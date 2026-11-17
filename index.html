@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build Your Canteen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #B3985A; --gold-deep: #8C7440; --beige: #EFEAE4; --ink: #111; --muted: #555;
+    --line: #DDD3CC; --white: #fff; --ease: cubic-bezier(.2,.8,.2,1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--beige); color: var(--ink); font-family: 'Hanken Grotesk', Helvetica, Arial, sans-serif; line-height: 1.5; }
+  .top { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; border-bottom: 1px solid var(--line); background: var(--white); }
+  .brand { font-weight: 800; letter-spacing: .12em; font-size: 14px; }
+  .brand small { display: block; font-weight: 500; letter-spacing: .02em; color: var(--muted); font-size: 12px; }
+  .proto { font-size: 12px; color: var(--muted); }
+
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+  .scene-col { position: sticky; top: 16px; }
+  .scene { background: #F7F3EE; border: 1px solid var(--line); border-radius: 24px; padding: 8px 8px 4px; }
+  #canteen { width: 100%; height: auto; display: block; }
+  .caption { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 8px 12px 6px; font-size: 14px; color: var(--muted); min-height: 36px; }
+  .caption b { color: var(--ink); }
+  .built { display: flex; gap: 5px; }
+  .built i { width: 22px; height: 6px; border-radius: 3px; background: var(--line); transition: background .4s var(--ease); }
+  .built i.on { background: var(--ink); }
+  .built i.now { background: var(--gold); }
+
+  .panel { background: var(--white); border: 1px solid var(--line); border-radius: 24px; padding: 32px; min-height: 480px; }
+  .screen > * { animation: rise .5s var(--ease) both; }
+  .screen > *:nth-child(2) { animation-delay: .06s; } .screen > *:nth-child(3) { animation-delay: .12s; }
+  .screen > *:nth-child(4) { animation-delay: .18s; } .screen > *:nth-child(5) { animation-delay: .24s; } .screen > *:nth-child(6) { animation-delay: .3s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .eyebrow { font-size: 12.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-deep); margin: 0 0 10px; }
+  h1 { font-size: clamp(30px, 3.6vw, 46px); line-height: 1.05; margin: 0 0 14px; letter-spacing: -.02em; }
+  h2 { font-size: clamp(20px, 2.1vw, 25px); line-height: 1.25; margin: 0 0 20px; letter-spacing: -.01em; outline: none; }
+  h2 strong { color: var(--gold-deep); }
+  .lead { font-size: 17px; color: #333; margin: 0 0 22px; }
+  .honest { border-left: 3px solid var(--gold); padding: 2px 0 2px 12px; font-size: 14.5px; color: #333; margin: 4px 0 20px; }
+  .btn { appearance: none; border: 0; background: var(--ink); color: var(--white); font-family: inherit; font-weight: 600; font-size: 16px; line-height: 1; padding: 17px 26px; border-radius: 999px; cursor: pointer; transition: transform .2s var(--ease), background .2s; }
+  .btn:hover { background: #333; } .btn:active { transform: scale(.97); }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+  .btn.ghost:hover { background: var(--beige); }
+  .btn:focus-visible, .opt:focus-visible, .link:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  .link { background: none; border: 0; font: inherit; color: var(--muted); text-decoration: underline; cursor: pointer; padding: 8px 0; }
+  form { display: grid; gap: 14px; }
+  label { font-size: 14px; font-weight: 600; display: grid; gap: 6px; }
+  input, select { font: inherit; font-size: 16px; padding: 13px 15px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--white); width: 100%; }
+  .note { font-size: 13px; color: var(--muted); }
+
+  .qhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .count { font-size: 13.5px; font-weight: 600; color: var(--muted); }
+  .zone-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--gold-deep); background: #F6F0E4; border-radius: 999px; padding: 5px 12px; margin-bottom: 14px; }
+  .opts { display: grid; gap: 10px; }
+  .opt { position: relative; text-align: left; font: inherit; color: var(--ink); background: var(--white); border: 1.5px solid var(--line); border-radius: 16px; padding: 15px 54px 15px 18px; cursor: pointer; transition: border-color .2s, transform .25s var(--ease), box-shadow .25s; animation: rise .45s var(--ease) both; }
+  .opt:hover { border-color: var(--gold); }
+  .opt b { display: block; font-size: 17px; line-height: 1.25; margin-bottom: 4px; }
+  .opt span { display: block; font-size: 14px; color: var(--muted); }
+  .opt.picked { border-color: var(--ink); transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
+  .tick { position: absolute; right: 16px; top: 16px; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); transition: background .2s, border-color .2s; }
+  .opt.picked .tick { background: var(--ink); border-color: var(--ink); }
+  .tick path { stroke: #fff; stroke-width: 2.4; fill: none; stroke-dasharray: 20; stroke-dashoffset: 20; }
+  .opt.picked .tick path { transition: stroke-dashoffset .35s .05s var(--ease); stroke-dashoffset: 0; }
+
+  .score { display: flex; align-items: baseline; gap: 8px; margin: 0 0 2px; }
+  .score b { font-size: clamp(60px, 7vw, 84px); line-height: 1; letter-spacing: -.04em; }
+  .score span { font-size: 24px; color: var(--muted); }
+  .stage-name { font-size: 25px; margin: 0 0 14px; }
+  .ladder { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 0 0 20px; }
+  .rung { font-size: 11px; font-weight: 600; color: var(--muted); }
+  .rung i { display: block; height: 8px; border-radius: 4px; background: var(--line); margin-bottom: 6px; transition: background .4s var(--ease); }
+  .rung.reached i { background: var(--gold); }
+  .rung.here { color: var(--ink); } .rung.here i { background: var(--ink); }
+  .desc { font-size: 16px; margin: 0 0 10px; }
+  .gaps { font-size: 16px; font-weight: 600; margin: 0 0 22px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 6px; }
+  details { margin-top: 20px; font-size: 13px; color: var(--muted); }
+  pre { white-space: pre-wrap; background: #FAF8F5; border: 1px solid var(--line); border-radius: 12px; padding: 12px; font-size: 12px; max-height: 240px; overflow: auto; }
+
+  /* ---------- canteen scene ---------- */
+  .piece { opacity: 0; transform: translateY(-46px); transition: transform .75s cubic-bezier(.34,1.45,.64,1), opacity .3s ease; transition-delay: var(--d, 0s); }
+  .on > .piece { opacity: 1; transform: none; }
+  .slot { fill: rgba(179,152,90,.06); stroke: #B8AC9C; stroke-width: 1.2; stroke-dasharray: 4 4; transition: opacity .4s, stroke .3s; }
+  .slot.filled { opacity: 0; }
+  .slot.current { stroke: var(--gold-deep); stroke-width: 2.2; fill: rgba(179,152,90,.16); opacity: 1; animation: march 1s linear infinite; }
+  @keyframes march { to { stroke-dashoffset: -16; } }
+  .pin { transition: opacity .35s, transform .5s var(--ease); }
+  .pin .dot { fill: #fff; stroke: #B8AC9C; stroke-width: 1.5; transition: fill .3s, stroke .3s; }
+  .pin text { font: 700 9.5px 'Hanken Grotesk', sans-serif; fill: var(--muted); }
+  .pin.current .dot { fill: var(--gold); stroke: var(--gold-deep); }
+  .pin.current text { fill: #fff; }
+  .pin.current { animation: bob 1.2s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(-4px); } }
+  .pin.done .dot { fill: var(--ink); stroke: var(--ink); }
+  .pin.done text { fill: #fff; }
+  .pin.hide { opacity: 0; }
+  .tag { opacity: 0; transform: translateY(6px); transition: opacity .4s var(--ease), transform .4s var(--ease); transition-delay: var(--d, 0s); }
+  .tag.show { opacity: 1; transform: none; }
+  .tag rect { fill: #fff; stroke: #1a1a1a; stroke-width: 1; }
+  .tag text { font: 700 8.6px 'Hanken Grotesk', sans-serif; fill: #111; }
+  .tag text.lv { font-weight: 600; fill: var(--gold-deep); }
+  .sign-text { font: 800 7.6px 'Hanken Grotesk', sans-serif; letter-spacing: .14em; fill: #fff; }
+  #shell { opacity: 0; transition: opacity .6s ease; } #shell.on { opacity: 1; }
+
+  @media (max-width: 900px) {
+    .wrap { grid-template-columns: 1fr; gap: 14px; padding: 12px 12px 40px; }
+    .scene-col { position: static; }
+    .scene { border-radius: 18px; padding: 4px 4px 0; }
+    /* stacked layout: keep the canteen short so the question and answers stay on the first screen */
+    #canteen { max-height: 38vh; max-height: 38svh; }
+    .panel { padding: 22px 18px; border-radius: 18px; min-height: 0; }
+    .top { padding: 12px 16px; } .proto { display: none; }
+    .rung { font-size: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">COMPASS GROUP<small>School Wellbeing Scorecard</small></div>
+  <div class="proto">Prototype · placeholder branding · nothing is stored</div>
+</header>
+<main class="wrap" id="wrap">
+  <div class="scene-col" aria-hidden="true">
+    <div class="scene">
+      <svg id="canteen" viewBox="10 4 470 404" role="img"></svg>
+      <div class="caption"><span id="caption"></span><span class="built" id="built"></span></div>
+    </div>
+  </div>
+  <section class="panel"><div id="screen" class="screen" aria-live="polite"></div></section>
+</main>
+<script src="quiz-data.js"></script>
+<script>
+(function () {
+  const Q = window.QUIZ;
+  const N = Q.questions.length;
+  const answers = new Array(N).fill(null);
+  let school = '', role = '', lead = null, busy = false, comparing = false;
+  const svg = document.getElementById('canteen');
+  const screen = document.getElementById('screen');
+  const caption = document.getElementById('caption');
+  const builtBar = document.getElementById('built');
+  const ticks = Array.from({ length: N }, () => builtBar.appendChild(document.createElement('i')));
+  const RM = Q.reducedMotion();
+
+  /* ================= isometric drawing kit ================= */
+  const S = 24, OX = 222, OY = 150;
+  const P = (x, y, z) => [OX + (x - y) * S * 0.866, OY + (x + y) * S * 0.5 - z * S];
+  const pts = a => a.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  function shade(hex, f) {
+    const n = parseInt(hex.slice(1), 16); let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    const t = f < 0 ? 0 : 255, k = Math.abs(f);
+    r = Math.round(r + (t - r) * k); g = Math.round(g + (t - g) * k); b = Math.round(b + (t - b) * k);
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+  const poly = (a, fill, extra = '') => `<polygon points="${pts(a)}" fill="${fill}" ${extra}/>`;
+  const EDGE = 'stroke="rgba(40,30,20,.18)" stroke-width=".6" stroke-linejoin="round"';
+  function box(x, y, z, w, d, h, c) {
+    const top = [P(x, y, z + h), P(x + w, y, z + h), P(x + w, y + d, z + h), P(x, y + d, z + h)];
+    const fy = [P(x, y + d, z), P(x + w, y + d, z), P(x + w, y + d, z + h), P(x, y + d, z + h)];
+    const fx = [P(x + w, y, z), P(x + w, y + d, z), P(x + w, y + d, z + h), P(x + w, y, z + h)];
+    return poly(fy, shade(c, -.1), EDGE) + poly(fx, shade(c, -.24), EDGE) + poly(top, shade(c, .06), EDGE);
+  }
+  // content painted flat on the back wall (plane y = y0); local px: right = +x, down = -z
+  const onBack = (x, y0, ztop, inner) => { const [e, f] = P(x, y0, ztop); return `<g transform="matrix(.866,.5,0,1,${e.toFixed(1)},${f.toFixed(1)})">${inner}</g>`; };
+  // content on the left wall (plane x = x0), reading from front (yFront) towards the back
+  const onLeft = (x0, yFront, ztop, inner) => { const [e, f] = P(x0, yFront, ztop); return `<g transform="matrix(.866,-.5,0,1,${e.toFixed(1)},${f.toFixed(1)})">${inner}</g>`; };
+  // content on a front-facing (max-y) face of an object, same orientation as onBack
+  const onFront = onBack;
+  const floorPoly = (x, y, w, d, z = 0) => [P(x, y, z), P(x + w, y, z), P(x + w, y + d, z), P(x, y + d, z)];
+  const wallPoly = (x, y0, w, z0, h) => [P(x, y0, z0), P(x + w, y0, z0), P(x + w, y0, z0 + h), P(x, y0, z0 + h)];
+  const leftPoly = (x0, y, d, z0, h) => [P(x0, y, z0), P(x0, y + d, z0), P(x0, y + d, z0 + h), P(x0, y, z0 + h)];
+  const SKIN = ['#C68B59', '#8D5524', '#E0AC69', '#A86B3C', '#F1C27D'];
+  function person(x, y, o = {}) {
+    const [px, py] = P(x, y, 0);
+    let h = o.kid ? 21 : 31; if (o.seated) h = o.kid ? 15 : 21;
+    const bw = o.kid ? 8 : 10, c = o.c || '#3F6E9A', skin = SKIN[o.s || 0];
+    let s = `<ellipse cx="${px}" cy="${py}" rx="${bw * .75}" ry="${bw * .32}" fill="rgba(40,30,20,.16)"/>`;
+    if (!o.seated) s += `<rect x="${px - bw * .35}" y="${py - h * .42}" width="${bw * .7}" height="${h * .42}" rx="2" fill="${o.legs || '#3A3632'}"/>`;
+    s += `<rect x="${px - bw / 2}" y="${py - h}" width="${bw}" height="${h * (o.seated ? .9 : .62)}" rx="${bw * .45}" fill="${c}"/>`;
+    if (o.apron) s += `<rect x="${px - bw * .32}" y="${py - h * .8}" width="${bw * .64}" height="${h * .55}" rx="2" fill="#fff" opacity=".92"/>`;
+    const hr = o.kid ? 4 : 4.6, hy = py - h - hr + 1;
+    s += `<circle cx="${px}" cy="${hy}" r="${hr}" fill="${skin}"/>`;
+    if (o.hair !== false) s += `<path d="M${px - hr} ${hy - .5} a${hr} ${hr} 0 0 1 ${hr * 2} 0 q-${hr} -${hr * .3} -${hr * 2} 0z" fill="#2A211B"/>`;
+    if (o.toque) s += `<rect x="${px - 3.6}" y="${hy - hr - 6}" width="7.2" height="6" fill="#fff" stroke="#D8D4CC" stroke-width=".6"/><circle cx="${px - 2}" cy="${hy - hr - 7}" r="3" fill="#fff"/><circle cx="${px + 2}" cy="${hy - hr - 7}" r="3" fill="#fff"/>`;
+    if (o.cap) s += `<path d="M${px - hr} ${hy - 1} a${hr} ${hr} 0 0 1 ${hr * 2} 0z" fill="${o.cap}"/>`;
+    return s;
+  }
+  const pc = (d, inner) => `<g class="piece" style="--d:${d}s">${inner}</g>`;
+  const T = (x, y, txt, size, fill, weight = 700, extra = '') => `<text x="${x}" y="${y}" font-family="Hanken Grotesk, sans-serif" font-size="${size}" font-weight="${weight}" fill="${fill}" ${extra}>${txt}</text>`;
+
+  /* palette */
+  const C = { wood: '#B9895A', woodL: '#D2AA7C', woodD: '#7E5B3A', steel: '#C3C6C8', steelD: '#8E9296', dark: '#2E2B28', wall: '#F6F1EA', wallL: '#EDE5DA', gold: '#B3985A', green: '#6E8B3D', tomato: '#C8553D', carrot: '#D9822B', blue: '#3F6E9A', cork: '#C9A274', chalk: '#2F3B33', cream: '#FBF8F3' };
+
+  /* ================= the room ================= */
+  function shell() {
+    let s = '';
+    // floor tiles
+    for (let x = 0; x < 12; x++) for (let y = 0; y < 9; y++)
+      s += poly(floorPoly(x, y, 1, 1), (x + y) % 2 ? '#E4D9CA' : '#EBE2D5', 'stroke="#DCCFBE" stroke-width=".5"');
+    // walls
+    s += box(0, -0.3, 0, 12, 0.3, 5, C.wall);
+    s += box(-0.3, -0.3, 0, 0.3, 9.3, 5, C.wallL);
+    // gold skirting
+    s += poly(wallPoly(0, 0, 12, 0, .32), C.gold) + poly(leftPoly(0, 0, 9, 0, .32), shade(C.gold, -.12));
+    // windows on the left wall (above the kitchen line)
+    for (const y of [6.9]) s += poly(leftPoly(0.01, y, 1.6, 1.4, 2.4), '#CFDDE3', EDGE) + poly(leftPoly(0.02, y + .78, .05, 1.4, 2.4), '#fff');
+    // school name sign
+    s += box(4.1, 0, 4.25, 3.6, 0.08, 0.58, C.dark);
+    s += onBack(4.18, 0.09, 4.77, `<text id="signText" class="sign-text" x="40.5" y="9.4" text-anchor="middle">YOUR SCHOOL · DINING HALL</text>`);
+    // dining tables (always there)
+    for (const ty of [3.7, 6.3]) {
+      s += box(3.4, ty - .55, 0, 3.2, .34, .42, C.woodD);
+      [3.9, 4.9, 5.9].forEach((kx, n) => s += person(kx, ty - .4, { kid: true, seated: true, c: ['#3F6E9A', '#B3985A', '#6E8B3D', '#8E2C48'][(n + (ty > 5 ? 1 : 0)) % 4], s: (n + Math.round(ty)) % 5 }));
+      s += box(3.4, ty, 0, 3.2, .95, .74, C.woodL);
+      [3.9, 4.9, 5.9].forEach(px => { const [a, b] = P(px, ty + .45, .74); s += `<ellipse cx="${a}" cy="${b}" rx="6.5" ry="3.4" fill="#fff" stroke="#D9D2C6" stroke-width=".5"/><ellipse cx="${a - 1.6}" cy="${b - .2}" rx="2.2" ry="1.2" fill="${C.carrot}"/><ellipse cx="${a + 1.8}" cy="${b + .3}" rx="2" ry="1" fill="${C.green}"/>`; });
+      s += box(3.4, ty + 1.15, 0, 3.2, .34, .42, C.woodD);
+    }
+    return s;
+  }
+
+  /* ================= the six zones ================= */
+  // Each zone: base (neutral, shown as soon as it is answered), l3 and l5 upgrades (shown at reveal)
+  const ZONES = [
+    { // Q1 menu board
+      name: 'Menu board', slot: wallPoly(1, 0.02, 2.7, 1.9, 2.35), pin: P(2.35, 0, 4.55),
+      base: () => pc(0, box(1, 0, 2.05, 2.6, .12, 2.05, C.woodD)) +
+        pc(.12, onFront(1.1, .125, 4.0, `<rect width="57.6" height="44" rx="1.5" fill="${C.chalk}"/>` + T(5, 8.5, "TODAY'S MENU", 5, '#F3EFE6', 800) +
+          `<path d="M5 15 h20 M5 20 h15 M5 25 h18" stroke="#E7E2D6" stroke-width="1.1" stroke-linecap="round" opacity=".8"/>`)),
+      l3: () => pc(0, onFront(1.1, .13, 4.0, `<g transform="translate(44 22)"><circle r="9" fill="#E9C46A"/><path d="M0 0 L0 -9 A9 9 0 0 1 8.6 2.7z" fill="${C.green}"/><path d="M0 0 L8.6 2.7 A9 9 0 0 1 -4 8.1z" fill="${C.tomato}"/><path d="M0 0 L-4 8.1 A9 9 0 0 1 -9 0z" fill="#F3EFE6"/></g>` + T(37, 38, 'FOOD GROUPS', 3.6, '#E7E2D6', 700))),
+      l5: () => pc(0, onFront(1.1, .135, 4.0, `<g transform="translate(5 30)">${[0, 1, 2].map(n => `<rect x="${n * 9}" y="${9 - (5 + n * 2)}" width="6" height="${5 + n * 2}" fill="${[C.gold, '#E9C46A', '#9DBF6B'][n]}"/>`).join('')}</g>` + T(4, 42.5, 'AGE 6–10 · 11–14 · 15–18', 3.3, '#E7E2D6', 700))) +
+        pc(.15, person(2.3, 1.05, { toque: true, apron: true, c: '#F2F0EB', s: 2 })) +
+        pc(.25, box(2.75, .5, 0, .55, .45, .9, C.woodD) + box(2.7, .45, .9, .65, .55, .06, C.cream))
+    },
+    { // Q2 parent information wall
+      name: 'Parent info wall', slot: wallPoly(4.4, 0.02, 3.1, 1.55, 2.6), pin: P(5.95, 0, 3.95), pinOff: [0, 8],
+      base: () => pc(0, box(4.5, 0, 1.7, 2.9, .1, 2.3, C.cork)) +
+        pc(.12, onFront(4.6, .105, 3.9, `<rect x="6" y="6" width="15" height="20" fill="#fff"/><path d="M9 11 h9 M9 15 h7 M9 19 h8" stroke="#BDB6AA" stroke-width="1.2"/><circle cx="13.5" cy="6.5" r="1.8" fill="${C.tomato}"/>`)),
+      l3: () => pc(0, onFront(4.6, .11, 3.9, `<rect x="26" y="4" width="16" height="21" fill="#fff"/><g fill="${C.green}"><rect x="29" y="15" width="2.5" height="7"/><rect x="33" y="11" width="2.5" height="11"/><rect x="37" y="13" width="2.5" height="9"/></g><circle cx="34" cy="4.5" r="1.8" fill="${C.blue}"/>` +
+        `<rect x="47" y="9" width="15" height="19" fill="#fff"/><path d="M50 14 h9 M50 18 h6" stroke="#BDB6AA" stroke-width="1.2"/><circle cx="54.5" cy="9.5" r="1.8" fill="${C.gold}"/>`)),
+      l5: () => pc(0, onFront(4.6, .115, 3.9, `<circle cx="58" cy="44" r="7.5" fill="${C.gold}" stroke="#fff" stroke-width="1.4"/><path d="M54.5 44 l2.4 2.4 4.6 -5" stroke="#fff" stroke-width="1.6" fill="none"/>`)) +
+        pc(.12, box(5.3, .75, 0, 1.0, .25, .25, C.dark) + box(5.72, .8, .25, .16, .14, .75, C.steelD) + box(5.25, .7, 1.0, 1.1, .2, .85, C.dark) +
+          onFront(5.3, .905, 1.8, `<rect width="24" height="16.5" fill="#F5F2EC"/><g fill="${C.green}"><rect x="3" y="9" width="3" height="5"/><rect x="8" y="5" width="3" height="9"/><rect x="13" y="7" width="3" height="7"/></g>` + T(3, 4.4, 'NUTRIENTS', 2.8, '#333', 800) + `<circle cx="20" cy="10" r="2.6" fill="${C.gold}"/>`)) +
+        pc(.22, person(6.75, 1.45, { c: '#7A3B2E', s: 1 }) + person(7.2, 1.85, { kid: true, c: '#E0A93B', s: 3 }))
+    },
+    { // Q3 kitchen + safety
+      name: 'Kitchen', slot: floorPoly(0.02, 0.9, 1.75, 5.85), pin: P(0.8, 3.4, 2.5),
+      base: () => pc(0, box(0, 1, 0, 1.3, 4.3, 1.2, C.steel)) +
+        pc(.1, box(.2, 1.35, 1.2, .9, .9, .04, C.dark) + box(.35, 1.5, 1.24, .58, .58, .4, '#9EA2A6') + box(.38, 1.53, 1.64, .52, .52, .03, '#B5B9BC')) +
+        pc(.2, box(.15, 2.6, 1.2, 1.0, 2.4, .06, '#E9E7E2') + [2.8, 3.55, 4.3].map((yy, n) => box(.25, yy, 1.26, .8, .6, .12, ['#E0A93B', C.green, C.tomato][n])).join('')) +
+        pc(.28, onLeft(0.01, 5.3, 2.35, `<rect width="102" height="18" fill="#E6EEF0"/><path d="M0 6 h102 M0 12 h102 M17 0 v18 M34 0 v18 M51 0 v18 M68 0 v18 M85 0 v18" stroke="#CFDCE0" stroke-width=".8"/>`)),
+      l3: () => pc(0, box(0, 5.5, 0, .95, .95, 1.0, '#F1F0EC') + box(.12, 5.62, 1.0, .7, .7, .03, '#C9D7DC') + box(.1, 5.9, 1.03, .1, .12, .45, C.steelD)) +
+        pc(.12, onLeft(0.01, 6.3, 2.95, `<rect x="2" y="0" width="17" height="23" rx="1" fill="${C.woodD}"/><rect x="4" y="3" width="13" height="18" fill="#fff"/><path d="M6 8 l1.5 1.5 3 -3 M6 13 l1.5 1.5 3 -3 M6 18 l1.5 1.5 3 -3" stroke="${C.green}" stroke-width="1.1" fill="none"/><path d="M12 8 h3 M12 13 h3 M12 18 h3" stroke="#AAA" stroke-width="1"/>`)),
+      l5: () => pc(0, box(0, 1.2, 2.75, 1.05, 1.5, .55, '#B2B6B9') + box(0, 1.35, 3.3, .45, .9, 1.4, '#A8ACAF')) +
+        pc(.12, onLeft(0.01, 4.9, 3.7, `<rect width="28" height="20" fill="${C.gold}"/><rect x="2" y="2" width="24" height="16" fill="#FFFDF8"/>` + T(5, 8, 'CERTIFIED', 3.6, '#333', 800) + `<path d="M5 11 h14 M5 14 h10" stroke="#BBB" stroke-width=".9"/><circle cx="21" cy="13" r="3" fill="${C.tomato}"/>`)) +
+        pc(.22, person(1.75, 3.0, { apron: true, c: '#F2F0EB', cap: '#2E2B28', s: 4 }) + person(1.8, 4.4, { apron: true, c: '#F2F0EB', cap: '#2E2B28', s: 0 }))
+    },
+    { // Q4 cooking class corner
+      name: 'Cooking corner', slot: floorPoly(7.5, 6.1, 3.7, 2.7), pin: P(9.6, 7.9, 1.0),
+      base: () => pc(0, box(7.85, 6.55, 0, .14, .14, .78, C.woodD) + box(10.3, 6.55, 0, .14, .14, .78, C.woodD) + box(7.85, 7.6, 0, .14, .14, .78, C.woodD) + box(10.3, 7.6, 0, .14, .14, .78, C.woodD) + box(7.75, 6.45, .78, 2.8, 1.35, .1, C.wood)),
+      l3: () => pc(0, (() => { let s = ''; [[8.2, 6.8, C.tomato], [8.5, 7.3, C.carrot], [9.1, 6.9, C.green], [9.6, 7.4, '#E9C46A'], [10, 6.85, C.tomato]].forEach(([x, y, c]) => { const [a, b] = P(x, y, .9); s += `<ellipse cx="${a}" cy="${b - 2}" rx="3.4" ry="3" fill="${c}"/><ellipse cx="${a}" cy="${b + .6}" rx="3" ry="1" fill="rgba(0,0,0,.12)"/>`; }); return s; })()) +
+        pc(.12, person(8.5, 8.35, { kid: true, c: '#3F6E9A', s: 1 }) + person(9.5, 8.4, { kid: true, c: '#8E2C48', s: 3 })),
+      l5: () => pc(0, box(8.0, 6.65, .88, .7, .45, .05, C.woodL) + box(9.0, 6.65, .88, .7, .45, .05, C.woodL) + box(9.0, 7.35, .88, .7, .45, .05, C.woodL)) +
+        pc(.12, person(10.85, 6.9, { toque: true, apron: true, c: '#F2F0EB', s: 2 }) + person(10.9, 7.75, { kid: true, c: '#6E8B3D', s: 4, apron: true }) + person(7.6, 8.5, { kid: true, c: '#E0A93B', s: 0, apron: true })) +
+        pc(.22, box(7.2, 5.35, 0, 1.3, .45, .5, C.woodD) + (() => { let s = ''; [7.45, 7.75, 8.05, 8.3].forEach(x => { const [a, b] = P(x, 5.57, .5); s += `<path d="M${a} ${b} q-3 -7 -1 -11 M${a} ${b} q3 -6 4 -9" stroke="${C.green}" stroke-width="2" fill="none" stroke-linecap="round"/>`; }); return s; })())
+    },
+    { // Q5 waste + compost
+      name: 'Waste station', slot: floorPoly(9.0, 2.95, 2.95, 1.7), pin: P(10.45, 3.8, 1.25),
+      base: () => pc(0, box(9.2, 3.25, 0, .62, .62, .9, '#7D8186') + box(9.15, 3.2, .9, .72, .72, .08, '#6A6E73')),
+      l3: () => pc(0, box(9.95, 3.25, 0, .62, .62, .9, C.green) + box(9.9, 3.2, .9, .72, .72, .08, shade(C.green, -.15))) +
+        pc(.1, box(10.7, 3.25, 0, .62, .62, .9, C.blue) + box(10.65, 3.2, .9, .72, .72, .08, shade(C.blue, -.15))),
+      l5: () => pc(0, box(11.4, 3.1, 0, .55, 1.25, .55, C.woodD) + box(11.43, 3.13, .55, .49, 1.19, .03, '#5B4130') + (() => { let s = ''; [3.35, 3.7, 4.05].forEach(y => { const [a, b] = P(11.67, y, .58); s += `<path d="M${a} ${b} q-3 -6 -1 -9 M${a} ${b} q3 -5 3 -8" stroke="${C.green}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`; }); return s; })()) +
+        pc(.12, box(9.4, 4.25, 0, .08, .08, 1.25, C.steelD) + onFront(9.05, 4.34, 1.85, `<rect width="18" height="13" fill="#fff" stroke="#333" stroke-width=".6"/>` + T(2, 4.5, 'WASTE (kg)', 2.6, '#333', 800) + `<g fill="${C.green}"><rect x="3" y="6" width="2.5" height="5"/><rect x="7" y="7.5" width="2.5" height="3.5"/><rect x="11" y="9" width="2.5" height="2"/></g>`)) +
+        pc(.2, person(10.3, 4.85, { kid: true, c: '#B3985A', s: 2 }))
+    },
+    { // Q6 review wall
+      name: 'Review wall', slot: wallPoly(8.35, 0.02, 3.3, 1.35, 3.45), pin: P(10, 0, 4.85),
+      base: () => pc(0, box(8.55, 0, 1.45, .85, .5, .62, C.woodD)) +
+        pc(.1, onFront(8.6, .505, 2.0, `<rect x="4" y="3" width="12" height="1.8" rx=".9" fill="#2A211B"/>` + T(3.5, 11, 'IDEAS', 3.6, '#F3EFE6', 800))),
+      l3: () => pc(0, box(9.6, 0, 2.0, 1.75, .07, 1.35, '#FDFCF9')) +
+        pc(.1, onFront(9.65, .075, 3.3, [[4, 4, '#F6D365'], [14, 6, '#A8D5BA'], [24, 3, '#F4A6A6'], [8, 16, '#A8C6E8'], [20, 17, '#F6D365'], [30, 15, '#A8D5BA']].map(([x, y, c]) => `<rect x="${x}" y="${y}" width="7" height="7" fill="${c}"/>`).join(''))),
+      l5: () => pc(0, box(8.45, 0, 3.55, 3.1, .08, 1.2, C.dark) + onFront(8.5, .085, 4.7, `<rect width="71" height="25.5" fill="#F5F2EC"/><path d="M5 21 L18 17 L30 18 L42 11 L54 9 L66 4" stroke="${C.gold}" stroke-width="1.6" fill="none"/><path d="M5 22.5 h61" stroke="#BBB" stroke-width=".6"/>` + T(5, 7, 'MENU PERFORMANCE', 3.4, '#333', 800))) +
+        pc(.12, box(9.1, .85, 0, 1.6, .8, .72, C.woodL) + person(9.4, 1.95, { c: '#3F6E9A', s: 2 }) + person(10.5, 1.95, { c: '#7A3B2E', s: 1 }))
+    }
+  ];
+
+  /* ================= assemble scene ================= */
+  // painter's order: back-to-front
+  const ORDER = [2, 0, 1, 5, 4, 3];
+  let html = `<g id="shell">${shell()}</g>`;
+  html += `<g id="slots">${ZONES.map((z, i) => `<polygon class="slot" data-i="${i}" points="${pts(z.slot)}"/>`).join('')}</g>`;
+  ORDER.forEach(i => {
+    const z = ZONES[i];
+    if (i === 3) html += ''; // cooking corner is front-most
+    html += `<g class="zone" data-i="${i}"><g class="lv base">${z.base()}</g><g class="lv l3">${z.l3()}</g><g class="lv l5">${z.l5()}</g></g>`;
+  });
+  html += `<g id="pins">${ZONES.map((z, i) => { const [x, y] = z.pin; const o = z.pinOff || [0, 0]; return `<g transform="translate(${x + o[0]} ${y + o[1]})"><g class="pin" data-i="${i}"><path d="M0 9 l-4 -6 h8z" fill="#B8AC9C"/><circle class="dot" r="8.5" cy="-1"/><text text-anchor="middle" y="2.4">${i + 1}</text></g></g>`; }).join('')}</g>`;
+  html += `<g id="tags"></g>`;
+  svg.innerHTML = html;
+  // dining area sits between the back zones and the front ones
+  const zoneEls = [...svg.querySelectorAll('.zone')].reduce((a, e) => (a[+e.dataset.i] = e, a), []);
+  const lv = (i, k) => zoneEls[i].querySelector('.' + k);
+  const slotEls = [...svg.querySelectorAll('.slot')];
+  const pinEls = [...svg.querySelectorAll('.pin')];
+  const signText = svg.querySelector('#signText');
+  requestAnimationFrame(() => svg.querySelector('#shell').classList.add('on'));
+
+  function setSign(name) {
+    const t = ((name || 'Your school').toUpperCase() + ' · DINING HALL');
+    signText.textContent = t;
+    if (t.length > 26) { signText.setAttribute('textLength', 76); signText.setAttribute('lengthAdjust', 'spacingAndGlyphs'); }
+    else signText.removeAttribute('textLength');
+  }
+
+  function paint(current) {
+    ZONES.forEach((z, i) => {
+      const answered = !!answers[i];
+      lv(i, 'base').classList.toggle('on', answered);
+      lv(i, 'l3').classList.remove('on'); lv(i, 'l5').classList.remove('on');
+      slotEls[i].classList.toggle('filled', answered && i !== current);
+      slotEls[i].classList.toggle('current', i === current);
+      pinEls[i].classList.toggle('current', i === current);
+      pinEls[i].classList.toggle('done', answered && i !== current);
+      pinEls[i].classList.remove('hide');
+      ticks[i].className = i === current ? 'now' : answered ? 'on' : '';
+    });
+    svg.querySelector('#tags').innerHTML = '';
+  }
+
+  /* ================= panel helpers ================= */
+  const NS = 'http://www.w3.org/2000/svg';
+  const h = (tag, props = {}, kids = []) => { const e = document.createElement(tag); Object.assign(e, props); kids.forEach(k => e.append(k)); return e; };
+  function show(nodes) {
+    screen.replaceChildren(...nodes);
+    const head = screen.querySelector('h1, h2');
+    if (head) { head.tabIndex = -1; head.focus({ preventScroll: true }); }
+    window.scrollTo({ top: 0, behavior: RM ? 'auto' : 'smooth' });
+  }
+  function personalised(text) {
+    const el = h('h2');
+    const parts = school ? text.split('your institution') : [text];
+    parts.forEach((p, n) => { if (n) el.append(h('strong', { textContent: school })); el.append(p); });
+    return el;
+  }
+  const setCaption = (lead, rest) => { caption.replaceChildren(); if (lead) caption.append(h('b', { textContent: lead })); if (rest) caption.append(' ' + rest); };
+
+  /* ================= screens ================= */
+  function intro() {
+    comparing = false;
+    paint(-1);
+    setCaption('Your canteen', 'is waiting to be built: six zones, one per question.');
+    const f = h('form');
+    const sIn = h('input', { required: true, autocomplete: 'organization', placeholder: 'e.g. Greenwood International School', value: school });
+    sIn.oninput = () => setSign(sIn.value.trim());
+    const rIn = h('select', { required: true });
+    ['', 'Principal', 'Director / Trustee', 'School administrator', 'Facilities / Operations head', 'Other'].forEach(r => rIn.append(h('option', { value: r, textContent: r || 'Select your role', selected: r === role })));
+    f.append(
+      h('label', {}, ['School / institution name', sIn]),
+      h('label', {}, ['Your role', rIn]),
+      h('p', { className: 'honest', textContent: 'There are no right or wrong answers. Pick what is true today — your canteen is built from your real answers.' }),
+      h('div', {}, [h('button', { className: 'btn', type: 'submit', textContent: 'Start building' })])
+    );
+    f.onsubmit = e => { e.preventDefault(); if (!f.reportValidity()) return; school = sIn.value.trim(); role = rIn.value; setSign(school); question(0); };
+    show([
+      h('p', { className: 'eyebrow', textContent: 'Institutional Dining Readiness' }),
+      h('h1', { textContent: 'How future-ready is your institute dining?' }),
+      h('p', { className: 'lead', textContent: 'Answer six questions and watch your school’s canteen take shape. At the end, see how it compares with a future-ready one.' }),
+      f
+    ]);
+  }
+
+  function question(i) {
+    busy = false;
+    paint(i);
+    setCaption('Building ' + (i + 1) + ' of ' + N + ':', ZONES[i].name);
+    const q = Q.questions[i];
+    const opts = Q.shuffle(q.options).map((o, n) => {
+      const b = h('button', { className: 'opt' + (answers[i] === o.key ? ' picked' : ''), type: 'button' }, [h('b', { textContent: o.headline }), h('span', { textContent: o.text })]);
+      b.style.animationDelay = (0.12 + n * 0.07) + 's';
+      const tick = document.createElementNS(NS, 'svg');
+      tick.setAttribute('class', 'tick'); tick.setAttribute('viewBox', '0 0 26 26');
+      const p = document.createElementNS(NS, 'path'); p.setAttribute('d', 'M7.5 13.5l3.6 3.6 7.4-8'); tick.append(p);
+      b.append(tick);
+      b.onclick = () => pick(i, o.key, b);
+      return b;
+    });
+    const back = h('button', { className: 'link', type: 'button', textContent: '← Back' });
+    back.onclick = () => (i === 0 ? intro() : question(i - 1));
+    show([
+      h('div', { className: 'qhead' }, [h('span', { className: 'count', textContent: 'Question ' + (i + 1) + ' of ' + N }), back]),
+      h('span', { className: 'zone-tag', textContent: 'Zone ' + (i + 1) + ' · ' + ZONES[i].name }),
+      personalised(q.text),
+      h('div', { className: 'opts', role: 'group' }, opts)
+    ]);
+  }
+
+  function pick(i, key, btn) {
+    if (busy) return; busy = true;
+    answers[i] = key;
+    screen.querySelectorAll('.opt').forEach(o => o.classList.remove('picked'));
+    btn.classList.add('picked');
+    // drop the zone in (neutral build), then move on
+    lv(i, 'base').classList.add('on');
+    slotEls[i].classList.remove('current'); slotEls[i].classList.add('filled');
+    pinEls[i].classList.remove('current'); pinEls[i].classList.add('done');
+    ticks[i].className = 'on';
+    setTimeout(() => (i + 1 < N ? question(i + 1) : leadForm()), RM ? 200 : 1050);
+  }
+
+  function leadForm() {
+    paint(-1);
+    setCaption('All six zones built.', 'Enter your details to inspect the finished canteen.');
+    const f = h('form');
+    const name = h('input', { required: true, autocomplete: 'name' });
+    const email = h('input', { type: 'email', required: true, autocomplete: 'email' });
+    const consent = h('input', { type: 'checkbox', required: true, style: 'width:auto' });
+    f.append(
+      h('label', {}, ['Your name', name]), h('label', {}, ['Work email', email]),
+      h('label', { style: 'display:flex;gap:10px;font-weight:400;align-items:flex-start' }, [consent, h('span', { className: 'note', textContent: 'I agree to Compass Group contacting me about my results. (Placeholder consent text — to be confirmed.)' })]),
+      h('div', {}, [h('button', { className: 'btn', type: 'submit', textContent: 'Inspect my canteen' })])
+    );
+    f.onsubmit = e => { e.preventDefault(); if (!f.reportValidity()) return; lead = { name: name.value.trim(), email: email.value.trim(), school, role }; result(); };
+    show([
+      h('p', { className: 'eyebrow', textContent: 'Canteen complete' }),
+      h('h2', { textContent: school + '’s canteen is built. Ready for inspection?' }),
+      h('p', { className: 'lead', textContent: 'Tell us where to send your readiness report, then see how each zone really measures up.' }),
+      f
+    ]);
+  }
+
+  const WORD = { 1: 'Basic', 3: 'Partly equipped', 5: 'Fully equipped' };
+  function showTags(levelOf) {
+    const g = svg.querySelector('#tags');
+    g.innerHTML = ZONES.map((z, i) => {
+      const [x, y] = z.pin; const o = z.pinOff || [0, 0];
+      const name = Q.questions[i].short, word = WORD[levelOf(i)];
+      const w = Math.max(name.length, word.length) * 4.9 + 14;
+      return `<g transform="translate(${x + o[0]} ${y + o[1] - 6})"><g class="tag" style="--d:${RM ? 0 : .15 + i * .12}s"><rect x="${-w / 2}" y="-15" width="${w}" height="24" rx="5"/><text text-anchor="middle" y="-5">${name}</text><text class="lv" text-anchor="middle" y="5">${word}</text></g></g>`;
+    }).join('');
+    requestAnimationFrame(() => requestAnimationFrame(() => g.querySelectorAll('.tag').forEach(t => t.classList.add('show'))));
+  }
+
+  function applyLevels(levelOf, stagger) {
+    ZONES.forEach((z, i) => {
+      const L = levelOf(i);
+      setTimeout(() => {
+        lv(i, 'base').classList.add('on');
+        lv(i, 'l3').classList.toggle('on', L >= 3);
+        lv(i, 'l5').classList.toggle('on', L >= 5);
+      }, RM ? 0 : i * stagger);
+    });
+    showTags(levelOf);
+  }
+
+  function result() {
+    const t = Q.total(answers), st = Q.stage(t), si = Q.stageIndex(t);
+    pinEls.forEach(p => p.classList.add('hide'));
+    slotEls.forEach(s => { s.classList.add('filled'); s.classList.remove('current'); });
+    ticks.forEach(k => k.className = 'on');
+    const mine = i => Q.level(i, answers[i]);
+    setTimeout(() => applyLevels(mine, 260), RM ? 0 : 300);
+    setCaption(school + '’s canteen', 'today');
+
+    const big = h('b', { textContent: '0' });
+    const rungs = Q.stages.map(s => h('div', { className: 'rung' }, [h('i'), s.name.replace(' Stage', '')]));
+    const compare = h('button', { className: 'btn ghost', type: 'button', textContent: 'Compare with a future-ready canteen' });
+    compare.onclick = () => {
+      comparing = !comparing;
+      if (comparing) { applyLevels(() => 5, 140); setCaption('A future-ready canteen', '(every zone fully equipped)'); compare.textContent = 'Back to my canteen'; }
+      else { applyLevels(mine, 140); setCaption(school + '’s canteen', 'today'); compare.textContent = 'Compare with a future-ready canteen'; }
+    };
+    const cta = h('button', { className: 'btn', type: 'button', textContent: 'Talk to a Compass nutrition expert' });
+    cta.onclick = () => { cta.textContent = 'Booking link coming soon'; };
+    const again = h('button', { className: 'link', type: 'button', textContent: 'Retake the assessment' });
+    again.onclick = () => { answers.fill(null); lead = null; intro(); };
+    const rec = Q.record(answers, lead);
+    console.log('Backend record (prototype):', rec);
+
+    show([
+      h('p', { className: 'eyebrow', textContent: school + '’s readiness score' }),
+      h('div', { className: 'score' }, [big, h('span', { textContent: '/ 30' })]),
+      h('h2', { className: 'stage-name', textContent: st.name }),
+      h('div', { className: 'ladder' }, rungs),
+      h('div', {}, [
+        h('p', { className: 'desc', textContent: st.desc }),
+        h('p', { className: 'gaps', textContent: Q.gaps(answers) }),
+        h('div', { className: 'actions' }, [compare, cta]),
+        again,
+        h('details', {}, [h('summary', { textContent: 'Backend record (demo only — not shown to guests)' }), h('pre', { textContent: JSON.stringify(rec, null, 2) })])
+      ])
+    ]);
+    setTimeout(() => {
+      Q.countUp(big, t, 1500);
+      rungs.forEach((r, n) => setTimeout(() => { r.classList.toggle('reached', n < si); r.classList.toggle('here', n === si); }, RM ? 0 : 500 + n * 160));
+    }, RM ? 0 : 400);
+  }
+
+  setSign('');
+  intro();
+})();
+</script>
+</body>
+</html>
