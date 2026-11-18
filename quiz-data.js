@@ -1,129 +1,178 @@
-/* Compass School Wellbeing Scorecard - shared content + scoring.
-   Question, option, score, explanation and stage text are verbatim from
-   "Compass School Wellbeing Scorecard.docx".
-   DRAFTS (not from the client, need approval): headline, short, phrase. */
+/* Compass dining readiness quiz - shared content + scoring.
+   Q1, Q2, Q4, Q6, Q7, Q8: question meaning, scores and explanations come from
+   "Compass School Wellbeing Scorecard.docx"; question and option copy is our simplified draft.
+   Q3, Q5, Q9: new questions, our draft (needs client approval).
+   Stage names and descriptions are verbatim from the document; the 9-45 ranges are our proposal. */
 window.QUIZ = (function () {
+  const pillars = [
+    { id: 'nutrition', name: 'Nutrition', place: 'Serving counter', q: [0, 1, 2] },
+    { id: 'safety', name: 'Food Safety', place: 'Kitchen', q: [3, 4, 5] },
+    { id: 'awareness', name: 'Awareness & Sustainability', place: 'Dining hall', q: [6, 7, 8] }
+  ];
+
   const questions = [
+    /* ---------- Pillar 1: Nutrition ---------- */
     {
-      area: 'Nutrition Strategy & Menu Design',
-      short: 'Menu design',
-      phrase: 'set age-specific nutrition standards before menus are planned',
-      food: '#E0A93B',
-      text: 'When your institution reviews its school dining menu, what typically drives the final decisions?',
+      pillar: 0, area: 'Nutrition Strategy & Menu Design', short: 'Menu board',
+      phrase: 'set age-specific nutrition targets before menus are planned',
+      text: 'What shapes your menu decisions most?',
       options: [
-        { key: 'A', score: 1, headline: 'Taste, variety and budget lead',
-          text: 'Student preferences, menu variety, budget, and operational feasibility are the primary considerations. Nutritional balance is reviewed as part of the process.',
+        { key: 'A', score: 1, headline: 'Taste, variety and budget',
+          text: 'Student preferences, variety and cost lead. Nutrition is checked along the way.',
           explanation: 'Nutrition is considered, but there is no indication of a defined nutritional framework guiding menu decisions.' },
-        { key: 'B', score: 3, headline: 'Balanced meals by food group',
-          text: 'Menus are planned around food groups, seasonal ingredients, and balanced meals. Nutritional requirements are considered alongside taste and operational feasibility.',
+        { key: 'B', score: 3, headline: 'Balanced meals',
+          text: 'Menus are built around food groups and seasonal produce, with nutrition weighed alongside taste and cost.',
           explanation: 'Demonstrates nutrition-conscious menu planning but does not establish whether age-specific nutritional benchmarks and meal-level targets consistently guide decisions.' },
-        { key: 'C', score: 5, headline: 'Nutrition targets come first',
-          text: 'Menu decisions begin with defined nutritional requirements for different age groups. Chefs and nutrition experts translate these into recipes, portions, food-group inclusion, and menu rotations.',
+        { key: 'C', score: 5, headline: 'Nutrition targets first',
+          text: 'Age-specific nutrition targets come first. Chefs and nutritionists turn them into recipes, portions and menu rotations.',
           explanation: 'Demonstrates nutrition by design, with science-led standards embedded before menu development, aligned with the Compass K12 Nutrition Guideline.' }
       ]
     },
     {
-      area: 'Nutritional Transparency & Validation',
-      short: 'Nutrition proof',
-      phrase: 'strengthen nutritional validation',
-      food: '#5E7D3A',
-      text: 'If a parent or school leader asked you to demonstrate the nutritional quality of the food served, what evidence could your institution provide?',
+      pillar: 0, area: 'Nutritional Transparency & Validation', short: 'Nutrition info',
+      phrase: 'back your menus with measured nutrition data',
+      text: 'A parent or leader asks you to prove the food is nutritious. What can you show?',
       options: [
-        { key: 'A', score: 1, headline: 'Menus and ingredient lists',
-          text: 'We can share the planned menus, ingredients and general information about the meals being served.',
+        { key: 'A', score: 1, headline: 'Menus and ingredients',
+          text: 'We can share planned menus and ingredient lists.',
           explanation: 'Menu transparency exists, but there is limited evidence of quantified nutritional assessment or systematic validation.' },
-        { key: 'B', score: 3, headline: 'Nutrition data for some meals',
-          text: 'We can provide nutritional information for selected meals or recipes, supported by periodic reviews.',
+        { key: 'B', score: 3, headline: 'Data for some meals',
+          text: 'Nutrition information for selected meals, reviewed from time to time.',
           explanation: 'Some nutritional assessment is undertaken, but consistency across meal occasions, nutrients and menu cycles may need strengthening.' },
         { key: 'C', score: 5, headline: 'Measured against benchmarks',
-          text: 'We can demonstrate nutritional values against defined benchmarks, supported by nutrient calculations, nutritionist reviews, and documented menu assessments.',
+          text: 'Nutrient values for every menu, checked against benchmarks and reviewed by a nutritionist.',
           explanation: 'Demonstrates measurable nutritional accountability through nutrient analysis, independent validation and structured scorecard-based assessment.' }
       ]
     },
     {
-      area: 'Food Safety & Operational Governance',
-      short: 'Food safety',
-      phrase: 'standardise food safety governance',
-      food: '#7A3B2E',
-      text: 'Imagine your school leadership team wants to verify that the approved food safety and quality standards are consistently followed at the point of service. How would this be demonstrated?',
+      pillar: 0, area: 'Healthy Ingredient Standards', short: 'Serving counter', isNew: true,
+      phrase: 'set clear limits on sugar, salt, fried and processed foods',
+      text: 'How do you manage sugar, salt, fried and processed foods?',
       options: [
-        { key: 'A', score: 1, headline: 'Good hygiene, fix issues as they arise',
-          text: 'Our food-service team follows established hygiene practices, and issues are addressed whenever they are identified.',
+        { key: 'A', score: 1, headline: 'Kept in moderation',
+          text: 'We try to limit them, but there are no set rules.',
+          explanation: 'DRAFT: Healthier choices are encouraged, but there are no defined standards limiting sugar, salt, fried or processed foods.' },
+        { key: 'B', score: 3, headline: 'Some limits in place',
+          text: 'We have guidelines for a few items, like fried snacks or sugary drinks.',
+          explanation: 'DRAFT: Some limits exist for specific items, but standards may not yet cover the full menu consistently.' },
+        { key: 'C', score: 5, headline: 'Clear standards',
+          text: 'Set limits for sugar, salt, fried and processed foods, with fresh, whole ingredients as the default.',
+          explanation: 'DRAFT: Demonstrates defined ingredient standards, with fresh, whole foods as the default and clear limits on less healthy items.' }
+      ]
+    },
+
+    /* ---------- Pillar 2: Food Safety ---------- */
+    {
+      pillar: 1, area: 'Food Safety & Operational Governance', short: 'Kitchen hygiene',
+      phrase: 'standardise food safety audits and certification',
+      text: 'How would you show that food safety standards are followed every day?',
+      options: [
+        { key: 'A', score: 1, headline: 'Good hygiene',
+          text: 'Our team follows hygiene practices and fixes issues as they come up.',
           explanation: 'Indicates reliance on operational practices and reactive issue resolution, with limited evidence of documented monitoring and audit mechanisms.' },
-        { key: 'B', score: 3, headline: 'Documented, trained, inspected',
-          text: 'We maintain food safety documentation, train food handlers, and conduct periodic kitchen inspections. We have a designated food preparation facility.',
+        { key: 'B', score: 3, headline: 'Documented and inspected',
+          text: 'Food safety records, trained food handlers and regular kitchen inspections.',
           explanation: 'Demonstrates structured food safety practices, but the frequency, effectiveness and accountability of compliance monitoring may require further assessment.' },
-        { key: 'C', score: 5, headline: 'Audited, certified, monitored',
-          text: 'We follow documented food safety systems, maintain appropriate kitchen infrastructure, conduct regular audits, monitor corrective actions, and hold applicable valid food safety certifications.',
+        { key: 'C', score: 5, headline: 'Audited and certified',
+          text: 'Documented safety systems, regular audits, tracked corrective actions and valid certifications.',
           explanation: 'Demonstrates a governed food-service environment with documented standards, trained personnel, audit mechanisms and continuous compliance monitoring.' }
       ]
     },
     {
-      area: 'Food Literacy & Student Wellbeing',
-      short: 'Food literacy',
-      phrase: 'integrate food literacy more deeply into the student experience',
-      food: '#D9822B',
-      text: 'A school wants students to make informed food choices independently, rather than simply depend on the meals provided. What opportunities does your institution currently create?',
+      pillar: 1, area: 'Allergen Management', short: 'Allergen station', isNew: true,
+      phrase: 'build a full allergen management system',
+      text: 'A student with a severe nut allergy comes to the cafeteria. How do you keep their meal safe?',
       options: [
-        { key: 'A', score: 1, headline: 'Healthy meals and encouragement',
-          text: 'Students receive balanced meals, and healthy eating is encouraged through school communication and activities.',
+        { key: 'A', score: 1, headline: 'The team is aware',
+          text: 'Our chefs and serving team know which students have allergies and take care when serving.',
+          explanation: 'DRAFT: Allergy awareness relies on individual staff knowledge, with limited documented controls at preparation and service.' },
+        { key: 'B', score: 3, headline: 'Labels and a list',
+          text: 'Allergens are labelled on the menu and the cafeteria keeps a list of students with allergies.',
+          explanation: 'DRAFT: Allergen labelling and records exist, but controls across preparation, training and service may not be consistent.' },
+        { key: 'C', score: 5, headline: 'A full allergen system',
+          text: 'Allergen records for every recipe, separate preparation, trained staff and a check at the point of service.',
+          explanation: 'DRAFT: Demonstrates a documented allergen management system covering recipes, preparation, staff training and point-of-service checks.' }
+      ]
+    },
+    {
+      pillar: 1, area: 'Nutrition Innovation & Continuous Improvement', short: 'Quality board',
+      phrase: 'build a data-led cycle of continuous improvement',
+      text: 'When you spot a way to improve the food programme, what happens next?',
+      options: [
+        { key: 'A', score: 1, headline: 'We react to feedback',
+          text: 'Changes come when students, parents or staff raise a concern.',
+          explanation: 'Indicates a largely reactive improvement process, with limited evidence of structured performance assessment or forward planning.' },
+        { key: 'B', score: 3, headline: 'Periodic reviews',
+          text: 'We review menus and feedback from time to time and try new recipes.',
+          explanation: 'Demonstrates an improvement-oriented approach, but opportunities remain to strengthen measurable outcomes, nutritional validation, and systematic review.' },
+        { key: 'C', score: 5, headline: 'A data-led cycle',
+          text: 'We use nutrition, feedback and audit data to find gaps, test changes and measure results.',
+          explanation: 'Demonstrates a data-led continuous improvement cycle, integrating nutrition governance, culinary innovation, validation and site-level monitoring.' }
+      ]
+    },
+
+    /* ---------- Pillar 3: Awareness & Sustainability ---------- */
+    {
+      pillar: 2, area: 'Nutrition Education & Student Wellbeing', short: 'Learning corner',
+      phrase: 'make nutrition education hands-on',
+      text: 'How do you help students make good food choices on their own?',
+      options: [
+        { key: 'A', score: 1, headline: 'Healthy meals and reminders',
+          text: 'We serve balanced meals and encourage healthy eating.',
           explanation: 'Food provision is established, but structured opportunities to build nutrition knowledge and influence eating behaviour are limited.' },
-        { key: 'B', score: 3, headline: 'Campaigns and classroom sessions',
-          text: 'Nutrition is discussed through health campaigns, classroom activities and interactive sessions. Students are encouraged to explore healthier food choices.',
+        { key: 'B', score: 3, headline: 'Campaigns and sessions',
+          text: 'Health campaigns, workshops and talks on healthier choices.',
           explanation: 'Demonstrates an awareness-based approach, with opportunities to create more consistent, experiential, and age-appropriate food literacy programmes.' },
-        { key: 'C', score: 5, headline: 'Hands-on food learning',
-          text: 'Students actively engage with food through experiential learning, nutrition sessions, interactive activities, food exploration, and kitchen experiences.',
+        { key: 'C', score: 5, headline: 'Hands-on learning',
+          text: 'Students learn by doing: cooking sessions, food exploration and kitchen experiences.',
           explanation: 'Demonstrates integration of food literacy into the student experience, extending nutrition beyond meal provision into education and behaviour development.' }
       ]
     },
     {
-      area: 'Sustainability & Responsible Food Practices',
-      short: 'Sustainability',
-      phrase: 'build sustainability into everyday food-service decisions',
-      food: '#8E2C48',
-      text: 'When your institution evaluates its food-service operations, which of the following best describes how environmental responsibility influences everyday decisions?',
+      pillar: 2, area: 'Sustainability & Responsible Food Practices', short: 'Waste station',
+      phrase: 'build sustainability into everyday food decisions',
+      text: 'How does sustainability show up in your food service?',
       options: [
-        { key: 'A', score: 1, headline: 'We encourage less waste',
-          text: 'We encourage responsible behaviour among students and staff, particularly around avoiding food wastage and maintaining cleanliness.',
+        { key: 'A', score: 1, headline: 'We discourage waste',
+          text: 'We ask students and staff to avoid wasting food.',
           explanation: 'Indicates awareness of sustainability, but limited evidence of structured food-service practices or measurable outcomes.' },
         { key: 'B', score: 3, headline: 'Some green initiatives',
-          text: 'We have introduced initiatives such as food-waste reduction, responsible ingredient sourcing, and resource conservation in selected areas.',
+          text: 'Food waste reduction, responsible sourcing or saving resources in some areas.',
           explanation: 'Demonstrates active sustainability initiatives, although their integration, monitoring and consistency across operations may vary.' },
-        { key: 'C', score: 5, headline: 'Built into every decision',
-          text: 'Sustainability considerations influence procurement, menu planning, resource utilisation, and food-waste management, supported by monitoring and continuous improvement initiatives.',
+        { key: 'C', score: 5, headline: 'Part of every decision',
+          text: 'Sustainability shapes sourcing, menus, resources and waste, and we track the results.',
           explanation: 'Demonstrates a systematic approach to responsible food-service operations, with sustainability integrated into planning and operational decision-making.' }
       ]
     },
     {
-      area: 'Nutrition Innovation & Continuous Improvement',
-      short: 'Improvement',
-      phrase: 'build a data-led cycle of continuous improvement',
-      food: '#C9A227',
-      text: 'When your institution identifies an opportunity to improve its food programme, how does that insight translate into actual change?',
+      pillar: 2, area: 'Communication & Feedback', short: 'Feedback point', isNew: true,
+      phrase: 'make food communication open and two-way',
+      text: 'How do students, families and staff stay informed about the food and share their views?',
       options: [
-        { key: 'A', score: 1, headline: 'We react to feedback',
-          text: 'Changes are introduced in response to student feedback, parent concerns, or operational challenges.',
-          explanation: 'Indicates a largely reactive improvement process, with limited evidence of structured performance assessment or forward planning.' },
-        { key: 'B', score: 3, headline: 'Periodic reviews',
-          text: 'We periodically review menus, gather feedback, and introduce new recipes, ingredients or food initiatives based on emerging requirements.',
-          explanation: 'Demonstrates an improvement-oriented approach, but opportunities remain to strengthen measurable outcomes, nutritional validation, and systematic review.' },
-        { key: 'C', score: 5, headline: 'A data-led improvement cycle',
-          text: 'We use nutritional assessments, menu performance data, student feedback and operational audits to identify gaps, test improvements, and evaluate their effectiveness.',
-          explanation: 'Demonstrates a data-led continuous improvement cycle, integrating nutrition governance, culinary innovation, validation and site-level monitoring.' }
+        { key: 'A', score: 1, headline: 'Menus on display',
+          text: 'Menus are shared, and feedback comes in informally.',
+          explanation: 'DRAFT: Information is shared one way and feedback is informal, with limited evidence that it shapes decisions.' },
+        { key: 'B', score: 3, headline: 'Updates and surveys',
+          text: 'We share menus and food updates, and run feedback surveys from time to time.',
+          explanation: 'DRAFT: Regular communication and periodic feedback exist, but the link between feedback and visible change may need strengthening.' },
+        { key: 'C', score: 5, headline: 'Open and two-way',
+          text: 'Menus, nutrition and sourcing are shared openly, feedback is collected regularly, and people see what changed.',
+          explanation: 'DRAFT: Demonstrates open, two-way communication where the community is informed and sees how feedback leads to change.' }
       ]
     }
   ];
 
+  // 9 questions x (1/3/5): totals are always odd, 9 to 45
   const stages = [
-    { min: 6, max: 10, name: 'Foundation Stage',
+    { min: 9, max: 15, name: 'Foundation Stage',
       desc: 'The institution has basic food-service practices in place, but nutrition, governance and wellbeing initiatives have significant opportunities for development.' },
-    { min: 11, max: 15, name: 'Emerging Stage',
+    { min: 16, max: 22, name: 'Emerging Stage',
       desc: 'The institution demonstrates awareness and has initiated several positive practices. However, these may not yet be consistently integrated into its food and wellbeing ecosystem.' },
-    { min: 16, max: 20, name: 'Developing Stage',
+    { min: 23, max: 30, name: 'Developing Stage',
       desc: 'The institution has established several good practices. The next opportunity is to strengthen standardisation, nutritional accountability and operational consistency.' },
-    { min: 21, max: 25, name: 'Advanced Stage',
+    { min: 31, max: 38, name: 'Advanced Stage',
       desc: 'The institution demonstrates a mature approach across most assessed areas, with opportunities to deepen innovation, measurement and integration.' },
-    { min: 26, max: 30, name: 'Future-Ready Stage',
+    { min: 39, max: 45, name: 'Future-Ready Stage',
       desc: 'The institution demonstrates strong integration of nutrition, food safety, student engagement, sustainability and continuous improvement.' }
   ];
 
@@ -143,6 +192,10 @@ window.QUIZ = (function () {
   const stageIndex = t => stages.indexOf(stage(t));
   const level = (i, key) => opt(i, key).score; // 1, 3 or 5
 
+  // pillar score 3-15 and its band
+  const pillarScore = (ans, p) => pillars[p].q.reduce((s, i) => s + (ans[i] ? opt(i, ans[i]).score : 0), 0);
+  const band = s => (s >= 13 ? { id: 'strong', word: 'Strong' } : s >= 9 ? { id: 'mid', word: 'In progress' } : { id: 'low', word: 'Needs attention' });
+
   function gaps(ans) {
     const items = ans
       .map((k, i) => ({ i, score: opt(i, k).score }))
@@ -152,7 +205,7 @@ window.QUIZ = (function () {
       .map(x => questions[x.i].phrase);
     if (!items.length) return 'You are setting the benchmark. The next step is to keep measuring, sharing and refining what already works.';
     const list = items.length === 1 ? items[0] : items.slice(0, -1).join(', ') + ' and ' + items[items.length - 1];
-    return 'There is an opportunity to ' + list + '.';
+    return 'Where to focus next: ' + list + '.';
   }
 
   // What the backend would store for one submission.
@@ -162,8 +215,10 @@ window.QUIZ = (function () {
       submittedAt: new Date().toISOString(),
       lead,
       answers: ans.map((k, i) => ({
-        area: questions[i].area, option: k, score: opt(i, k).score, explanation: opt(i, k).explanation
+        pillar: pillars[questions[i].pillar].name, area: questions[i].area,
+        option: k, score: opt(i, k).score, explanation: opt(i, k).explanation
       })),
+      pillars: pillars.map((p, n) => ({ name: p.name, score: pillarScore(ans, n), band: band(pillarScore(ans, n)).word })),
       total: t,
       stage: stage(t).name
     };
@@ -181,5 +236,5 @@ window.QUIZ = (function () {
     })(start);
   }
 
-  return { questions, stages, opt, shuffle, total, stage, stageIndex, level, gaps, record, reducedMotion, countUp };
+  return { pillars, questions, stages, opt, shuffle, total, stage, stageIndex, level, pillarScore, band, gaps, record, reducedMotion, countUp };
 })();

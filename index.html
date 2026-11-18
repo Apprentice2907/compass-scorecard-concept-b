@@ -2,119 +2,223 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Build Your Canteen</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How Future-Ready Is Your Institution's Dining?</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23B3985A'/%3E%3Cpath d='M9 20h14M11 20v-5a5 5 0 0 1 10 0v5M16 10v-1' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --gold: #B3985A; --gold-deep: #8C7440; --beige: #EFEAE4; --ink: #111; --muted: #555;
-    --line: #DDD3CC; --white: #fff; --ease: cubic-bezier(.2,.8,.2,1);
+    --gold: #B3985A; --gold-deep: #7E6838; --beige: #EFEAE4; --ink: #111; --muted: #555;
+    --line: #DDD3CC; --white: #fff; --scene: #F7F3EE; --ease: cubic-bezier(.2,.8,.2,1);
+    --low: #C0392B; --mid: #D68A1A; --strong: #3E7D3A;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body { background: var(--beige); color: var(--ink); font-family: 'Hanken Grotesk', Helvetica, Arial, sans-serif; line-height: 1.5; }
-  .top { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; border-bottom: 1px solid var(--line); background: var(--white); }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 24px; padding-top: max(12px, env(safe-area-inset-top)); border-bottom: 1px solid var(--line); background: var(--white); }
   .brand { font-weight: 800; letter-spacing: .12em; font-size: 14px; }
   .brand small { display: block; font-weight: 500; letter-spacing: .02em; color: var(--muted); font-size: 12px; }
-  .proto { font-size: 12px; color: var(--muted); }
+  .proto { font-size: 12px; color: var(--muted); text-align: right; }
 
-  .wrap { max-width: 1320px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 32px; align-items: start; }
-  .scene-col { position: sticky; top: 16px; }
-  .scene { background: #F7F3EE; border: 1px solid var(--line); border-radius: 24px; padding: 8px 8px 4px; }
-  #canteen { width: 100%; height: auto; display: block; }
-  .caption { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 8px 12px 6px; font-size: 14px; color: var(--muted); min-height: 36px; }
+  /* default: side by side (landscape tablet / laptop) */
+  .wrap { max-width: 1360px; margin: 0 auto; padding: 20px 24px 40px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+  .scene-col { position: sticky; top: 14px; }
+  .scene { background: var(--scene); border: 1px solid var(--line); border-radius: 24px; padding: 6px; overflow: hidden; }
+  .stage-box { position: relative; }
+  .stage-box svg { display: block; width: 100%; height: min(68vh, 600px); }
+  #future { position: absolute; inset: 0; clip-path: inset(0 0 0 50%); }
+  .divider { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1.5px; background: var(--white); box-shadow: 0 0 0 1px rgba(0,0,0,.15); pointer-events: none; }
+  .divider::after { content: '‹ ›'; letter-spacing: 2px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 38px; height: 38px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-size: 18px; }
+  .cmp-label { position: absolute; top: 10px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.92); border: 1px solid var(--line); padding: 4px 10px; border-radius: 999px; pointer-events: none; }
+  .cmp-label.l { left: 10px; } .cmp-label.r { right: 10px; background: var(--ink); color: #fff; border-color: var(--ink); }
+  .cmp-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; touch-action: none; }
+  .compare-ui[hidden] { display: none !important; }
+  .caption { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 8px 10px 4px; font-size: 14px; color: var(--muted); min-height: 34px; flex-wrap: wrap; }
   .caption b { color: var(--ink); }
-  .built { display: flex; gap: 5px; }
-  .built i { width: 22px; height: 6px; border-radius: 3px; background: var(--line); transition: background .4s var(--ease); }
+  .built { display: flex; gap: 10px; }
+  .built span { display: flex; gap: 4px; }
+  .built i { width: 16px; height: 6px; border-radius: 3px; background: var(--line); transition: background .4s var(--ease); }
   .built i.on { background: var(--ink); }
   .built i.now { background: var(--gold); }
+  .legend { display: flex; gap: 12px; font-size: 12.5px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
 
-  .panel { background: var(--white); border: 1px solid var(--line); border-radius: 24px; padding: 32px; min-height: 480px; }
-  .screen > * { animation: rise .5s var(--ease) both; }
-  .screen > *:nth-child(2) { animation-delay: .06s; } .screen > *:nth-child(3) { animation-delay: .12s; }
-  .screen > *:nth-child(4) { animation-delay: .18s; } .screen > *:nth-child(5) { animation-delay: .24s; } .screen > *:nth-child(6) { animation-delay: .3s; }
-  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-  .eyebrow { font-size: 12.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-deep); margin: 0 0 10px; }
-  h1 { font-size: clamp(30px, 3.6vw, 46px); line-height: 1.05; margin: 0 0 14px; letter-spacing: -.02em; }
-  h2 { font-size: clamp(20px, 2.1vw, 25px); line-height: 1.25; margin: 0 0 20px; letter-spacing: -.01em; outline: none; }
-  h2 strong { color: var(--gold-deep); }
-  .lead { font-size: 17px; color: #333; margin: 0 0 22px; }
-  .honest { border-left: 3px solid var(--gold); padding: 2px 0 2px 12px; font-size: 14.5px; color: #333; margin: 4px 0 20px; }
-  .btn { appearance: none; border: 0; background: var(--ink); color: var(--white); font-family: inherit; font-weight: 600; font-size: 16px; line-height: 1; padding: 17px 26px; border-radius: 999px; cursor: pointer; transition: transform .2s var(--ease), background .2s; }
+  .panel { background: var(--white); border: 1px solid var(--line); border-radius: 24px; padding: 30px; min-height: 420px; }
+  .screen > * { animation: rise .45s var(--ease) both; }
+  .screen > *:nth-child(2) { animation-delay: .05s; } .screen > *:nth-child(3) { animation-delay: .1s; }
+  .screen > *:nth-child(4) { animation-delay: .15s; } .screen > *:nth-child(5) { animation-delay: .2s; } .screen > *:nth-child(n+6) { animation-delay: .25s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  .eyebrow { font-size: 12.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-deep); margin: 0 0 8px; }
+  h1 { font-size: clamp(28px, 3.4vw, 42px); line-height: 1.08; margin: 0 0 12px; letter-spacing: -.02em; }
+  h2 { font-size: clamp(21px, 2.2vw, 26px); line-height: 1.25; margin: 0 0 18px; letter-spacing: -.01em; outline: none; }
+  .lead { font-size: 17px; color: #333; margin: 0 0 18px; }
+  .why-h { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 4px 0 10px; }
+  .why { list-style: none; padding: 0; margin: 0 0 22px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .wcard { position: relative; aspect-ratio: 3 / 4; max-width: 100%; border-radius: 16px; overflow: hidden; background: #D9CFC2; isolation: isolate; }
+  .wcard img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: kb 9s ease-out both; }
+  .wcard:nth-child(2) img { animation-delay: .3s; } .wcard:nth-child(3) img { animation-delay: .6s; }
+  @keyframes kb { from { transform: scale(1.1); } to { transform: scale(1); } }
+  .wcard::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(12,9,6,.86) 0%, rgba(12,9,6,.5) 38%, rgba(12,9,6,0) 66%); }
+  .wcard .tag { position: absolute; top: 10px; left: 10px; z-index: 1; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.94); color: var(--ink); padding: 4px 8px; border-radius: 999px; }
+  .wcard .txt { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: 14px 13px; color: #fff; }
+  h1:focus { outline: none; }
+
+  /* why option 1: pillar tour linked to the scene */
+  .tour { border: 1.5px solid var(--line); border-radius: 18px; overflow: hidden; margin: 0 0 20px; }
+  .tour-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .tour-tabs button { position: relative; font: inherit; font-size: 13px; font-weight: 700; line-height: 1.2; padding: 13px 8px; border: 0; border-bottom: 1.5px solid var(--line); background: #FAF6EE; color: var(--muted); cursor: pointer; }
+  .tour-tabs button + button { border-left: 1px solid var(--line); }
+  .tour-tabs button[aria-selected="true"] { background: var(--white); color: var(--ink); border-bottom-color: transparent; }
+  .tour-tabs button i { position: absolute; left: 0; bottom: -1.5px; height: 3px; width: 0; background: var(--gold); }
+  .tour-tabs button[aria-selected="true"] i { animation: fillbar var(--dur, 4.5s) linear forwards; }
+  @keyframes fillbar { to { width: 100%; } }
+  .tour-body { padding: 18px 20px 20px; }
+  .tour-body .k { font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-deep); }
+  .tour-body b { display: block; font-size: clamp(24px, 2.6vw, 31px); line-height: 1.12; margin: 6px 0 8px; letter-spacing: -.015em; text-wrap: balance; }
+  .tour-body p { margin: 0; color: #444; font-size: 16px; }
+  .tour-body .qs { margin-top: 12px; font-size: 13.5px; color: var(--muted); }
+  .tour-body.swap > * { animation: rise .4s var(--ease) both; }
+
+  /* why option 2: attract loop shown while the tablet is idle */
+  .attract { position: fixed; inset: 0; z-index: 50; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; text-align: left; font: inherit; color: #fff; border: 0; cursor: pointer;
+    padding: 28px max(28px, env(safe-area-inset-right)) max(40px, env(safe-area-inset-bottom)) max(28px, env(safe-area-inset-left));
+    background: linear-gradient(to bottom, rgba(20,17,14,0) 34%, rgba(20,17,14,.86) 56%, #14110E 100%); }
+  .attract .eb { font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #E2CC95; }
+  .attract .big { font-size: clamp(40px, 6.6vw, 76px); line-height: 1.02; font-weight: 800; letter-spacing: -.025em; margin: 12px 0 12px; max-width: 14ch; min-height: 2.05em; }
+  .attract .sub { font-size: clamp(17px, 2.1vw, 22px); color: rgba(255,255,255,.84); max-width: 34ch; margin: 0 0 28px; min-height: 2.6em; }
+  .attract .swap { animation: rise .55s var(--ease) both; }
+  .attract .cta { display: inline-flex; align-items: center; gap: 12px; background: var(--gold); color: #111; font-weight: 800; font-size: clamp(17px, 2vw, 20px); padding: 19px 28px; border-radius: 999px; animation: pulse 2.2s ease-in-out infinite; }
+  .attract .dots { display: flex; gap: 6px; margin-top: 22px; }
+  .attract .dots i { width: 26px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.28); transition: background .3s; }
+  .attract .dots i.on { background: #E2CC95; }
+  @keyframes pulse { 50% { transform: scale(1.04); } }
+  .wcard b { display: block; font-size: 15.5px; line-height: 1.15; font-weight: 800; letter-spacing: -.01em; text-wrap: balance; }
+  .wcard .txt span { display: block; margin-top: 5px; font-size: 12px; line-height: 1.35; color: rgba(255,255,255,.88); }
+  .wcard { aspect-ratio: 3 / 4.4; }
+  .wcard::after { background: linear-gradient(to top, rgba(12,9,6,.9) 0%, rgba(12,9,6,.62) 45%, rgba(12,9,6,0) 75%); }
+  @media (orientation: portrait), (max-width: 900px) {
+    .wcard { aspect-ratio: 3 / 4; }
+    .wcard b { font-size: 18px; }
+    .wcard .txt span { font-size: 13px; }
+    .wcard::after { background: linear-gradient(to top, rgba(12,9,6,.86) 0%, rgba(12,9,6,.5) 38%, rgba(12,9,6,0) 66%); }
+  }
+  .btn { appearance: none; border: 0; background: var(--ink); color: var(--white); font-family: inherit; font-weight: 600; font-size: 17px; line-height: 1; padding: 18px 28px; border-radius: 999px; cursor: pointer; transition: transform .2s var(--ease), background .2s; }
   .btn:hover { background: #333; } .btn:active { transform: scale(.97); }
-  .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
-  .btn.ghost:hover { background: var(--beige); }
-  .btn:focus-visible, .opt:focus-visible, .link:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  .btn:focus-visible, .opt:focus-visible, .more:focus-visible, .link:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
   .link { background: none; border: 0; font: inherit; color: var(--muted); text-decoration: underline; cursor: pointer; padding: 8px 0; }
-  form { display: grid; gap: 14px; }
+  form { display: grid; gap: 13px; }
   label { font-size: 14px; font-weight: 600; display: grid; gap: 6px; }
-  input, select { font: inherit; font-size: 16px; padding: 13px 15px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--white); width: 100%; }
-  .note { font-size: 13px; color: var(--muted); }
+  label .opt-tag { font-weight: 400; color: var(--muted); }
+  input, select, textarea { font: inherit; font-size: 17px; padding: 13px 15px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--white); width: 100%; color: var(--ink); }
+  textarea { min-height: 84px; resize: vertical; font-size: 15px; }
+  .note { font-size: 13px; color: var(--muted); margin: 0; }
+  .meta-line { font-size: 13.5px; color: var(--muted); margin: 10px 0 0; }
 
-  .qhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .qhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
   .count { font-size: 13.5px; font-weight: 600; color: var(--muted); }
-  .zone-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--gold-deep); background: #F6F0E4; border-radius: 999px; padding: 5px 12px; margin-bottom: 14px; }
+  .pillar-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--gold-deep); background: #F6F0E4; border-radius: 999px; padding: 5px 12px; margin-bottom: 12px; }
   .opts { display: grid; gap: 10px; }
-  .opt { position: relative; text-align: left; font: inherit; color: var(--ink); background: var(--white); border: 1.5px solid var(--line); border-radius: 16px; padding: 15px 54px 15px 18px; cursor: pointer; transition: border-color .2s, transform .25s var(--ease), box-shadow .25s; animation: rise .45s var(--ease) both; }
-  .opt:hover { border-color: var(--gold); }
-  .opt b { display: block; font-size: 17px; line-height: 1.25; margin-bottom: 4px; }
-  .opt span { display: block; font-size: 14px; color: var(--muted); }
-  .opt.picked { border-color: var(--ink); transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
-  .tick { position: absolute; right: 16px; top: 16px; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); transition: background .2s, border-color .2s; }
-  .opt.picked .tick { background: var(--ink); border-color: var(--ink); }
+  .orow { display: grid; grid-template-columns: 1fr auto; border: 1.5px solid var(--line); border-radius: 16px; background: var(--white); transition: border-color .2s, transform .25s var(--ease), box-shadow .25s; animation: rise .4s var(--ease) both; overflow: hidden; }
+  .orow:hover { border-color: var(--gold); }
+  .orow.picked { border-color: var(--ink); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
+  .opt { position: relative; text-align: left; font: inherit; font-size: 18px; font-weight: 700; line-height: 1.25; color: var(--ink); background: none; border: 0; padding: 18px 16px 18px 52px; cursor: pointer; min-height: 62px; }
+  .tick { position: absolute; left: 16px; top: 50%; margin-top: -13px; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); transition: background .2s, border-color .2s; }
+  .orow.picked .tick { background: var(--ink); border-color: var(--ink); }
   .tick path { stroke: #fff; stroke-width: 2.4; fill: none; stroke-dasharray: 20; stroke-dashoffset: 20; }
-  .opt.picked .tick path { transition: stroke-dashoffset .35s .05s var(--ease); stroke-dashoffset: 0; }
+  .orow.picked .tick path { transition: stroke-dashoffset .3s .05s var(--ease); stroke-dashoffset: 0; }
+  .more { font: inherit; font-size: 13px; font-weight: 600; color: var(--gold-deep); background: #FAF6EE; border: 0; border-left: 1px solid var(--line); padding: 0 16px; cursor: pointer; min-width: 84px; }
+  .more[aria-expanded="true"] { background: #F1E8D6; }
+  .detail { grid-column: 1 / -1; margin: 0; padding: 0 16px 14px 52px; font-size: 15px; color: #444; }
+  .tip { font-size: 13px; color: var(--muted); margin: 12px 0 0; }
 
-  .score { display: flex; align-items: baseline; gap: 8px; margin: 0 0 2px; }
-  .score b { font-size: clamp(60px, 7vw, 84px); line-height: 1; letter-spacing: -.04em; }
+  .score { display: flex; align-items: baseline; gap: 8px; margin: 0; }
+  .score b { font-size: clamp(56px, 6.5vw, 80px); line-height: 1; letter-spacing: -.04em; }
   .score span { font-size: 24px; color: var(--muted); }
-  .stage-name { font-size: 25px; margin: 0 0 14px; }
-  .ladder { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 0 0 20px; }
+  .stage-name { display: inline-block; font-size: 22px; margin: 6px 0 14px; padding: 6px 14px; border-radius: 10px; color: #fff; background: var(--stage, var(--ink)); }
+  .ladder { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 0 0 16px; }
   .rung { font-size: 11px; font-weight: 600; color: var(--muted); }
   .rung i { display: block; height: 8px; border-radius: 4px; background: var(--line); margin-bottom: 6px; transition: background .4s var(--ease); }
   .rung.reached i { background: var(--gold); }
-  .rung.here { color: var(--ink); } .rung.here i { background: var(--ink); }
-  .desc { font-size: 16px; margin: 0 0 10px; }
-  .gaps { font-size: 16px; font-weight: 600; margin: 0 0 22px; }
-  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 6px; }
-  details { margin-top: 20px; font-size: 13px; color: var(--muted); }
+  .rung.here { color: var(--ink); } .rung.here i { background: var(--stage, var(--ink)); }
+  .desc { font-size: 16px; margin: 0 0 14px; }
+  .pcards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 0 14px; }
+  .pcard { border-radius: 14px; padding: 12px; border: 1.5px solid; min-width: 0; }
+  .pcard small { display: block; font-size: 12px; font-weight: 700; line-height: 1.25; min-height: 30px; }
+  .pcard b { display: block; font-size: 26px; line-height: 1.1; }
+  .pcard b span { font-size: 14px; color: var(--muted); font-weight: 600; }
+  .pcard em { font-style: normal; font-size: 12.5px; font-weight: 700; }
+  .pcard.low { border-color: var(--low); background: #FBEDEB; } .pcard.low em { color: var(--low); }
+  .pcard.mid { border-color: var(--mid); background: #FDF3E3; } .pcard.mid em { color: #9A5F07; }
+  .pcard.strong { border-color: var(--strong); background: #ECF4EA; } .pcard.strong em { color: var(--strong); }
+  .gaps { font-size: 16px; font-weight: 600; margin: 0 0 14px; }
+  .sent { display: flex; gap: 10px; align-items: flex-start; background: #F6F0E4; border-radius: 14px; padding: 12px 14px; font-size: 14.5px; margin: 0 0 14px; }
+  details { margin-top: 12px; font-size: 14px; color: var(--muted); }
+  details summary { cursor: pointer; font-weight: 600; color: var(--ink); padding: 6px 0; }
+  details form { margin-top: 8px; }
   pre { white-space: pre-wrap; background: #FAF8F5; border: 1px solid var(--line); border-radius: 12px; padding: 12px; font-size: 12px; max-height: 240px; overflow: auto; }
+  .next-guest { display: block; margin-top: 16px; }
 
-  /* ---------- canteen scene ---------- */
-  .piece { opacity: 0; transform: translateY(-46px); transition: transform .75s cubic-bezier(.34,1.45,.64,1), opacity .3s ease; transition-delay: var(--d, 0s); }
-  .on > .piece { opacity: 1; transform: none; }
-  .slot { fill: rgba(179,152,90,.06); stroke: #B8AC9C; stroke-width: 1.2; stroke-dasharray: 4 4; transition: opacity .4s, stroke .3s; }
+  /* ---------- scene ---------- */
+  .item .sk, .item .rl { opacity: 0; transition: opacity .55s ease; }
+  .item.sketch .sk { opacity: 1; animation: drop .6s cubic-bezier(.34,1.4,.64,1) both; }
+  .item.real .rl { opacity: 1; }
+  .item.real .sk { opacity: 0; }
+  .rl .v1, .rl .v3, .rl .v5 { display: none; }
+  .item.l1 .v1, .item.l3 .v3, .item.l5 .v5 { display: inline; }
+  @keyframes drop { from { opacity: 0; transform: translateY(-34px); } to { opacity: 1; transform: none; } }
+  .slot { fill: rgba(179,152,90,.07); stroke: #B8AC9C; stroke-width: 1.2; stroke-dasharray: 4 4; transition: opacity .4s; }
   .slot.filled { opacity: 0; }
-  .slot.current { stroke: var(--gold-deep); stroke-width: 2.2; fill: rgba(179,152,90,.16); opacity: 1; animation: march 1s linear infinite; }
+  .slot.current { stroke: var(--gold-deep); stroke-width: 2.2; fill: rgba(179,152,90,.18); animation: march 1s linear infinite; }
   @keyframes march { to { stroke-dashoffset: -16; } }
-  .pin { transition: opacity .35s, transform .5s var(--ease); }
+  .pin { transition: opacity .35s; }
   .pin .dot { fill: #fff; stroke: #B8AC9C; stroke-width: 1.5; transition: fill .3s, stroke .3s; }
   .pin text { font: 700 9.5px 'Hanken Grotesk', sans-serif; fill: var(--muted); }
   .pin.current .dot { fill: var(--gold); stroke: var(--gold-deep); }
-  .pin.current text { fill: #fff; }
+  .pin.current text, .pin.done text, .pin.lv text { fill: #fff; }
   .pin.current { animation: bob 1.2s ease-in-out infinite; }
   @keyframes bob { 50% { transform: translateY(-4px); } }
-  .pin.done .dot { fill: var(--ink); stroke: var(--ink); }
-  .pin.done text { fill: #fff; }
+  .pin.done .dot { fill: #8A9BB0; stroke: #8A9BB0; }
+  .pin.lv1 .dot { fill: var(--low); stroke: #fff; } .pin.lv3 .dot { fill: var(--mid); stroke: #fff; } .pin.lv5 .dot { fill: var(--strong); stroke: #fff; }
   .pin.hide { opacity: 0; }
-  .tag { opacity: 0; transform: translateY(6px); transition: opacity .4s var(--ease), transform .4s var(--ease); transition-delay: var(--d, 0s); }
-  .tag.show { opacity: 1; transform: none; }
-  .tag rect { fill: #fff; stroke: #1a1a1a; stroke-width: 1; }
-  .tag text { font: 700 8.6px 'Hanken Grotesk', sans-serif; fill: #111; }
-  .tag text.lv { font-weight: 600; fill: var(--gold-deep); }
-  .sign-text { font: 800 7.6px 'Hanken Grotesk', sans-serif; letter-spacing: .14em; fill: #fff; }
-  #shell { opacity: 0; transition: opacity .6s ease; } #shell.on { opacity: 1; }
+  .crowd { opacity: 0; transition: opacity .5s ease; }
+  .crowd.on { opacity: 1; }
+  .chip rect { fill: #fff; stroke: var(--gold); stroke-width: 1.2; }
+  .chip text { font-family: 'Hanken Grotesk', sans-serif; }
+  .chip .n { font-size: 7px; font-weight: 800; letter-spacing: .12em; fill: var(--gold-deep); }
+  .chip .t { font-size: 9px; font-weight: 800; fill: #111; }
+  .chip.dim { opacity: .55; } .chip.active rect { fill: #111; stroke: #111; } .chip.active .t { fill: #fff; } .chip.active .n { fill: #E9D7AE; }
+  .chip.done rect { stroke: var(--ink); }
+  .flash { opacity: 0; pointer-events: none; }
+  .flash polygon { fill: rgba(179,152,90,.22); stroke: var(--gold); stroke-width: 2.5; }
+  .flash rect { fill: var(--ink); }
+  .flash text { font: 800 11px 'Hanken Grotesk', sans-serif; fill: #fff; letter-spacing: .04em; }
+  .flash.go { animation: flash 1.25s ease both; }
+  .flash.hold { opacity: 1; transition: opacity .4s ease; }
+  @keyframes flash { 0% { opacity: 0; } 15% { opacity: 1; } 75% { opacity: 1; } 100% { opacity: 0; } }
+  .sign-text { font: 800 7.4px 'Hanken Grotesk', sans-serif; letter-spacing: .14em; fill: #fff; }
 
-  @media (max-width: 900px) {
-    .wrap { grid-template-columns: 1fr; gap: 14px; padding: 12px 12px 40px; }
-    .scene-col { position: static; }
-    .scene { border-radius: 18px; padding: 4px 4px 0; }
-    /* stacked layout: keep the canteen short so the question and answers stay on the first screen */
-    #canteen { max-height: 38vh; max-height: 38svh; }
+  /* stacked: phones and portrait tablets (the event set-up) */
+  @media (orientation: portrait), (max-width: 900px) {
+    .wrap { grid-template-columns: 1fr; gap: 12px; padding: 12px 12px 32px; }
+    .scene-col { position: sticky; top: 0; z-index: 2; }
+    .scene { border-radius: 18px; padding: 4px; box-shadow: 0 6px 18px rgba(60,40,10,.08); }
+    .stage-box svg { height: 40vh; height: 40svh; }
     .panel { padding: 22px 18px; border-radius: 18px; min-height: 0; }
-    .top { padding: 12px 16px; } .proto { display: none; }
-    .rung { font-size: 10px; }
+    .top { padding-left: 16px; padding-right: 16px; }
+  }
+  @media (max-width: 560px) {
+    .stage-box svg { height: 34vh; height: 34svh; }
+    .proto { display: none; }
+    .pcards { grid-template-columns: 1fr; }
+    .pcard small { min-height: 0; }
+    .opt { font-size: 17px; padding: 15px 12px 15px 48px; }
+    .more { min-width: 70px; padding: 0 10px; }
+    .detail { padding-left: 48px; }
+    /* swipeable cards on phones */
+    .why { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 74%; overflow-x: auto; scroll-snap-type: x mandatory; margin-right: -18px; padding-right: 18px; scrollbar-width: none; }
+    .why::-webkit-scrollbar { display: none; }
+    .wcard { aspect-ratio: 4 / 5; scroll-snap-align: start; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
@@ -123,14 +227,22 @@
 </head>
 <body>
 <header class="top">
-  <div class="brand">COMPASS GROUP<small>School Wellbeing Scorecard</small></div>
-  <div class="proto">Prototype · placeholder branding · nothing is stored</div>
+  <div class="brand">COMPASS GROUP<small>Dining Readiness Index</small></div>
+  <div class="proto">Prototype · placeholder branding and name · nothing is stored</div>
 </header>
-<main class="wrap" id="wrap">
-  <div class="scene-col" aria-hidden="true">
+<main class="wrap">
+  <div class="scene-col">
     <div class="scene">
-      <svg id="canteen" viewBox="10 4 470 404" role="img"></svg>
-      <div class="caption"><span id="caption"></span><span class="built" id="built"></span></div>
+      <div class="stage-box" id="stageBox">
+        <svg id="today" role="img" aria-label="Illustrated cafeteria that builds as you answer"></svg>
+        <div class="compare-ui" id="compareUI" hidden>
+          <svg id="future" aria-hidden="true"></svg>
+          <div class="divider" id="divider" style="left:50%"></div>
+          <span class="cmp-label l">Today</span><span class="cmp-label r">Future-ready</span>
+          <input class="cmp-range" id="cmpRange" type="range" min="0" max="100" value="50" aria-label="Drag to compare your cafeteria today with a future-ready cafeteria">
+        </div>
+      </div>
+      <div class="caption"><span id="caption"></span><span id="capRight"></span></div>
     </div>
   </div>
   <section class="panel"><div id="screen" class="screen" aria-live="polite"></div></section>
@@ -140,42 +252,43 @@
 (function () {
   const Q = window.QUIZ;
   const N = Q.questions.length;
-  const answers = new Array(N).fill(null);
-  let school = '', role = '', lead = null, busy = false, comparing = false;
-  const svg = document.getElementById('canteen');
-  const screen = document.getElementById('screen');
-  const caption = document.getElementById('caption');
-  const builtBar = document.getElementById('built');
-  const ticks = Array.from({ length: N }, () => builtBar.appendChild(document.createElement('i')));
   const RM = Q.reducedMotion();
+  // which "why invest" treatment to show: ?why=1 pillar tour, ?why=2 attract loop, default photo cards
+  const WHY_MODE = new URLSearchParams(location.search).get('why') || '3';
+  const answers = new Array(N).fill(null);
+  let role = '', variant = 'k12', lead = null, busy = false, timers = [];
+  const later = (fn, ms) => timers.push(setTimeout(fn, RM ? Math.min(ms, 150) : ms));
+  const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
 
   /* ================= isometric drawing kit ================= */
-  const S = 24, OX = 222, OY = 150;
+  const S = 24, OX = 230, OY = 150;
   const P = (x, y, z) => [OX + (x - y) * S * 0.866, OY + (x + y) * S * 0.5 - z * S];
   const pts = a => a.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
   function shade(hex, f) {
+    if (hex.length === 4) hex = '#' + [...hex.slice(1)].map(c => c + c).join(''); // #fff -> #ffffff
     const n = parseInt(hex.slice(1), 16); let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
     const t = f < 0 ? 0 : 255, k = Math.abs(f);
     r = Math.round(r + (t - r) * k); g = Math.round(g + (t - g) * k); b = Math.round(b + (t - b) * k);
     return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
   }
   const poly = (a, fill, extra = '') => `<polygon points="${pts(a)}" fill="${fill}" ${extra}/>`;
-  const EDGE = 'stroke="rgba(40,30,20,.18)" stroke-width=".6" stroke-linejoin="round"';
+  const EDGE = 'stroke="rgba(40,30,20,.2)" stroke-width=".6" stroke-linejoin="round"';
   function box(x, y, z, w, d, h, c) {
     const top = [P(x, y, z + h), P(x + w, y, z + h), P(x + w, y + d, z + h), P(x, y + d, z + h)];
     const fy = [P(x, y + d, z), P(x + w, y + d, z), P(x + w, y + d, z + h), P(x, y + d, z + h)];
     const fx = [P(x + w, y, z), P(x + w, y + d, z), P(x + w, y + d, z + h), P(x + w, y, z + h)];
     return poly(fy, shade(c, -.1), EDGE) + poly(fx, shade(c, -.24), EDGE) + poly(top, shade(c, .06), EDGE);
   }
-  // content painted flat on the back wall (plane y = y0); local px: right = +x, down = -z
-  const onBack = (x, y0, ztop, inner) => { const [e, f] = P(x, y0, ztop); return `<g transform="matrix(.866,.5,0,1,${e.toFixed(1)},${f.toFixed(1)})">${inner}</g>`; };
-  // content on the left wall (plane x = x0), reading from front (yFront) towards the back
+  // flat art on a plane facing the viewer's right-front (y = const): local px right = +x, down = -z (24 px = 1 unit)
+  const onFront = (x, y0, ztop, inner) => { const [e, f] = P(x, y0, ztop); return `<g transform="matrix(.866,.5,0,1,${e.toFixed(1)},${f.toFixed(1)})">${inner}</g>`; };
+  // flat art on the left wall (x = const), local px right = towards the back (-y)
   const onLeft = (x0, yFront, ztop, inner) => { const [e, f] = P(x0, yFront, ztop); return `<g transform="matrix(.866,-.5,0,1,${e.toFixed(1)},${f.toFixed(1)})">${inner}</g>`; };
-  // content on a front-facing (max-y) face of an object, same orientation as onBack
-  const onFront = onBack;
+  // flat art on a face looking towards +x (right side faces)
+  const onSide = onLeft;
   const floorPoly = (x, y, w, d, z = 0) => [P(x, y, z), P(x + w, y, z), P(x + w, y + d, z), P(x, y + d, z)];
   const wallPoly = (x, y0, w, z0, h) => [P(x, y0, z0), P(x + w, y0, z0), P(x + w, y0, z0 + h), P(x, y0, z0 + h)];
   const leftPoly = (x0, y, d, z0, h) => [P(x0, y, z0), P(x0, y + d, z0), P(x0, y + d, z0 + h), P(x0, y, z0 + h)];
+  const T = (x, y, txt, size, fill, weight = 700, extra = '') => `<text x="${x}" y="${y}" font-family="Hanken Grotesk, sans-serif" font-size="${size}" font-weight="${weight}" fill="${fill}" ${extra}>${txt}</text>`;
   const SKIN = ['#C68B59', '#8D5524', '#E0AC69', '#A86B3C', '#F1C27D'];
   function person(x, y, o = {}) {
     const [px, py] = P(x, y, 0);
@@ -184,325 +297,573 @@
     let s = `<ellipse cx="${px}" cy="${py}" rx="${bw * .75}" ry="${bw * .32}" fill="rgba(40,30,20,.16)"/>`;
     if (!o.seated) s += `<rect x="${px - bw * .35}" y="${py - h * .42}" width="${bw * .7}" height="${h * .42}" rx="2" fill="${o.legs || '#3A3632'}"/>`;
     s += `<rect x="${px - bw / 2}" y="${py - h}" width="${bw}" height="${h * (o.seated ? .9 : .62)}" rx="${bw * .45}" fill="${c}"/>`;
-    if (o.apron) s += `<rect x="${px - bw * .32}" y="${py - h * .8}" width="${bw * .64}" height="${h * .55}" rx="2" fill="#fff" opacity=".92"/>`;
+    if (o.apron) s += `<rect x="${px - bw * .32}" y="${py - h * .8}" width="${bw * .64}" height="${h * .55}" rx="2" fill="${o.apron === true ? '#fff' : o.apron}" opacity=".95"/>`;
+    if (o.bag) s += `<rect x="${px + bw * .3}" y="${py - h * .85}" width="${bw * .45}" height="${h * .4}" rx="2" fill="${o.bag}"/>`;
     const hr = o.kid ? 4 : 4.6, hy = py - h - hr + 1;
     s += `<circle cx="${px}" cy="${hy}" r="${hr}" fill="${skin}"/>`;
     if (o.hair !== false) s += `<path d="M${px - hr} ${hy - .5} a${hr} ${hr} 0 0 1 ${hr * 2} 0 q-${hr} -${hr * .3} -${hr * 2} 0z" fill="#2A211B"/>`;
     if (o.toque) s += `<rect x="${px - 3.6}" y="${hy - hr - 6}" width="7.2" height="6" fill="#fff" stroke="#D8D4CC" stroke-width=".6"/><circle cx="${px - 2}" cy="${hy - hr - 7}" r="3" fill="#fff"/><circle cx="${px + 2}" cy="${hy - hr - 7}" r="3" fill="#fff"/>`;
     if (o.cap) s += `<path d="M${px - hr} ${hy - 1} a${hr} ${hr} 0 0 1 ${hr * 2} 0z" fill="${o.cap}"/>`;
+    if (o.clip) s += `<rect x="${px + bw * .4}" y="${py - h * .78}" width="5" height="6.5" fill="#fff" stroke="#555" stroke-width=".5"/>`;
     return s;
   }
-  const pc = (d, inner) => `<g class="piece" style="--d:${d}s">${inner}</g>`;
-  const T = (x, y, txt, size, fill, weight = 700, extra = '') => `<text x="${x}" y="${y}" font-family="Hanken Grotesk, sans-serif" font-size="${size}" font-weight="${weight}" fill="${fill}" ${extra}>${txt}</text>`;
+  // a dish of food seen from above at a point on a surface
+  const dish = (x, y, z, c, r = 5.5) => { const [a, b] = P(x, y, z); return `<ellipse cx="${a}" cy="${b}" rx="${r + 1.4}" ry="${(r + 1.4) * .52}" fill="#E8E6E1" stroke="#C9C5BD" stroke-width=".5"/><ellipse cx="${a}" cy="${b - .4}" rx="${r}" ry="${r * .5}" fill="${c}"/>`; };
+  const sprout = (x, y, z, c = '#6E8B3D') => { const [a, b] = P(x, y, z); return `<path d="M${a} ${b} q-3 -7 -1 -11 M${a} ${b} q3 -6 4 -9" stroke="${c}" stroke-width="2" fill="none" stroke-linecap="round"/>`; };
+  const C = { wood: '#B9895A', woodL: '#D2AA7C', woodD: '#7E5B3A', steel: '#C3C6C8', steelD: '#8E9296', dark: '#2E2B28', wall: '#F6F1EA', wallL: '#F7F1E8', gold: '#B3985A', green: '#6E8B3D', leaf: '#8DB255', tomato: '#C8553D', carrot: '#D9822B', blue: '#3F6E9A', cork: '#C9A274', chalk: '#2F3B33', cream: '#FBF8F3', fried: '#C27C2C', fried2: '#A65A26', purple: '#6B3FA0', screen: '#1F2B33' };
 
-  /* palette */
-  const C = { wood: '#B9895A', woodL: '#D2AA7C', woodD: '#7E5B3A', steel: '#C3C6C8', steelD: '#8E9296', dark: '#2E2B28', wall: '#F6F1EA', wallL: '#EDE5DA', gold: '#B3985A', green: '#6E8B3D', tomato: '#C8553D', carrot: '#D9822B', blue: '#3F6E9A', cork: '#C9A274', chalk: '#2F3B33', cream: '#FBF8F3' };
-
-  /* ================= the room ================= */
-  function shell() {
-    let s = '';
-    // floor tiles
-    for (let x = 0; x < 12; x++) for (let y = 0; y < 9; y++)
-      s += poly(floorPoly(x, y, 1, 1), (x + y) % 2 ? '#E4D9CA' : '#EBE2D5', 'stroke="#DCCFBE" stroke-width=".5"');
-    // walls
-    s += box(0, -0.3, 0, 12, 0.3, 5, C.wall);
-    s += box(-0.3, -0.3, 0, 0.3, 9.3, 5, C.wallL);
-    // gold skirting
-    s += poly(wallPoly(0, 0, 12, 0, .32), C.gold) + poly(leftPoly(0, 0, 9, 0, .32), shade(C.gold, -.12));
-    // windows on the left wall (above the kitchen line)
-    for (const y of [6.9]) s += poly(leftPoly(0.01, y, 1.6, 1.4, 2.4), '#CFDDE3', EDGE) + poly(leftPoly(0.02, y + .78, .05, 1.4, 2.4), '#fff');
-    // school name sign
-    s += box(4.1, 0, 4.25, 3.6, 0.08, 0.58, C.dark);
-    s += onBack(4.18, 0.09, 4.77, `<text id="signText" class="sign-text" x="40.5" y="9.4" text-anchor="middle">YOUR SCHOOL · DINING HALL</text>`);
-    // dining tables (always there)
-    for (const ty of [3.7, 6.3]) {
-      s += box(3.4, ty - .55, 0, 3.2, .34, .42, C.woodD);
-      [3.9, 4.9, 5.9].forEach((kx, n) => s += person(kx, ty - .4, { kid: true, seated: true, c: ['#3F6E9A', '#B3985A', '#6E8B3D', '#8E2C48'][(n + (ty > 5 ? 1 : 0)) % 4], s: (n + Math.round(ty)) % 5 }));
-      s += box(3.4, ty, 0, 3.2, .95, .74, C.woodL);
-      [3.9, 4.9, 5.9].forEach(px => { const [a, b] = P(px, ty + .45, .74); s += `<ellipse cx="${a}" cy="${b}" rx="6.5" ry="3.4" fill="#fff" stroke="#D9D2C6" stroke-width=".5"/><ellipse cx="${a - 1.6}" cy="${b - .2}" rx="2.2" ry="1.2" fill="${C.carrot}"/><ellipse cx="${a + 1.8}" cy="${b + .3}" rx="2" ry="1" fill="${C.green}"/>`; });
-      s += box(3.4, ty + 1.15, 0, 3.2, .34, .42, C.woodD);
-    }
-    return s;
-  }
-
-  /* ================= the six zones ================= */
-  // Each zone: base (neutral, shown as soon as it is answered), l3 and l5 upgrades (shown at reveal)
-  const ZONES = [
-    { // Q1 menu board
-      name: 'Menu board', slot: wallPoly(1, 0.02, 2.7, 1.9, 2.35), pin: P(2.35, 0, 4.55),
-      base: () => pc(0, box(1, 0, 2.05, 2.6, .12, 2.05, C.woodD)) +
-        pc(.12, onFront(1.1, .125, 4.0, `<rect width="57.6" height="44" rx="1.5" fill="${C.chalk}"/>` + T(5, 8.5, "TODAY'S MENU", 5, '#F3EFE6', 800) +
-          `<path d="M5 15 h20 M5 20 h15 M5 25 h18" stroke="#E7E2D6" stroke-width="1.1" stroke-linecap="round" opacity=".8"/>`)),
-      l3: () => pc(0, onFront(1.1, .13, 4.0, `<g transform="translate(44 22)"><circle r="9" fill="#E9C46A"/><path d="M0 0 L0 -9 A9 9 0 0 1 8.6 2.7z" fill="${C.green}"/><path d="M0 0 L8.6 2.7 A9 9 0 0 1 -4 8.1z" fill="${C.tomato}"/><path d="M0 0 L-4 8.1 A9 9 0 0 1 -9 0z" fill="#F3EFE6"/></g>` + T(37, 38, 'FOOD GROUPS', 3.6, '#E7E2D6', 700))),
-      l5: () => pc(0, onFront(1.1, .135, 4.0, `<g transform="translate(5 30)">${[0, 1, 2].map(n => `<rect x="${n * 9}" y="${9 - (5 + n * 2)}" width="6" height="${5 + n * 2}" fill="${[C.gold, '#E9C46A', '#9DBF6B'][n]}"/>`).join('')}</g>` + T(4, 42.5, 'AGE 6–10 · 11–14 · 15–18', 3.3, '#E7E2D6', 700))) +
-        pc(.15, person(2.3, 1.05, { toque: true, apron: true, c: '#F2F0EB', s: 2 })) +
-        pc(.25, box(2.75, .5, 0, .55, .45, .9, C.woodD) + box(2.7, .45, .9, .65, .55, .06, C.cream))
+  /* ================= the nine items =================
+     common: structure drawn in the sketch and in colour; v1 / v3 / v5: what the answer level adds */
+  const ITEMS = [
+    { // Q1 menu board (enlarged, on the back wall)
+      slot: wallPoly(3.3, .02, 3.3, 1.55, 2.5), pin: [4.95, 0, 4.3],
+      common: V => box(3.3, 0, 1.55, 3.3, .12, 2.5, C.woodD),
+      v1: V => onFront(3.4, .125, 3.95, `<rect width="74" height="55" rx="1.5" fill="${C.chalk}"/>` + T(6, 10, "TODAY'S MENU", 6, '#F3EFE6', 800) +
+        `<path d="M6 19 h30 M6 27 h22 M6 35 h27 M6 43 h18" stroke="#E7E2D6" stroke-width="1.3" stroke-linecap="round" opacity=".85"/><path d="M48 22 q6 -6 12 0 q-6 6 -12 0z" fill="none" stroke="#E7E2D6" stroke-width="1"/>`),
+      v3: V => onFront(3.4, .125, 3.95, `<rect width="74" height="55" rx="1.5" fill="${C.cream}"/><rect width="74" height="9" fill="${C.gold}"/>` + T(5, 6.6, 'MENU OF THE WEEK', 5, '#fff', 800) +
+        [0, 1, 2, 3].map(n => `<circle cx="7" cy="${17 + n * 9}" r="2.4" fill="${[C.green, C.carrot, '#E9C46A', C.tomato][n]}"/><path d="M12 ${17 + n * 9} h${22 + (n % 2) * 8}" stroke="#9A9286" stroke-width="1.3"/>`).join('') +
+        `<g transform="translate(58 33)"><circle r="11" fill="#E9C46A"/><path d="M0 0 L0 -11 A11 11 0 0 1 10.5 3.3z" fill="${C.green}"/><path d="M0 0 L10.5 3.3 A11 11 0 0 1 -5 9.8z" fill="${C.tomato}"/><path d="M0 0 L-5 9.8 A11 11 0 0 1 -11 0z" fill="#F3EFE6"/></g>`),
+      v5: V => onFront(3.4, .125, 3.95, `<rect width="74" height="55" rx="2" fill="${C.screen}"/>` + T(5, 8.5, V === 'uni' ? 'NUTRITION PER MEAL' : 'NUTRITION BY AGE', 5.2, '#F3EFE6', 800) +
+        [0, 1, 2].map(n => `<text x="5" y="${21 + n * 12}" font-family="Hanken Grotesk, sans-serif" font-size="4.2" font-weight="700" fill="#C9D3D8">${V === 'uni' ? ['KCAL', 'PROTEIN', 'FIBRE'][n] : ['AGE 6-10', 'AGE 11-14', 'AGE 15-18'][n]}</text>` +
+          [0, 1, 2, 3].map(k => `<rect x="${30 + k * 10}" y="${15 + n * 12 + (3 - ((n + k) % 3))}" width="6" height="${5 + ((n + k) % 3)}" fill="${[C.leaf, '#E9C46A', C.carrot, '#7FB2D9'][k]}"/>`).join('')).join('') +
+        `<circle cx="66" cy="48" r="4" fill="${C.leaf}"/><path d="M64 48 l1.5 1.5 3 -3.2" stroke="#fff" stroke-width="1.2" fill="none"/>`) +
+        person(5.1, .85, { toque: true, apron: true, c: '#F2F0EB', s: 2, clip: true })
     },
-    { // Q2 parent information wall
-      name: 'Parent info wall', slot: wallPoly(4.4, 0.02, 3.1, 1.55, 2.6), pin: P(5.95, 0, 3.95), pinOff: [0, 8],
-      base: () => pc(0, box(4.5, 0, 1.7, 2.9, .1, 2.3, C.cork)) +
-        pc(.12, onFront(4.6, .105, 3.9, `<rect x="6" y="6" width="15" height="20" fill="#fff"/><path d="M9 11 h9 M9 15 h7 M9 19 h8" stroke="#BDB6AA" stroke-width="1.2"/><circle cx="13.5" cy="6.5" r="1.8" fill="${C.tomato}"/>`)),
-      l3: () => pc(0, onFront(4.6, .11, 3.9, `<rect x="26" y="4" width="16" height="21" fill="#fff"/><g fill="${C.green}"><rect x="29" y="15" width="2.5" height="7"/><rect x="33" y="11" width="2.5" height="11"/><rect x="37" y="13" width="2.5" height="9"/></g><circle cx="34" cy="4.5" r="1.8" fill="${C.blue}"/>` +
-        `<rect x="47" y="9" width="15" height="19" fill="#fff"/><path d="M50 14 h9 M50 18 h6" stroke="#BDB6AA" stroke-width="1.2"/><circle cx="54.5" cy="9.5" r="1.8" fill="${C.gold}"/>`)),
-      l5: () => pc(0, onFront(4.6, .115, 3.9, `<circle cx="58" cy="44" r="7.5" fill="${C.gold}" stroke="#fff" stroke-width="1.4"/><path d="M54.5 44 l2.4 2.4 4.6 -5" stroke="#fff" stroke-width="1.6" fill="none"/>`)) +
-        pc(.12, box(5.3, .75, 0, 1.0, .25, .25, C.dark) + box(5.72, .8, .25, .16, .14, .75, C.steelD) + box(5.25, .7, 1.0, 1.1, .2, .85, C.dark) +
-          onFront(5.3, .905, 1.8, `<rect width="24" height="16.5" fill="#F5F2EC"/><g fill="${C.green}"><rect x="3" y="9" width="3" height="5"/><rect x="8" y="5" width="3" height="9"/><rect x="13" y="7" width="3" height="7"/></g>` + T(3, 4.4, 'NUTRIENTS', 2.8, '#333', 800) + `<circle cx="20" cy="10" r="2.6" fill="${C.gold}"/>`)) +
-        pc(.22, person(6.75, 1.45, { c: '#7A3B2E', s: 1 }) + person(7.2, 1.85, { kid: true, c: '#E0A93B', s: 3 }))
+    { // Q2 nutrition information wall
+      slot: wallPoly(7.0, .02, 2.4, 1.5, 2.1), pin: [8.2, 0, 3.95],
+      common: V => box(7.0, 0, 1.5, 2.4, .1, 2.1, C.cork),
+      v1: V => onFront(7.05, .105, 3.5, `<rect x="8" y="6" width="17" height="23" fill="#fff"/><path d="M11 12 h11 M11 16 h8 M11 20 h10 M11 24 h7" stroke="#BDB6AA" stroke-width="1.3"/><circle cx="16.5" cy="6.5" r="2" fill="${C.tomato}"/>`),
+      v3: V => onFront(7.05, .105, 3.5, `<rect x="5" y="5" width="15" height="21" fill="#fff"/><path d="M8 10 h9 M8 14 h7 M8 18 h8" stroke="#BDB6AA" stroke-width="1.2"/><circle cx="12.5" cy="5.5" r="1.8" fill="${C.tomato}"/>` +
+        `<rect x="24" y="4" width="16" height="22" fill="#fff"/><g fill="${C.green}"><rect x="27" y="16" width="2.6" height="7"/><rect x="31" y="12" width="2.6" height="11"/><rect x="35" y="14" width="2.6" height="9"/></g><circle cx="32" cy="4.5" r="1.8" fill="${C.blue}"/>` +
+        `<rect x="44" y="9" width="11" height="15" fill="#fff"/><circle cx="49.5" cy="16" r="4" fill="#E9C46A"/><path d="M49.5 16 L49.5 12 A4 4 0 0 1 53.3 17z" fill="${C.green}"/>`),
+      v5: V => onFront(7.05, .105, 3.5, `<rect x="5" y="5" width="15" height="21" fill="#fff"/><g fill="${C.green}"><rect x="8" y="16" width="2.4" height="7"/><rect x="12" y="11" width="2.4" height="12"/><rect x="16" y="14" width="2.4" height="9"/></g>` +
+        `<rect x="24" y="4" width="16" height="22" fill="#fff"/><path d="M27 10 h10 M27 14 h8 M27 18 h10 M27 22 h6" stroke="#BDB6AA" stroke-width="1.2"/>` +
+        `<circle cx="49" cy="15" r="8" fill="${C.gold}" stroke="#fff" stroke-width="1.5"/><path d="M45.3 15 l2.6 2.6 4.8 -5.3" stroke="#fff" stroke-width="1.7" fill="none"/>` + T(39.5, 32, 'VERIFIED', 4.2, '#5B4A2A', 800)) +
+        box(10.0, .7, 0, .7, .3, .28, C.dark) + box(10.27, .78, .28, .16, .14, .8, C.steelD) + box(9.95, .62, 1.08, .8, .2, .95, C.dark) +
+        onFront(10.0, .825, 1.98, `<rect width="17" height="20" fill="#F5F2EC"/>` + T(2.5, 5, 'NUTRIENTS', 2.7, '#333', 800) + `<g fill="${C.green}"><rect x="3" y="10" width="2.6" height="7"/><rect x="7" y="7" width="2.6" height="10"/><rect x="11" y="12" width="2.6" height="5"/></g>`) +
+        person(10.75, 1.75, { c: '#7A3B2E', s: 1 })
     },
-    { // Q3 kitchen + safety
-      name: 'Kitchen', slot: floorPoly(0.02, 0.9, 1.75, 5.85), pin: P(0.8, 3.4, 2.5),
-      base: () => pc(0, box(0, 1, 0, 1.3, 4.3, 1.2, C.steel)) +
-        pc(.1, box(.2, 1.35, 1.2, .9, .9, .04, C.dark) + box(.35, 1.5, 1.24, .58, .58, .4, '#9EA2A6') + box(.38, 1.53, 1.64, .52, .52, .03, '#B5B9BC')) +
-        pc(.2, box(.15, 2.6, 1.2, 1.0, 2.4, .06, '#E9E7E2') + [2.8, 3.55, 4.3].map((yy, n) => box(.25, yy, 1.26, .8, .6, .12, ['#E0A93B', C.green, C.tomato][n])).join('')) +
-        pc(.28, onLeft(0.01, 5.3, 2.35, `<rect width="102" height="18" fill="#E6EEF0"/><path d="M0 6 h102 M0 12 h102 M17 0 v18 M34 0 v18 M51 0 v18 M68 0 v18 M85 0 v18" stroke="#CFDCE0" stroke-width=".8"/>`)),
-      l3: () => pc(0, box(0, 5.5, 0, .95, .95, 1.0, '#F1F0EC') + box(.12, 5.62, 1.0, .7, .7, .03, '#C9D7DC') + box(.1, 5.9, 1.03, .1, .12, .45, C.steelD)) +
-        pc(.12, onLeft(0.01, 6.3, 2.95, `<rect x="2" y="0" width="17" height="23" rx="1" fill="${C.woodD}"/><rect x="4" y="3" width="13" height="18" fill="#fff"/><path d="M6 8 l1.5 1.5 3 -3 M6 13 l1.5 1.5 3 -3 M6 18 l1.5 1.5 3 -3" stroke="${C.green}" stroke-width="1.1" fill="none"/><path d="M12 8 h3 M12 13 h3 M12 18 h3" stroke="#AAA" stroke-width="1"/>`)),
-      l5: () => pc(0, box(0, 1.2, 2.75, 1.05, 1.5, .55, '#B2B6B9') + box(0, 1.35, 3.3, .45, .9, 1.4, '#A8ACAF')) +
-        pc(.12, onLeft(0.01, 4.9, 3.7, `<rect width="28" height="20" fill="${C.gold}"/><rect x="2" y="2" width="24" height="16" fill="#FFFDF8"/>` + T(5, 8, 'CERTIFIED', 3.6, '#333', 800) + `<path d="M5 11 h14 M5 14 h10" stroke="#BBB" stroke-width=".9"/><circle cx="21" cy="13" r="3" fill="${C.tomato}"/>`)) +
-        pc(.22, person(1.75, 3.0, { apron: true, c: '#F2F0EB', cap: '#2E2B28', s: 4 }) + person(1.8, 4.4, { apron: true, c: '#F2F0EB', cap: '#2E2B28', s: 0 }))
+    { // Q3 serving counter (new question: healthy ingredient standards)
+      slot: floorPoly(3.3, 1.35, 6.1, .75), pin: [6.3, 1.7, 1.75],
+      common: V => box(3.3, 1.35, 0, 6.1, .75, .95, C.steel) + onFront(3.3, 2.1, .9, `<rect width="146" height="18" fill="${C.gold}" opacity=".9"/>`) +
+        box(3.35, 1.45, .95, .05, .05, .55, C.steelD) + box(9.3, 1.45, .95, .05, .05, .55, C.steelD) + poly([P(3.35, 1.47, 1.5), P(9.35, 1.47, 1.5), P(9.35, 1.67, 1.5), P(3.35, 1.67, 1.5)], 'rgba(205,226,234,.55)', 'stroke="rgba(120,150,160,.5)" stroke-width=".5"'),
+      v1: V => [3.75, 4.5, 5.25, 6.0, 6.75, 7.5, 8.25].map((x, n) => dish(x, 1.72, .95, [C.fried, C.fried2, '#D9A441', C.fried, '#E3C16F', C.fried2, C.fried][n])).join('') +
+        [8.75, 8.95, 9.15].map(x => box(x, 1.55, .95, .12, .12, .32, '#B3261E')).join(''),
+      v3: V => [3.75, 4.5, 5.25, 6.0, 6.75, 7.5, 8.25].map((x, n) => dish(x, 1.72, .95, [C.leaf, C.fried, '#E9D8A6', C.green, C.fried2, C.tomato, '#E9C46A'][n])).join('') +
+        (() => { const [a, b] = P(8.95, 1.72, .95); return `<ellipse cx="${a}" cy="${b}" rx="8" ry="4" fill="${C.woodD}"/><circle cx="${a - 3}" cy="${b - 3}" r="2.6" fill="${C.tomato}"/><circle cx="${a + 1}" cy="${b - 4}" r="2.6" fill="#E9C46A"/><circle cx="${a + 4}" cy="${b - 2}" r="2.4" fill="${C.leaf}"/>`; })(),
+      v5: V => [3.75, 4.5, 5.25, 6.0, 6.75, 7.5, 8.25, 9.0].map((x, n) => dish(x, 1.72, .95, [C.leaf, C.tomato, '#E9D8A6', C.green, C.carrot, '#9C6ADE', '#E9C46A', C.leaf][n])).join('') +
+        box(9.55, 1.4, 0, .45, .45, 1.05, C.blue) + box(9.6, 1.45, 1.05, .35, .35, .45, '#BFE0F2') +
+        onFront(3.6, 2.11, .78, `<rect x="0" y="0" width="34" height="11" rx="2" fill="#fff"/>` + T(3, 8, 'FRESH TODAY', 6, C.green, 800))
     },
-    { // Q4 cooking class corner
-      name: 'Cooking corner', slot: floorPoly(7.5, 6.1, 3.7, 2.7), pin: P(9.6, 7.9, 1.0),
-      base: () => pc(0, box(7.85, 6.55, 0, .14, .14, .78, C.woodD) + box(10.3, 6.55, 0, .14, .14, .78, C.woodD) + box(7.85, 7.6, 0, .14, .14, .78, C.woodD) + box(10.3, 7.6, 0, .14, .14, .78, C.woodD) + box(7.75, 6.45, .78, 2.8, 1.35, .1, C.wood)),
-      l3: () => pc(0, (() => { let s = ''; [[8.2, 6.8, C.tomato], [8.5, 7.3, C.carrot], [9.1, 6.9, C.green], [9.6, 7.4, '#E9C46A'], [10, 6.85, C.tomato]].forEach(([x, y, c]) => { const [a, b] = P(x, y, .9); s += `<ellipse cx="${a}" cy="${b - 2}" rx="3.4" ry="3" fill="${c}"/><ellipse cx="${a}" cy="${b + .6}" rx="3" ry="1" fill="rgba(0,0,0,.12)"/>`; }); return s; })()) +
-        pc(.12, person(8.5, 8.35, { kid: true, c: '#3F6E9A', s: 1 }) + person(9.5, 8.4, { kid: true, c: '#8E2C48', s: 3 })),
-      l5: () => pc(0, box(8.0, 6.65, .88, .7, .45, .05, C.woodL) + box(9.0, 6.65, .88, .7, .45, .05, C.woodL) + box(9.0, 7.35, .88, .7, .45, .05, C.woodL)) +
-        pc(.12, person(10.85, 6.9, { toque: true, apron: true, c: '#F2F0EB', s: 2 }) + person(10.9, 7.75, { kid: true, c: '#6E8B3D', s: 4, apron: true }) + person(7.6, 8.5, { kid: true, c: '#E0A93B', s: 0, apron: true })) +
-        pc(.22, box(7.2, 5.35, 0, 1.3, .45, .5, C.woodD) + (() => { let s = ''; [7.45, 7.75, 8.05, 8.3].forEach(x => { const [a, b] = P(x, 5.57, .5); s += `<path d="M${a} ${b} q-3 -7 -1 -11 M${a} ${b} q3 -6 4 -9" stroke="${C.green}" stroke-width="2" fill="none" stroke-linecap="round"/>`; }); return s; })())
+    { // Q4 kitchen hygiene
+      slot: floorPoly(.02, .7, 1.25, 2.8), pin: [.6, 2.1, 2.6],
+      common: V => onLeft(.01, 3.6, 2.4, `<rect width="70" height="26" fill="#E6EEF0"/><path d="M0 6.5 h70 M0 13 h70 M0 19.5 h70 M14 0 v26 M28 0 v26 M42 0 v26 M56 0 v26" stroke="#CFDCE0" stroke-width=".8"/>`) +
+        box(0, .7, 0, 1.25, 2.8, 1.0, C.steel) + box(.18, .95, 1.0, .9, .9, .04, C.dark) + box(.33, 1.1, 1.04, .58, .58, .42, '#9EA2A6') + box(.36, 1.13, 1.46, .52, .52, .03, '#B5B9BC') +
+        box(.2, 2.2, 1.0, .85, 1.0, .05, '#E9E7E2'),
+      v1: V => box(1.55, 3.05, 0, .42, .42, .36, '#E9C46A') + box(1.72, 3.2, .36, .05, .05, .75, C.woodD),
+      v3: V => onLeft(.01, 2.15, 3.3, `<rect x="0" y="0" width="17" height="23" rx="1" fill="${C.woodD}"/><rect x="2" y="3" width="13" height="18" fill="#fff"/><path d="M4 8 l1.5 1.5 3 -3 M4 13 l1.5 1.5 3 -3 M4 18 l1.5 1.5 3 -3" stroke="${C.green}" stroke-width="1.1" fill="none"/><path d="M10 8 h3 M10 13 h3 M10 18 h3" stroke="#AAA" stroke-width="1"/>`) +
+        onLeft(.01, 3.45, 3.0, `<rect width="18" height="11" rx="1.5" fill="#2F6FA3"/>` + T(2, 7, 'WASH HANDS', 3.4, '#fff', 800)) +
+        person(1.75, 2.1, { apron: true, c: '#F2F0EB', s: 4 }),
+      v5: V => box(0, .85, 2.75, 1.05, 1.6, .5, '#B2B6B9') + box(0, 1.2, 3.25, .45, .9, 1.6, '#A8ACAF') +
+        onLeft(.01, 3.55, 3.85, `<rect width="26" height="19" fill="${C.gold}"/><rect x="2" y="2" width="22" height="15" fill="#FFFDF8"/>` + T(4, 7.5, 'CERTIFIED', 3.6, '#333', 800) + `<path d="M4 10.5 h12 M4 13.5 h9" stroke="#BBB" stroke-width=".9"/><circle cx="19.5" cy="12" r="3" fill="${C.tomato}"/>`) +
+        person(1.75, 1.6, { apron: true, c: '#F2F0EB', cap: C.dark, s: 0 }) + person(1.85, 2.9, { c: '#3F6E9A', s: 2, clip: true })
     },
-    { // Q5 waste + compost
-      name: 'Waste station', slot: floorPoly(9.0, 2.95, 2.95, 1.7), pin: P(10.45, 3.8, 1.25),
-      base: () => pc(0, box(9.2, 3.25, 0, .62, .62, .9, '#7D8186') + box(9.15, 3.2, .9, .72, .72, .08, '#6A6E73')),
-      l3: () => pc(0, box(9.95, 3.25, 0, .62, .62, .9, C.green) + box(9.9, 3.2, .9, .72, .72, .08, shade(C.green, -.15))) +
-        pc(.1, box(10.7, 3.25, 0, .62, .62, .9, C.blue) + box(10.65, 3.2, .9, .72, .72, .08, shade(C.blue, -.15))),
-      l5: () => pc(0, box(11.4, 3.1, 0, .55, 1.25, .55, C.woodD) + box(11.43, 3.13, .55, .49, 1.19, .03, '#5B4130') + (() => { let s = ''; [3.35, 3.7, 4.05].forEach(y => { const [a, b] = P(11.67, y, .58); s += `<path d="M${a} ${b} q-3 -6 -1 -9 M${a} ${b} q3 -5 3 -8" stroke="${C.green}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`; }); return s; })()) +
-        pc(.12, box(9.4, 4.25, 0, .08, .08, 1.25, C.steelD) + onFront(9.05, 4.34, 1.85, `<rect width="18" height="13" fill="#fff" stroke="#333" stroke-width=".6"/>` + T(2, 4.5, 'WASTE (kg)', 2.6, '#333', 800) + `<g fill="${C.green}"><rect x="3" y="6" width="2.5" height="5"/><rect x="7" y="7.5" width="2.5" height="3.5"/><rect x="11" y="9" width="2.5" height="2"/></g>`)) +
-        pc(.2, person(10.3, 4.85, { kid: true, c: '#B3985A', s: 2 }))
+    { // Q5 allergen station (new question)
+      slot: floorPoly(.02, 4.0, 1.15, 1.8), pin: [.6, 4.9, 1.9],
+      common: V => box(0, 4.0, 0, 1.15, 1.8, .95, '#E9E7E2') + box(.05, 4.05, .95, 1.05, 1.7, .03, '#D8D5CE'),
+      v1: V => onLeft(.01, 5.55, 2.3, `<rect width="11" height="11" fill="#F6D365" transform="rotate(-6 5 5)"/>` + T(1.5, 6.5, 'NUTS?', 3.2, '#5B4A2A', 800)),
+      v3: V => [[.3, 4.25, '#C8553D'], [.3, 4.8, '#E9C46A'], [.3, 5.35, '#3F6E9A']].map(([x, y, c]) => box(x, y, .98, .5, .4, .2, '#F4F2EE') + box(x, y, 1.18, .5, .4, .04, c)).join('') +
+        onLeft(.01, 5.75, 2.75, `<rect width="30" height="24" fill="#fff" stroke="#BBB" stroke-width=".6"/>` + T(2, 5.5, 'ALLERGENS', 3.6, '#333', 800) + [0, 1, 2].map(n => `<circle cx="4.5" cy="${11 + n * 5}" r="1.6" fill="${['#C8553D', '#E9C46A', '#3F6E9A'][n]}"/><path d="M8 ${11 + n * 5} h17" stroke="#AAA" stroke-width="1"/>`).join('')),
+      v5: V => box(.1, 4.1, .98, .95, 1.6, .03, C.purple) + [[.35, 4.4], [.35, 5.1]].map(([x, y]) => box(x, y, 1.01, .45, .35, .14, '#F4F2EE') + box(x, y, 1.15, .45, .35, .04, C.purple)).join('') +
+        onLeft(.01, 5.8, 3.0, `<rect width="38" height="14" rx="2" fill="${C.purple}"/>` + T(3, 9, 'ALLERGEN-SAFE ZONE', 3.5, '#fff', 800)) +
+        person(1.6, 4.9, { apron: true, c: C.purple, s: 3 })
     },
-    { // Q6 review wall
-      name: 'Review wall', slot: wallPoly(8.35, 0.02, 3.3, 1.35, 3.45), pin: P(10, 0, 4.85),
-      base: () => pc(0, box(8.55, 0, 1.45, .85, .5, .62, C.woodD)) +
-        pc(.1, onFront(8.6, .505, 2.0, `<rect x="4" y="3" width="12" height="1.8" rx=".9" fill="#2A211B"/>` + T(3.5, 11, 'IDEAS', 3.6, '#F3EFE6', 800))),
-      l3: () => pc(0, box(9.6, 0, 2.0, 1.75, .07, 1.35, '#FDFCF9')) +
-        pc(.1, onFront(9.65, .075, 3.3, [[4, 4, '#F6D365'], [14, 6, '#A8D5BA'], [24, 3, '#F4A6A6'], [8, 16, '#A8C6E8'], [20, 17, '#F6D365'], [30, 15, '#A8D5BA']].map(([x, y, c]) => `<rect x="${x}" y="${y}" width="7" height="7" fill="${c}"/>`).join(''))),
-      l5: () => pc(0, box(8.45, 0, 3.55, 3.1, .08, 1.2, C.dark) + onFront(8.5, .085, 4.7, `<rect width="71" height="25.5" fill="#F5F2EC"/><path d="M5 21 L18 17 L30 18 L42 11 L54 9 L66 4" stroke="${C.gold}" stroke-width="1.6" fill="none"/><path d="M5 22.5 h61" stroke="#BBB" stroke-width=".6"/>` + T(5, 7, 'MENU PERFORMANCE', 3.4, '#333', 800))) +
-        pc(.12, box(9.1, .85, 0, 1.6, .8, .72, C.woodL) + person(9.4, 1.95, { c: '#3F6E9A', s: 2 }) + person(10.5, 1.95, { c: '#7A3B2E', s: 1 }))
+    { // Q6 quality / improvement board
+      slot: leftPoly(.02, 6.4, 2.1, 1.5, 1.8), pin: [0, 7.45, 3.75],
+      common: V => box(0, 6.4, 1.5, .08, 2.1, 1.8, C.woodD),
+      v1: V => onLeft(.085, 8.45, 3.25, `<rect width="49" height="41" fill="#F7F4EE"/><rect x="6" y="8" width="9" height="9" fill="#F6D365"/>`) +
+        box(.55, 7.5, 0, .08, .08, .85, C.woodD) + box(.4, 7.35, .85, .38, .38, .32, C.wood) + poly([P(.45, 7.55, 1.18), P(.72, 7.55, 1.18), P(.72, 7.58, 1.18), P(.45, 7.58, 1.18)], C.dark),
+      v3: V => onLeft(.085, 8.45, 3.25, `<rect width="49" height="41" fill="#F7F4EE"/>` + [[4, 5, '#F6D365'], [16, 7, '#A8D5BA'], [29, 4, '#F4A6A6'], [8, 20, '#A8C6E8'], [21, 22, '#F6D365'], [34, 19, '#A8D5BA'], [14, 31, '#F4A6A6']].map(([x, y, c]) => `<rect x="${x}" y="${y}" width="9" height="8" fill="${c}"/>`).join('')),
+      v5: V => onLeft(.085, 8.45, 3.25, `<rect width="49" height="41" fill="${C.screen}"/>` + T(4, 8, 'QUALITY TRENDS', 4.2, '#F3EFE6', 800) + `<path d="M5 34 L14 29 L22 31 L30 21 L38 19 L45 11" stroke="${C.leaf}" stroke-width="1.8" fill="none"/><path d="M5 36 h40" stroke="#5B6A72" stroke-width=".7"/>`) +
+        person(1.3, 6.9, { c: '#3F6E9A', s: 2 }) + person(1.55, 7.85, { apron: true, c: '#F2F0EB', cap: C.dark, s: 1 })
+    },
+    { // Q7 learning corner (front right)
+      slot: floorPoly(8.4, 6.4, 3.5, 2.4), pin: [10, 7.4, 1.6],
+      common: V => [[8.75, 6.85], [11.15, 6.85], [8.75, 7.8], [11.15, 7.8]].map(([x, y]) => box(x, y, 0, .12, .12, .78, C.woodD)).join('') + box(8.65, 6.75, .78, 2.7, 1.3, .1, C.wood),
+      v1: V => box(8.15, 6.45, 0, .08, .08, 1.2, C.woodD) + onFront(7.85, 6.53, 1.95, `<rect width="17" height="13" fill="#fff" stroke="#BBB" stroke-width=".5"/>` + T(2, 6, 'EAT WELL', 3.6, C.green, 800) + `<circle cx="13" cy="9" r="2.4" fill="${C.tomato}"/>`),
+      v3: V => box(11.75, 6.5, 0, .08, .9, 1.55, C.woodD) + onSide(11.84, 7.4, 1.5, `<rect width="21" height="16" fill="#fff" stroke="#BBB" stroke-width=".5"/><path d="M3 4 h12 M3 8 h9 M3 12 h13" stroke="#3F6E9A" stroke-width="1.2"/>`) +
+        [[9.2, 7.05], [9.9, 7.2], [10.6, 7.0]].map(([x, y]) => { const [a, b] = P(x, y, .88); return `<rect x="${a - 3}" y="${b - 2}" width="6" height="4" fill="#fff" stroke="#BBB" stroke-width=".4"/>`; }).join('') +
+        person(12.15, 7.6, { c: '#7A3B2E', s: 1 }) + person(9.3, 8.55, { kid: V !== 'uni', c: '#3F6E9A', s: 3 }) + person(10.3, 8.6, { kid: V !== 'uni', c: '#8E2C48', s: 0 }),
+      v5: V => box(8.9, 6.9, .88, .7, .45, .05, C.woodL) + box(9.9, 6.9, .88, .7, .45, .05, C.woodL) + box(10.4, 7.55, .88, .7, .45, .05, C.woodL) +
+        (() => { let s = ''; [[9.1, 7.05, C.tomato], [9.35, 7.15, C.carrot], [10.1, 7.05, C.leaf], [10.65, 7.7, '#E9C46A'], [10.9, 7.75, C.tomato]].forEach(([x, y, c]) => { const [a, b] = P(x, y, .95); s += `<ellipse cx="${a}" cy="${b - 2}" rx="3.2" ry="2.8" fill="${c}"/>`; }); return s; })() +
+        box(8.0, 5.95, 0, 1.4, .4, .45, C.woodD) + [8.25, 8.6, 8.95, 9.25].map(x => sprout(x, 6.15, .45)).join('') +
+        person(12.0, 7.2, { toque: true, apron: true, c: '#F2F0EB', s: 2 }) + person(9.1, 8.55, { kid: V !== 'uni', c: '#6E8B3D', s: 4, apron: true }) + person(10.1, 8.65, { kid: V !== 'uni', c: '#E0A93B', s: 0, apron: true }) + person(11.1, 8.6, { kid: V !== 'uni', c: '#3F6E9A', s: 3, apron: true })
+    },
+    { // Q8 waste station (right)
+      slot: floorPoly(10.3, 3.0, 1.7, 2.0), pin: [11.1, 3.7, 1.75],
+      common: V => box(10.3, 3.0, 0, 1.7, 1.25, .04, '#D5CCBF'),
+      v1: V => box(10.85, 3.3, 0, .6, .6, .9, '#7D8186') + box(10.8, 3.25, .9, .7, .7, .08, '#6A6E73'),
+      v3: V => [[10.35, C.green], [10.95, C.blue], [11.55, '#7D8186']].map(([x, c]) => box(x, 3.3, 0, .5, .5, .85, c) + box(x - .03, 3.27, .85, .56, .56, .07, shade(c, -.18))).join('') +
+        onFront(10.35, 3.81, .65, `<circle cx="6" cy="5" r="3" fill="#fff"/>`) + onFront(10.95, 3.81, .65, `<circle cx="6" cy="5" r="3" fill="#fff"/>`),
+      v5: V => [[10.35, C.green], [10.95, C.blue], [11.55, '#7D8186']].map(([x, c]) => box(x, 3.3, 0, .5, .5, .85, c) + box(x - .03, 3.27, .85, .56, .56, .07, shade(c, -.18))).join('') +
+        box(10.4, 4.3, 0, 1.5, .55, .5, C.woodD) + box(10.43, 4.33, .5, 1.44, .49, .03, '#5B4130') + [10.65, 11.0, 11.35, 11.7].map(x => sprout(x, 4.55, .53)).join('') +
+        box(12.15, 3.6, 0, .08, .08, 1.3, C.steelD) + onSide(12.24, 4.1, 2.05, `<rect width="20" height="15" fill="#fff" stroke="#333" stroke-width=".6"/>` + T(2, 4.6, 'WASTE kg', 2.8, '#333', 800) + `<g fill="${C.green}"><rect x="3" y="6.5" width="3" height="6"/><rect x="8" y="8.5" width="3" height="4"/><rect x="13" y="10.5" width="3" height="2"/></g>`)
+    },
+    { // Q9 feedback point (front left, new question)
+      slot: floorPoly(3.3, 7.4, 1.9, 1.4), pin: [4.25, 8.0, 2.45],
+      common: V => box(3.55, 7.85, 0, .1, .1, 1.35, C.steelD) + box(4.85, 7.85, 0, .1, .1, 1.35, C.steelD),
+      v1: V => box(3.5, 7.95, 1.0, 1.5, .05, .55, '#fff') + onFront(3.5, 8.0, 1.5, `<path d="M4 5 h20 M4 9 h14" stroke="#BDB6AA" stroke-width="1.2"/>` + T(26, 9, 'MENU', 4.5, '#555', 800)),
+      v3: V => box(3.45, 7.95, .9, 1.6, .05, .75, '#fff') + onFront(3.45, 8.0, 1.6, `<rect x="2" y="2" width="16" height="13" fill="#F3EFE6"/><path d="M4 6 h11 M4 10 h8" stroke="#BDB6AA" stroke-width="1.1"/>` + T(21, 7, 'TELL US', 4.4, C.blue, 800) + `<g fill="#E9C46A"><circle cx="23" cy="12" r="1.6"/><circle cx="27" cy="12" r="1.6"/><circle cx="31" cy="12" r="1.6"/></g>`) +
+        box(5.25, 7.7, 0, .45, .45, .8, C.blue) + poly([P(5.33, 7.92, .8), P(5.62, 7.92, .8), P(5.62, 7.95, .8), P(5.33, 7.95, .8)], C.dark),
+      v5: V => box(3.4, 7.95, .7, 1.7, .06, 1.15, C.screen) + onFront(3.4, 8.01, 1.8, `<rect width="41" height="26" fill="${C.screen}"/>` + T(3, 6.5, 'YOU SAID', 4, '#F6D365', 800) + T(23, 6.5, 'WE DID', 4, C.leaf, 800) +
+        `<path d="M3 11 h15 M3 15 h12 M3 19 h14 M23 11 h14 M23 15 h11 M23 19 h13" stroke="#C9D3D8" stroke-width="1.1"/><path d="M20.5 9 v13" stroke="#5B6A72" stroke-width=".6"/>`) +
+        person(3.9, 8.85, { kid: V !== 'uni', c: '#B3985A', s: 2 }) + person(4.8, 8.95, { c: '#7A3B2E', s: 1 })
     }
   ];
 
-  /* ================= assemble scene ================= */
-  // painter's order: back-to-front
-  const ORDER = [2, 0, 1, 5, 4, 3];
-  let html = `<g id="shell">${shell()}</g>`;
-  html += `<g id="slots">${ZONES.map((z, i) => `<polygon class="slot" data-i="${i}" points="${pts(z.slot)}"/>`).join('')}</g>`;
-  ORDER.forEach(i => {
-    const z = ZONES[i];
-    if (i === 3) html += ''; // cooking corner is front-most
-    html += `<g class="zone" data-i="${i}"><g class="lv base">${z.base()}</g><g class="lv l3">${z.l3()}</g><g class="lv l5">${z.l5()}</g></g>`;
-  });
-  html += `<g id="pins">${ZONES.map((z, i) => { const [x, y] = z.pin; const o = z.pinOff || [0, 0]; return `<g transform="translate(${x + o[0]} ${y + o[1]})"><g class="pin" data-i="${i}"><path d="M0 9 l-4 -6 h8z" fill="#B8AC9C"/><circle class="dot" r="8.5" cy="-1"/><text text-anchor="middle" y="2.4">${i + 1}</text></g></g>`; }).join('')}</g>`;
-  html += `<g id="tags"></g>`;
-  svg.innerHTML = html;
-  // dining area sits between the back zones and the front ones
-  const zoneEls = [...svg.querySelectorAll('.zone')].reduce((a, e) => (a[+e.dataset.i] = e, a), []);
-  const lv = (i, k) => zoneEls[i].querySelector('.' + k);
-  const slotEls = [...svg.querySelectorAll('.slot')];
-  const pinEls = [...svg.querySelectorAll('.pin')];
-  const signText = svg.querySelector('#signText');
-  requestAnimationFrame(() => svg.querySelector('#shell').classList.add('on'));
-
-  function setSign(name) {
-    const t = ((name || 'Your school').toUpperCase() + ' · DINING HALL');
-    signText.textContent = t;
-    if (t.length > 26) { signText.setAttribute('textLength', 76); signText.setAttribute('lengthAdjust', 'spacingAndGlyphs'); }
-    else signText.removeAttribute('textLength');
+  /* ================= people who fill the cafeteria ================= */
+  function crowdSpots(V) {
+    const kid = V !== 'uni';
+    const look = (n, extra = {}) => Object.assign({ kid, c: ['#3F6E9A', '#B3985A', '#6E8B3D', '#8E2C48', '#E0A93B', '#4C5B8A'][n % 6], s: n % 5 }, extra, V === 'uni' && !extra.seated ? { bag: ['#2E2B28', '#7A3B2E', '#3F6E9A'][n % 3] } : {});
+    // [x, y, options], in the order they arrive
+    const queue = [[4.4, 2.55], [5.3, 2.6], [6.2, 2.5], [7.2, 2.6]].map(([x, y], n) => [x, y, look(n + 1)]);
+    const seats = V === 'uni'
+      ? [[4.45, 3.45], [6.75, 3.45], [4.45, 5.65], [6.75, 5.65]].map(([x, y], n) => [x, y, look(n + 3, { seated: true })])
+      : [[4.4, 3.2], [5.7, 3.2], [7.0, 3.2], [4.4, 5.4], [5.7, 5.4], [7.0, 5.4]].map(([x, y], n) => [x, y, look(n + 2, { seated: true })]);
+    const stand = V === 'uni' ? [[8.2, 4.4, look(5)], [8.55, 4.9, look(2)]] : [];
+    const all = [];
+    const order = [seats[0], queue[0], seats[1], queue[1], seats[2], stand[0], queue[2], seats[3], stand[1], seats[4], queue[3], seats[5]].filter(Boolean);
+    order.forEach((p, n) => all.push({ x: p[0], y: p[1], o: p[2], n }));
+    return all;
   }
 
-  function paint(current) {
-    ZONES.forEach((z, i) => {
-      const answered = !!answers[i];
-      lv(i, 'base').classList.toggle('on', answered);
-      lv(i, 'l3').classList.remove('on'); lv(i, 'l5').classList.remove('on');
-      slotEls[i].classList.toggle('filled', answered && i !== current);
-      slotEls[i].classList.toggle('current', i === current);
-      pinEls[i].classList.toggle('current', i === current);
-      pinEls[i].classList.toggle('done', answered && i !== current);
-      pinEls[i].classList.remove('hide');
-      ticks[i].className = i === current ? 'now' : answered ? 'on' : '';
-    });
-    svg.querySelector('#tags').innerHTML = '';
+  function dining(V, crowd) {
+    // tables, with seated people interleaved so nearer things draw on top
+    const seated = crowd.filter(p => p.o.seated);
+    const pp = p => `<g class="crowd" data-n="${p.n}">${person(p.x, p.y, p.o)}</g>`;
+    let s = '';
+    if (V === 'uni') {
+      for (const [tx, ty] of [[4.0, 3.75], [6.3, 3.75], [4.0, 5.95], [6.3, 5.95]]) {
+        s += box(tx + .3, ty - .55, 0, .4, .4, .42, C.woodD) + box(tx + .3, ty - .6, .42, .4, .08, .55, C.woodD);
+        seated.filter(p => Math.abs(p.y - (ty - .3)) < .01 && Math.abs(p.x - (tx + .45)) < .01).forEach(p => s += pp(p));
+        s += box(tx + .42, ty + .3, 0, .12, .12, .7, C.steelD) + box(tx, ty, .7, .95, .95, .06, C.woodL);
+        const [a, b] = P(tx + .4, ty + .45, .76); s += `<path d="M${a - 5} ${b} l7 3.5 l0 -6 l-7 -3.5z" fill="#3A3F44"/><path d="M${a - 5} ${b} l7 3.5 l6 -3 l-7 -3.5z" fill="#9AA3A8"/>`;
+        const [c, d] = P(tx + .7, ty + .3, .76); s += `<ellipse cx="${c}" cy="${d}" rx="3" ry="1.6" fill="#fff"/><ellipse cx="${c}" cy="${d - .3}" rx="2" ry="1" fill="#6B4226"/>`;
+      }
+    } else {
+      for (const ty of [3.5, 5.7]) {
+        s += box(3.7, ty - .55, 0, 3.8, .34, .42, C.woodD);
+        seated.filter(p => Math.abs(p.y - (ty - .3)) < .01).forEach(p => s += pp(p));
+        s += box(3.7, ty, 0, 3.8, .95, .74, C.woodL);
+        [4.4, 5.7, 7.0].forEach(px => { const [a, b] = P(px, ty + .4, .74); s += `<ellipse cx="${a}" cy="${b}" rx="6.5" ry="3.4" fill="#fff" stroke="#D9D2C6" stroke-width=".5"/><ellipse cx="${a - 1.6}" cy="${b - .2}" rx="2.2" ry="1.2" fill="${C.carrot}"/><ellipse cx="${a + 1.8}" cy="${b + .3}" rx="2" ry="1" fill="${C.green}"/>`; });
+        s += box(3.7, ty + 1.15, 0, 3.8, .34, .42, C.woodD);
+      }
+    }
+    return s;
   }
 
-  /* ================= panel helpers ================= */
-  const NS = 'http://www.w3.org/2000/svg';
+  /* ================= areas (pillars) ================= */
+  const AREAS = [
+    { floor: floorPoly(3.0, 0, 9.2, 2.45), box: [2.9, 0, 12.4, 3.0, 4.9], chip: [2.1, 0, 4.75], label: 'Serving counter' },
+    { floor: floorPoly(0, 0, 2.7, 9), box: [0, 0, 2.9, 9.1, 4.9], chip: [0, 6.0, 4.75], label: 'Kitchen' },
+    { floor: floorPoly(3.0, 2.6, 9.4, 6.4), box: [2.9, 2.5, 12.6, 9.2, 2.4], chip: [6.7, 8.9, 0], label: 'Dining hall' }
+  ];
+  function bboxOf(x0, y0, x1, y1, zt, pad = 14) {
+    const ps = []; for (const x of [x0, x1]) for (const y of [y0, y1]) for (const z of [0, zt]) ps.push(P(x, y, z));
+    const xs = ps.map(p => p[0]), ys = ps.map(p => p[1]);
+    return [Math.min(...xs) - pad, Math.min(...ys) - pad - 10, Math.max(...xs) - Math.min(...xs) + pad * 2, Math.max(...ys) - Math.min(...ys) + pad * 2 + 10];
+  }
+  const FULL = bboxOf(-0.4, -0.4, 12.6, 9.2, 5.2, 8);
+
+  /* ================= scene builder (used twice: today + future) ================= */
+  function makeScene(svg, id) {
+    let V = 'k12', crowd = [], vb = FULL.slice(), anim = 0, signName = '';
+    const el = {};
+    function render(variant) {
+      V = variant; crowd = crowdSpots(V);
+      const pp = p => `<g class="crowd" data-n="${p.n}">${person(p.x, p.y, p.o)}</g>`;
+      const item = i => `<g class="item" data-i="${i}"><g class="sk" filter="url(#bp${id})">${ITEMS[i].common(V)}</g><g class="rl">${ITEMS[i].common(V)}<g class="v1">${ITEMS[i].v1(V)}</g><g class="v3">${ITEMS[i].v3(V)}</g><g class="v5">${ITEMS[i].v5(V)}</g></g></g>`;
+      let s = `<defs>
+        <filter id="bp${id}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".105 .2065 .0385 0 .45  .12 .236 .044 0 .5  .135 .2655 .0495 0 .58  0 0 0 .8 0"/></filter>
+        <filter id="pale${id}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".3593 .4004 .0403 0 .16  .1193 .6404 .0403 0 .16  .1193 .4004 .2803 0 .16  0 0 0 1 0"/></filter>
+      </defs>`;
+      // floor + walls
+      for (let x = 0; x < 12; x++) for (let y = 0; y < 9; y++) s += poly(floorPoly(x, y, 1, 1), (x + y) % 2 ? '#E4D9CA' : '#EBE2D5', 'stroke="#DCCFBE" stroke-width=".5"');
+      s += box(0, -0.3, 0, 12.4, 0.3, 5, C.wall) + box(-0.3, -0.3, 0, 0.3, 9.3, 5, C.wallL) + poly(leftPoly(0, -0.3, 9.3, 0, 5), '#E6DDD0', EDGE);
+      s += poly(wallPoly(0, 0, 12.4, 0, .32), C.gold) + poly(leftPoly(0, 0, 9, 0, .32), shade(C.gold, -.12));
+      s += poly(wallPoly(10.6, .01, 1.5, 1.6, 2.2), '#CFDDE3', EDGE) + poly(wallPoly(11.33, .02, .05, 1.6, 2.2), '#fff');
+      // institution sign
+      s += box(6.85, 0, 4.2, 4.6, 0.08, 0.6, C.dark) + onFront(6.92, .09, 4.74, `<text class="sign-text" x="55" y="9.2" text-anchor="middle">YOUR INSTITUTION</text>`);
+      // pillar flash highlights (under the furniture)
+      s += AREAS.map((a, p) => `<g class="flash fl" data-p="${p}"><polygon points="${pts(a.floor)}"/></g>`).join('');
+      s += `<g class="slots">${ITEMS.map((it, i) => `<polygon class="slot" data-i="${i}" points="${pts(it.slot)}"/>`).join('')}</g>`;
+      // painter's order, back to front
+      s += item(0) + item(1) + item(2);
+      s += crowd.filter(p => !p.o.seated && p.y < 3).map(pp).join('');
+      s += item(3) + item(4) + item(5);
+      s += dining(V, crowd);
+      s += crowd.filter(p => !p.o.seated && p.y >= 3).map(pp).join('');
+      s += item(8) + item(7) + item(6);
+      // area chips + flash banners + pins on top
+      s += AREAS.map((a, p) => { const [x, y] = P(...a.chip); const t = Q.pillars[p].name.toUpperCase(), w = Math.max(t.length * 5.9, (a.label.length + 4) * 5.3) + 16;
+        return `<g class="chip" data-p="${p}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><rect x="${-w / 2}" y="-13" width="${w}" height="25" rx="6"/><text class="n" text-anchor="middle" y="-3.5">${p + 1} · ${a.label.toUpperCase()}</text><text class="t" text-anchor="middle" y="7">${t}</text></g>`; }).join('');
+      s += AREAS.map((a, p) => { const c = a.floor.reduce((m, q) => [m[0] + q[0] / 4, m[1] + q[1] / 4], [0, 0]); const t = Q.pillars[p].name + ' done ✓', w = t.length * 6.4 + 20;
+        return `<g class="flash" data-p="${p}"><rect x="${c[0] - w / 2}" y="${c[1] - 14}" width="${w}" height="24" rx="12"/><text x="${c[0]}" y="${c[1] + 2}" text-anchor="middle">${t}</text></g>`; }).join('');
+      s += `<g class="pins">${ITEMS.map((it, i) => { const [x, y] = P(...it.pin); return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><g class="pin" data-i="${i}"><path d="M0 9 l-4 -6 h8z" fill="#B8AC9C"/><circle class="dot" r="8.5" cy="-1"/><text text-anchor="middle" y="2.4">${i + 1}</text></g></g>`; }).join('')}</g>`;
+      svg.innerHTML = s;
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      // items are drawn in painter's order, so index them by question number, not DOM order
+      el.items = [...svg.querySelectorAll('.item')].sort((a, b) => a.dataset.i - b.dataset.i);
+      el.slots = [...svg.querySelectorAll('.slot')];
+      el.pins = [...svg.querySelectorAll('.pin')];
+      el.crowd = [...svg.querySelectorAll('.crowd')];
+      el.chips = [...svg.querySelectorAll('.chip')];
+      el.sign = svg.querySelector('.sign-text');
+      setSign(signName);
+      setVB(vb);
+    }
+    function setVB(b) { vb = b.slice(); svg.setAttribute('viewBox', vb.map(n => n.toFixed(1)).join(' ')); }
+    function zoom(target) {
+      cancelAnimationFrame(anim);
+      const from = vb.slice(), t0 = performance.now(), dur = RM ? 0 : 700;
+      const step = now => { const k = dur ? Math.min(1, (now - t0) / dur) : 1, e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+        setVB(from.map((v, n) => v + (target[n] - v) * e)); if (k < 1) anim = requestAnimationFrame(step); };
+      anim = requestAnimationFrame(step);
+    }
+    function setSign(name) {
+      signName = name || '';
+      if (!el.sign) return;
+      const t = (signName || 'Your institution').toUpperCase() + (V === 'uni' ? ' · FOOD COURT' : ' · DINING HALL');
+      el.sign.textContent = t;
+      if (t.length > 24) { el.sign.setAttribute('textLength', 100); el.sign.setAttribute('lengthAdjust', 'spacingAndGlyphs'); } else el.sign.removeAttribute('textLength');
+    }
+    function setItem(i, state, L) {
+      const it = el.items[i];
+      it.classList.remove('sketch', 'real', 'l1', 'l3', 'l5');
+      const rl = it.querySelector('.rl');
+      rl.removeAttribute('filter');
+      if (state === 'sketch') it.classList.add('sketch');
+      if (state === 'real') { it.classList.add('real', 'l' + L); if (L === 1) rl.setAttribute('filter', `url(#pale${id})`); }
+    }
+    function setCrowd(n) { el.crowd.forEach(c => c.classList.toggle('on', +c.dataset.n < n)); }
+    const crowdSize = () => crowd.length;
+    function quiz(ans, current) {
+      ITEMS.forEach((_, i) => {
+        const done = !!ans[i];
+        setItem(i, done ? 'sketch' : 'none');
+        el.slots[i].classList.toggle('filled', done && i !== current);
+        el.slots[i].classList.toggle('current', i === current);
+        el.slots[i].style.display = '';
+        const pin = el.pins[i]; pin.setAttribute('class', 'pin' + (i === current ? ' current' : done ? ' done' : ''));
+      });
+      const answered = ans.filter(Boolean).length;
+      setCrowd(Math.round(answered / N * crowd.length));
+      const p = current >= 0 ? Q.questions[current].pillar : -1;
+      el.chips.forEach((c, n) => { c.setAttribute('class', 'chip' + (p === -1 ? '' : n === p ? ' active' : Q.pillars[n].q.every(q => ans[q]) ? ' done' : ' dim')); });
+    }
+    function reveal(levelOf, stagger, pinsToo = true) {
+      el.slots.forEach(s => s.style.display = 'none');
+      el.chips.forEach(c => c.setAttribute('class', 'chip'));
+      ITEMS.forEach((_, i) => {
+        const L = levelOf(i);
+        const go = () => { setItem(i, 'real', L); if (pinsToo) el.pins[i].setAttribute('class', 'pin lv lv' + L); else el.pins[i].setAttribute('class', 'pin hide'); };
+        stagger && !RM ? later(go, i * stagger) : go();
+      });
+      setCrowd(crowd.length);
+    }
+    function flash(p) {
+      svg.querySelectorAll(`.flash[data-p="${p}"]`).forEach(f => { f.classList.remove('go'); void f.getBBox(); f.classList.add('go'); });
+    }
+    const areaBox = p => { const b = AREAS[p].box; return bboxOf(b[0], b[1], b[2], b[3], b[4]); };
+    function chip(p) {
+      el.chips.forEach((c, n) => c.setAttribute('class', 'chip' + (p < 0 ? '' : n === p ? ' active' : ' dim')));
+      svg.querySelectorAll('.flash.fl').forEach(f => f.classList.toggle('hold', +f.dataset.p === p));
+    }
+    return { render, quiz, reveal, flash, zoom, setVB, setSign, areaBox, setCrowd, crowdSize, chip, get variant() { return V; } };
+  }
+
+  /* ================= wiring ================= */
+  const today = makeScene(document.getElementById('today'), 'T');
+  const future = makeScene(document.getElementById('future'), 'F');
+  today.render('k12');
+  const screen = document.getElementById('screen');
+  const caption = document.getElementById('caption');
+  const capRight = document.getElementById('capRight');
+  const compareUI = document.getElementById('compareUI');
+  const cmpRange = document.getElementById('cmpRange');
+  const divider = document.getElementById('divider');
+  const futureSvg = document.getElementById('future');
+  cmpRange.addEventListener('input', () => { const v = cmpRange.value; futureSvg.style.clipPath = `inset(0 0 0 ${v}%)`; divider.style.left = v + '%'; });
+
   const h = (tag, props = {}, kids = []) => { const e = document.createElement(tag); Object.assign(e, props); kids.forEach(k => e.append(k)); return e; };
   function show(nodes) {
     screen.replaceChildren(...nodes);
     const head = screen.querySelector('h1, h2');
     if (head) { head.tabIndex = -1; head.focus({ preventScroll: true }); }
-    window.scrollTo({ top: 0, behavior: RM ? 'auto' : 'smooth' });
-  }
-  function personalised(text) {
-    const el = h('h2');
-    const parts = school ? text.split('your institution') : [text];
-    parts.forEach((p, n) => { if (n) el.append(h('strong', { textContent: school })); el.append(p); });
-    return el;
+    const panelTop = screen.getBoundingClientRect().top + window.scrollY - 12;
+    if (window.scrollY > panelTop) window.scrollTo({ top: 0, behavior: RM ? 'auto' : 'smooth' });
   }
   const setCaption = (lead, rest) => { caption.replaceChildren(); if (lead) caption.append(h('b', { textContent: lead })); if (rest) caption.append(' ' + rest); };
+  function progress(current) {
+    const wrap = h('span', { className: 'built', ariaHidden: 'true' });
+    Q.pillars.forEach(p => wrap.append(h('span', {}, p.q.map(i => h('i', { className: i === current ? 'now' : answers[i] ? 'on' : '' })))));
+    capRight.replaceChildren(wrap);
+  }
+  function legend() {
+    capRight.replaceChildren(h('span', { className: 'legend' }, [['--strong', 'Strong'], ['--mid', 'In progress'], ['--low', 'Needs attention']].map(([v, t]) => { const i = h('i'); i.style.background = `var(${v})`; return h('span', {}, [i, t]); })));
+  }
+
+  const ROLES = [
+    ['K-12', ['Principal', 'Director / Trustee', 'School administrator', 'Facilities / Operations head']],
+    ['Higher education', ['Vice Chancellor / Director', 'Dean', 'Registrar', 'Campus services / Dining head']]
+  ];
+  const variantFor = r => (ROLES[1][1].includes(r) ? 'uni' : 'k12');
 
   /* ================= screens ================= */
   function intro() {
-    comparing = false;
-    paint(-1);
-    setCaption('Your canteen', 'is waiting to be built: six zones, one per question.');
+    clearTimers();
+    compareUI.hidden = true;
+    today.render(variantFor(role));
+    today.quiz(answers, -1);
+    today.zoom(FULL);
+    setCaption('Your cafeteria', 'builds as you answer: 3 areas, 9 questions.');
+    progress(-1);
     const f = h('form');
-    const sIn = h('input', { required: true, autocomplete: 'organization', placeholder: 'e.g. Greenwood International School', value: school });
-    sIn.oninput = () => setSign(sIn.value.trim());
     const rIn = h('select', { required: true });
-    ['', 'Principal', 'Director / Trustee', 'School administrator', 'Facilities / Operations head', 'Other'].forEach(r => rIn.append(h('option', { value: r, textContent: r || 'Select your role', selected: r === role })));
+    rIn.append(h('option', { value: '', textContent: 'Select your role' }));
+    ROLES.forEach(([g, list]) => { const og = h('optgroup', { label: g }); list.forEach(r => og.append(h('option', { value: r, textContent: r, selected: r === role }))); rIn.append(og); });
+    rIn.append(h('option', { value: 'Other', textContent: 'Other', selected: role === 'Other' }));
+    rIn.onchange = () => { role = rIn.value; const v = variantFor(role); if (v !== today.variant) { today.render(v); today.quiz(answers, -1); } };
     f.append(
-      h('label', {}, ['School / institution name', sIn]),
       h('label', {}, ['Your role', rIn]),
-      h('p', { className: 'honest', textContent: 'There are no right or wrong answers. Pick what is true today — your canteen is built from your real answers.' }),
-      h('div', {}, [h('button', { className: 'btn', type: 'submit', textContent: 'Start building' })])
+      h('div', {}, [h('button', { className: 'btn', type: 'submit', textContent: 'Start' })]),
+      h('p', { className: 'note', textContent: '9 quick questions · about 60 seconds · no right or wrong answers' })
     );
-    f.onsubmit = e => { e.preventDefault(); if (!f.reportValidity()) return; school = sIn.value.trim(); role = rIn.value; setSign(school); question(0); };
+    f.onsubmit = e => { e.preventDefault(); if (!f.reportValidity()) return; role = rIn.value; question(0); };
+    const WHY = [
+      { img: 'img/why-learn.jpg', uni: 'img/why-campus.jpg', tag: 'Nutrition', b: 'Well-fed students learn better', t: 'Good meals help students focus and keep their energy up all day.', alt: 'Students eating lunch together in a dining hall' },
+      { img: 'img/why-safe.jpg', tag: 'Food Safety', b: 'Safe food protects your name', t: 'A well-run kitchen lowers risk and builds trust.', alt: 'Chefs in white uniforms reviewing a menu' },
+      { img: 'img/why-families.jpg', tag: 'Awareness', b: 'Families notice what you serve', t: 'Food is one of the first things people judge you on.', alt: 'Fresh salads and vegetables at a serving counter' }
+    ];
+    const cardImgs = [];
+    const why = h('ul', { className: 'why', ariaLabel: 'Why invest in good food' }, WHY.map(w => {
+      const img = h('img', { src: variantFor(role) === 'uni' && w.uni ? w.uni : w.img, alt: w.alt, loading: 'eager', decoding: 'async' });
+      cardImgs.push([img, w]);
+      return h('li', { className: 'wcard' }, [img, h('span', { className: 'tag', textContent: w.tag }), h('span', { className: 'txt' }, [h('b', { textContent: w.b }), h('span', { textContent: w.t })])]);
+    }));
+    rIn.addEventListener('change', () => cardImgs.forEach(([img, w]) => { if (w.uni) img.src = variantFor(rIn.value) === 'uni' ? w.uni : w.img; }));
+    const whyBlock = WHY_MODE === '1' ? [h('p', { className: 'why-h', textContent: 'Why invest in good food' }), tour()]
+      : WHY_MODE === '2' ? [h('p', { className: 'lead', textContent: 'Answer 9 quick questions and see your cafeteria built, one area at a time.' })]
+      : [h('p', { className: 'why-h', textContent: 'Why invest in good food' }), why];
     show([
-      h('p', { className: 'eyebrow', textContent: 'Institutional Dining Readiness' }),
-      h('h1', { textContent: 'How future-ready is your institute dining?' }),
-      h('p', { className: 'lead', textContent: 'Answer six questions and watch your school’s canteen take shape. At the end, see how it compares with a future-ready one.' }),
+      h('p', { className: 'eyebrow', textContent: 'Dining Readiness Index' }),
+      h('h1', { textContent: 'How future-ready is your institution’s dining?' }),
+      ...whyBlock,
       f
     ]);
+    onIntro = true;
   }
 
+  /* why option 1: one reason per pillar; the scene zooms to that area */
+  const REASONS = [
+    { b: 'Well-fed students learn better', t: 'Good meals help students focus and keep their energy up all day.', qs: '3 questions: menu planning, nutrition proof, healthy ingredients' },
+    { b: 'Safe food protects your name', t: 'A well-run kitchen lowers risk and builds trust with every family.', qs: '3 questions: kitchen hygiene, allergens, continuous improvement' },
+    { b: 'Families notice what you serve', t: 'Food is one of the first things parents and students judge an institution on.', qs: '3 questions: nutrition education, sustainability, communication' }
+  ];
+  function tour() {
+    const DUR = 4500;
+    const tabs = h('div', { className: 'tour-tabs', role: 'tablist' });
+    const body = h('div', { className: 'tour-body', role: 'tabpanel' });
+    const btns = Q.pillars.map((p, n) => { const b = h('button', { type: 'button', role: 'tab' }, [(n + 1) + ' · ' + (n === 2 ? 'Awareness' : p.name), h('i')]); b.style.setProperty('--dur', DUR + 'ms'); b.onclick = () => go(n, true); tabs.append(b); return b; });
+    let k = 0;
+    function go(n, manual) {
+      k = n;
+      btns.forEach((b, m) => b.setAttribute('aria-selected', String(m === n)));
+      const r = REASONS[n];
+      body.className = 'tour-body'; void body.offsetWidth; body.className = 'tour-body swap';
+      body.replaceChildren(h('span', { className: 'k', textContent: Q.pillars[n].name + ' · ' + Q.pillars[n].place }), h('b', { textContent: r.b }), h('p', { textContent: r.t }), h('p', { className: 'qs', textContent: r.qs }));
+      today.zoom(today.areaBox(n)); today.chip(n);
+      setCaption(Q.pillars[n].name + ':', Q.pillars[n].place.toLowerCase());
+      if (!RM) later(() => go((k + 1) % 3), manual ? DUR * 2 : DUR);
+    }
+    later(() => go(0), 500);
+    return h('div', { className: 'tour' }, [tabs, body]);
+  }
+
+  /* why option 2: attract loop for an idle tablet at the stand */
+  const ATTRACT = [
+    ['Well-fed students learn better.', 'Good meals help students focus and keep their energy up all day.'],
+    ['Safe food protects your name.', 'A well-run kitchen lowers risk and builds trust.'],
+    ['Families notice what you serve.', 'Food is one of the first things people judge you on.'],
+    ['How future-ready is your dining?', 'Answer 9 questions in about 60 seconds and see your cafeteria built from your answers.']
+  ];
+  function attract() {
+    clearTimers(); onIntro = false;
+    compareUI.hidden = true;
+    answers.fill(null); lead = null;
+    today.render(variantFor(role));
+    today.reveal(() => 5, 0, false);
+    today.chip(-1);
+    const big = h('div', { className: 'big' }), sub = h('p', { className: 'sub' });
+    const dots = h('div', { className: 'dots' }, ATTRACT.map(() => h('i')));
+    const ov = h('button', { className: 'attract', type: 'button', ariaLabel: 'Start the dining readiness check' }, [
+      h('span', { className: 'eb', textContent: 'Compass Group · Dining Readiness Index' }), big, sub,
+      h('span', { className: 'cta', textContent: 'Tap to check your institution  →' }), dots
+    ]);
+    let n = 0;
+    const tick = () => {
+      const [b, s] = ATTRACT[n % ATTRACT.length];
+      big.textContent = b; sub.textContent = s;
+      big.className = 'big'; sub.className = 'sub'; void big.offsetWidth; big.className = 'big swap'; sub.className = 'sub swap';
+      [...dots.children].forEach((d, m) => d.classList.toggle('on', m === n % ATTRACT.length));
+      today.zoom(n % ATTRACT.length < 3 ? today.areaBox(n % ATTRACT.length) : FULL);
+      n++; later(tick, 4200);
+    };
+    tick();
+    ov.onclick = () => { ov.remove(); intro(); };
+    document.body.append(ov);
+    ov.focus({ preventScroll: true });
+  }
+  // back to the attract loop after 45 s of nobody touching the first screen
+  let onIntro = false, idleT = 0;
+  const resetIdle = () => { clearTimeout(idleT); if (WHY_MODE === '2') idleT = setTimeout(() => { if (onIntro && !document.querySelector('.attract')) attract(); }, 45000); };
+  ['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, resetIdle, true));
+
   function question(i) {
+    clearTimers(); onIntro = false;
+    today.chip(-1);
     busy = false;
-    paint(i);
-    setCaption('Building ' + (i + 1) + ' of ' + N + ':', ZONES[i].name);
-    const q = Q.questions[i];
-    const opts = Q.shuffle(q.options).map((o, n) => {
-      const b = h('button', { className: 'opt' + (answers[i] === o.key ? ' picked' : ''), type: 'button' }, [h('b', { textContent: o.headline }), h('span', { textContent: o.text })]);
-      b.style.animationDelay = (0.12 + n * 0.07) + 's';
-      const tick = document.createElementNS(NS, 'svg');
-      tick.setAttribute('class', 'tick'); tick.setAttribute('viewBox', '0 0 26 26');
-      const p = document.createElementNS(NS, 'path'); p.setAttribute('d', 'M7.5 13.5l3.6 3.6 7.4-8'); tick.append(p);
-      b.append(tick);
-      b.onclick = () => pick(i, o.key, b);
-      return b;
+    const q = Q.questions[i], p = q.pillar;
+    today.quiz(answers, i);
+    today.zoom(today.areaBox(p));
+    setCaption(Q.pillars[p].name + ':', Q.pillars[p].place.toLowerCase());
+    progress(i);
+    const rows = Q.shuffle(q.options).map((o, n) => {
+      const row = h('div', { className: 'orow' + (answers[i] === o.key ? ' picked' : '') });
+      row.style.animationDelay = (0.08 + n * 0.06) + 's';
+      const b = h('button', { className: 'opt', type: 'button', textContent: o.headline });
+      const tick = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      tick.setAttribute('class', 'tick'); tick.setAttribute('viewBox', '0 0 26 26'); tick.setAttribute('aria-hidden', 'true');
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path'); path.setAttribute('d', 'M7.5 13.5l3.6 3.6 7.4-8'); tick.append(path);
+      b.prepend(tick);
+      const detail = h('p', { className: 'detail', textContent: o.text, hidden: true, id: 'd' + i + o.key });
+      const more = h('button', { className: 'more', type: 'button', textContent: 'Details' });
+      more.setAttribute('aria-expanded', 'false'); more.setAttribute('aria-controls', detail.id);
+      more.onclick = () => { const open = detail.hidden; detail.hidden = !open; more.setAttribute('aria-expanded', String(open)); more.textContent = open ? 'Hide' : 'Details'; };
+      b.onclick = () => pick(i, o.key, row);
+      row.append(b, more, detail);
+      return row;
     });
     const back = h('button', { className: 'link', type: 'button', textContent: '← Back' });
     back.onclick = () => (i === 0 ? intro() : question(i - 1));
     show([
       h('div', { className: 'qhead' }, [h('span', { className: 'count', textContent: 'Question ' + (i + 1) + ' of ' + N }), back]),
-      h('span', { className: 'zone-tag', textContent: 'Zone ' + (i + 1) + ' · ' + ZONES[i].name }),
-      personalised(q.text),
-      h('div', { className: 'opts', role: 'group' }, opts)
+      h('span', { className: 'pillar-tag', textContent: (p + 1) + ' · ' + Q.pillars[p].name + ' · ' + Q.questions[i].short }),
+      h('h2', { textContent: q.text }),
+      h('div', { className: 'opts', role: 'group', ariaLabel: 'Answers' }, rows),
+      i === 0 ? h('p', { className: 'tip', textContent: 'Tap an answer to choose it. Tap Details to read more.' }) : h('span')
     ]);
   }
 
-  function pick(i, key, btn) {
+  function pick(i, key, row) {
     if (busy) return; busy = true;
     answers[i] = key;
-    screen.querySelectorAll('.opt').forEach(o => o.classList.remove('picked'));
-    btn.classList.add('picked');
-    // drop the zone in (neutral build), then move on
-    lv(i, 'base').classList.add('on');
-    slotEls[i].classList.remove('current'); slotEls[i].classList.add('filled');
-    pinEls[i].classList.remove('current'); pinEls[i].classList.add('done');
-    ticks[i].className = 'on';
-    setTimeout(() => (i + 1 < N ? question(i + 1) : leadForm()), RM ? 200 : 1050);
+    screen.querySelectorAll('.orow').forEach(o => o.classList.remove('picked'));
+    row.classList.add('picked');
+    today.quiz(answers, -2);
+    progress(-1);
+    const p = Q.questions[i].pillar;
+    const endOfPillar = Q.pillars[p].q[2] === i;
+    if (endOfPillar) {
+      later(() => { today.flash(p); setCaption(Q.pillars[p].name, 'area complete'); }, 450);
+      later(() => (i + 1 < N ? question(i + 1) : leadForm()), 1650);
+    } else later(() => question(i + 1), 750);
   }
 
   function leadForm() {
-    paint(-1);
-    setCaption('All six zones built.', 'Enter your details to inspect the finished canteen.');
+    clearTimers();
+    today.quiz(answers, -1);
+    today.zoom(FULL);
+    setCaption('Your cafeteria is sketched.', 'Add your details to see it in colour.');
+    progress(-1);
     const f = h('form');
-    const name = h('input', { required: true, autocomplete: 'name' });
-    const email = h('input', { type: 'email', required: true, autocomplete: 'email' });
-    const consent = h('input', { type: 'checkbox', required: true, style: 'width:auto' });
+    const name = h('input', { required: true, autocomplete: 'name', name: 'name' });
+    const email = h('input', { type: 'email', required: true, autocomplete: 'email', name: 'email' });
+    const phone = h('input', { type: 'tel', required: true, autocomplete: 'tel', name: 'phone', pattern: '\\+?[0-9 ]{7,}', title: 'Please enter a valid phone number, for example +91 98765 43210' });
+    const inst = h('input', { autocomplete: 'organization', name: 'institution' });
+    const consent = h('input', { type: 'checkbox', required: true, style: 'width:auto;margin-top:3px' });
     f.append(
-      h('label', {}, ['Your name', name]), h('label', {}, ['Work email', email]),
-      h('label', { style: 'display:flex;gap:10px;font-weight:400;align-items:flex-start' }, [consent, h('span', { className: 'note', textContent: 'I agree to Compass Group contacting me about my results. (Placeholder consent text — to be confirmed.)' })]),
-      h('div', {}, [h('button', { className: 'btn', type: 'submit', textContent: 'Inspect my canteen' })])
+      h('label', {}, ['Name', name]), h('label', {}, ['Work email', email]), h('label', {}, ['Phone', phone]),
+      h('label', {}, [h('span', {}, ['Institution ', h('span', { className: 'opt-tag', textContent: '(optional)' })]), inst]),
+      h('label', { style: 'display:flex;gap:10px;font-weight:400;align-items:flex-start' }, [consent, h('span', { className: 'note', textContent: 'I agree to Compass Group sending me my scorecard and contacting me about it. (Placeholder consent text, to be confirmed.)' })]),
+      h('div', {}, [h('button', { className: 'btn', type: 'submit', textContent: 'See my cafeteria' })])
     );
-    f.onsubmit = e => { e.preventDefault(); if (!f.reportValidity()) return; lead = { name: name.value.trim(), email: email.value.trim(), school, role }; result(); };
+    f.onsubmit = e => { e.preventDefault(); if (!f.reportValidity()) return; lead = { name: name.value.trim(), email: email.value.trim(), phone: phone.value.trim(), institution: inst.value.trim(), role }; result(); };
     show([
-      h('p', { className: 'eyebrow', textContent: 'Canteen complete' }),
-      h('h2', { textContent: school + '’s canteen is built. Ready for inspection?' }),
-      h('p', { className: 'lead', textContent: 'Tell us where to send your readiness report, then see how each zone really measures up.' }),
+      h('p', { className: 'eyebrow', textContent: 'All 9 answered' }),
+      h('h2', { textContent: 'Where should we send your scorecard?' }),
+      h('p', { className: 'lead', textContent: 'We will email your full scorecard. Your cafeteria appears in colour on the next screen.' }),
       f
     ]);
   }
 
-  const WORD = { 1: 'Basic', 3: 'Partly equipped', 5: 'Fully equipped' };
-  function showTags(levelOf) {
-    const g = svg.querySelector('#tags');
-    g.innerHTML = ZONES.map((z, i) => {
-      const [x, y] = z.pin; const o = z.pinOff || [0, 0];
-      const name = Q.questions[i].short, word = WORD[levelOf(i)];
-      const w = Math.max(name.length, word.length) * 4.9 + 14;
-      return `<g transform="translate(${x + o[0]} ${y + o[1] - 6})"><g class="tag" style="--d:${RM ? 0 : .15 + i * .12}s"><rect x="${-w / 2}" y="-15" width="${w}" height="24" rx="5"/><text text-anchor="middle" y="-5">${name}</text><text class="lv" text-anchor="middle" y="5">${word}</text></g></g>`;
-    }).join('');
-    requestAnimationFrame(() => requestAnimationFrame(() => g.querySelectorAll('.tag').forEach(t => t.classList.add('show'))));
-  }
-
-  function applyLevels(levelOf, stagger) {
-    ZONES.forEach((z, i) => {
-      const L = levelOf(i);
-      setTimeout(() => {
-        lv(i, 'base').classList.add('on');
-        lv(i, 'l3').classList.toggle('on', L >= 3);
-        lv(i, 'l5').classList.toggle('on', L >= 5);
-      }, RM ? 0 : i * stagger);
-    });
-    showTags(levelOf);
-  }
-
   function result() {
+    clearTimers();
     const t = Q.total(answers), st = Q.stage(t), si = Q.stageIndex(t);
-    pinEls.forEach(p => p.classList.add('hide'));
-    slotEls.forEach(s => { s.classList.add('filled'); s.classList.remove('current'); });
-    ticks.forEach(k => k.className = 'on');
     const mine = i => Q.level(i, answers[i]);
-    setTimeout(() => applyLevels(mine, 260), RM ? 0 : 300);
-    setCaption(school + '’s canteen', 'today');
+    // stage colour: red for Foundation through to green for Future-Ready
+    screen.style.setProperty('--stage', ['#B03A2E', '#C8641E', '#B9831A', '#5E8F34', '#2F6B2C'][si]);
+    today.setSign(lead.institution);
+    today.zoom(FULL);
+    later(() => today.reveal(mine, 280), 350);
+    setCaption((lead.institution || 'Your') + (lead.institution ? '’s' : '') + ' cafeteria', 'today');
+    legend();
+    // future-ready view for the slider (built once the reveal has played)
+    later(() => {
+      future.render(today.variant); future.setSign(lead.institution); future.setVB(FULL); future.reveal(() => 5, 0, false);
+      cmpRange.value = 100; futureSvg.style.clipPath = 'inset(0 0 0 100%)'; divider.style.left = '100%';
+      compareUI.hidden = false;
+      // glide the divider in to show it can be dragged
+      const t0 = performance.now(); const glide = now => { const k = Math.min(1, (now - t0) / 900), v = 100 - 45 * (1 - Math.pow(1 - k, 3)); cmpRange.value = v; futureSvg.style.clipPath = `inset(0 0 0 ${v}%)`; divider.style.left = v + '%'; if (k < 1) requestAnimationFrame(glide); };
+      RM ? (cmpRange.value = 55, cmpRange.dispatchEvent(new Event('input'))) : requestAnimationFrame(glide);
+      setCaption('Drag the slider', 'to compare with a future-ready cafeteria.');
+    }, 350 + 9 * 280 + 900);
 
     const big = h('b', { textContent: '0' });
     const rungs = Q.stages.map(s => h('div', { className: 'rung' }, [h('i'), s.name.replace(' Stage', '')]));
-    const compare = h('button', { className: 'btn ghost', type: 'button', textContent: 'Compare with a future-ready canteen' });
-    compare.onclick = () => {
-      comparing = !comparing;
-      if (comparing) { applyLevels(() => 5, 140); setCaption('A future-ready canteen', '(every zone fully equipped)'); compare.textContent = 'Back to my canteen'; }
-      else { applyLevels(mine, 140); setCaption(school + '’s canteen', 'today'); compare.textContent = 'Compare with a future-ready canteen'; }
-    };
-    const cta = h('button', { className: 'btn', type: 'button', textContent: 'Talk to a Compass nutrition expert' });
-    cta.onclick = () => { cta.textContent = 'Booking link coming soon'; };
-    const again = h('button', { className: 'link', type: 'button', textContent: 'Retake the assessment' });
-    again.onclick = () => { answers.fill(null); lead = null; intro(); };
+    const cards = Q.pillars.map((p, n) => { const sc = Q.pillarScore(answers, n), b = Q.band(sc);
+      return h('div', { className: 'pcard ' + b.id }, [h('small', { textContent: p.name }), h('b', {}, [String(sc), h('span', { textContent: ' / 15' })]), h('em', { textContent: b.word })]); });
     const rec = Q.record(answers, lead);
     console.log('Backend record (prototype):', rec);
+    const notes = h('textarea', { placeholder: 'Institution details, interests, follow-up…' });
+    const saved = h('p', { className: 'note' });
+    const nf = h('form', {}, [notes, h('div', {}, [h('button', { className: 'btn', type: 'submit', textContent: 'Save note', style: 'font-size:15px;padding:13px 20px' })]), saved]);
+    nf.onsubmit = e => { e.preventDefault(); rec.sellerNote = notes.value.trim(); saved.textContent = 'Prototype: the note is added to the record below, not saved anywhere yet.'; pre.textContent = JSON.stringify(rec, null, 2); };
+    const pre = h('pre', { textContent: JSON.stringify(rec, null, 2) });
+    const next = h('button', { className: 'link next-guest', type: 'button', textContent: 'Start again for the next guest' });
+    next.onclick = () => { answers.fill(null); lead = null; role = ''; intro(); };
 
     show([
-      h('p', { className: 'eyebrow', textContent: school + '’s readiness score' }),
-      h('div', { className: 'score' }, [big, h('span', { textContent: '/ 30' })]),
+      h('p', { className: 'eyebrow', textContent: (lead.institution ? lead.institution + '’s' : 'Your') + ' readiness score' }),
+      h('div', { className: 'score' }, [big, h('span', { textContent: '/ 45' })]),
       h('h2', { className: 'stage-name', textContent: st.name }),
       h('div', { className: 'ladder' }, rungs),
-      h('div', {}, [
-        h('p', { className: 'desc', textContent: st.desc }),
-        h('p', { className: 'gaps', textContent: Q.gaps(answers) }),
-        h('div', { className: 'actions' }, [compare, cta]),
-        again,
-        h('details', {}, [h('summary', { textContent: 'Backend record (demo only — not shown to guests)' }), h('pre', { textContent: JSON.stringify(rec, null, 2) })])
-      ])
+      h('p', { className: 'desc', textContent: st.desc }),
+      h('div', { className: 'pcards' }, cards),
+      h('p', { className: 'gaps', textContent: Q.gaps(answers) }),
+      h('p', { className: 'sent' }, [h('span', { textContent: 'Your full scorecard, with next steps for each area, will be emailed to ' + lead.email + '.' })]),
+      h('details', {}, [h('summary', { textContent: 'Seller notes (for the Compass team)' }), nf]),
+      h('details', {}, [h('summary', { textContent: 'Backend record (demo only, not shown to guests)' }), pre]),
+      next
     ]);
-    setTimeout(() => {
+    later(() => {
       Q.countUp(big, t, 1500);
-      rungs.forEach((r, n) => setTimeout(() => { r.classList.toggle('reached', n < si); r.classList.toggle('here', n === si); }, RM ? 0 : 500 + n * 160));
-    }, RM ? 0 : 400);
+      rungs.forEach((r, n) => later(() => { r.classList.toggle('reached', n < si); r.classList.toggle('here', n === si); }, 500 + n * 160));
+    }, 400);
   }
 
-  setSign('');
-  intro();
+  WHY_MODE === '2' ? attract() : intro();
+  resetIdle();
 })();
 </script>
 </body>

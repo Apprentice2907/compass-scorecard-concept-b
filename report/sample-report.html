@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dining Readiness Report (sample)</title>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  :root { --gold: #B3985A; --gold-deep: #7E6838; --beige: #EFEAE4; --ink: #141210; --muted: #5C554C; --line: #E2D9CE;
+    --stage: #B9831A; --low: #B03A2E; --mid: #B9831A; --strong: #2F6B2C; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: #D9D3CB; font-family: 'Hanken Grotesk', Helvetica, Arial, sans-serif; color: var(--ink); font-size: 10pt; line-height: 1.42; }
+  .page { width: 210mm; height: 297mm; margin: 10mm auto; background: #fff; position: relative; padding: 15mm 16mm 16mm; overflow: hidden; display: flex; flex-direction: column; }
+  @media print { body { background: #fff; } .page { margin: 0; break-after: page; } .page:last-child { break-after: auto; } }
+  .head { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--gold); padding-bottom: 8px; margin-bottom: 12px; }
+  .logo { font-weight: 800; letter-spacing: .14em; font-size: 12pt; }
+  .logo small { display: block; font-weight: 600; letter-spacing: .04em; font-size: 8.5pt; color: var(--muted); }
+  .meta { text-align: right; font-size: 8.5pt; color: var(--muted); }
+  .sample { display: inline-block; background: var(--ink); color: #fff; font-size: 7.5pt; font-weight: 800; letter-spacing: .12em; padding: 2px 7px; border-radius: 4px; margin-bottom: 4px; }
+  h1 { font-size: 22pt; line-height: 1.1; margin: 4px 0 4px; letter-spacing: -.015em; }
+  h2 { font-size: 14pt; margin: 0 0 8px; letter-spacing: -.01em; }
+  h3 { font-size: 10.5pt; margin: 0 0 4px; }
+  p { margin: 0 0 6px; }
+  .muted { color: var(--muted); }
+  .eyebrow { font-size: 8pt; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-deep); margin: 0 0 3px; }
+  .for { font-size: 10pt; color: var(--muted); margin-bottom: 12px; }
+  .for b { color: var(--ink); }
+
+  .scorecard { display: grid; grid-template-columns: 52mm 1fr; border-radius: 12px; overflow: hidden; border: 1.5px solid var(--stage); margin-bottom: 12px; }
+  .scorecard .num { background: var(--stage); color: #fff; padding: 14px 16px; display: flex; flex-direction: column; justify-content: center; }
+  .scorecard .num b { font-size: 46pt; line-height: 1; letter-spacing: -.03em; }
+  .scorecard .num b span { font-size: 16pt; font-weight: 600; opacity: .85; }
+  .scorecard .num em { font-style: normal; font-weight: 800; font-size: 13pt; margin-top: 6px; }
+  .scorecard .txt { padding: 14px 16px; background: #FBF5E9; }
+  .ladder { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 10px; }
+  .ladder div { font-size: 7.5pt; color: var(--muted); font-weight: 600; }
+  .ladder i { display: block; height: 6px; border-radius: 3px; background: var(--line); margin-bottom: 3px; }
+  .ladder .r i { background: #D9C49A; } .ladder .h { color: var(--ink); font-weight: 800; } .ladder .h i { background: var(--stage); }
+
+  .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  .pc { border-radius: 10px; padding: 10px 12px; border: 1.5px solid; }
+  .pc small { display: block; font-size: 8pt; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+  .pc b { display: block; font-size: 20pt; line-height: 1.15; }
+  .pc b span { font-size: 10pt; color: var(--muted); font-weight: 600; }
+  .pc em { font-style: normal; font-weight: 800; font-size: 8.5pt; }
+  .pc p { font-size: 8.5pt; color: #3F3A34; margin: 5px 0 0; }
+  .pc.low { border-color: var(--low); background: #FBEDEB; } .pc.low em { color: var(--low); }
+  .pc.mid { border-color: var(--mid); background: #FDF4E4; } .pc.mid em { color: #8E6210; }
+  .pc.strong { border-color: var(--strong); background: #ECF4EA; } .pc.strong em { color: var(--strong); }
+
+  .figure { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #F7F3EE; }
+  .figure img { display: block; width: 100%; height: auto; }
+  .figure figcaption { font-size: 8pt; color: var(--muted); padding: 6px 10px; border-top: 1px solid var(--line); background: #fff; display: flex; justify-content: space-between; gap: 8px; }
+  .key i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin: 0 3px 0 8px; vertical-align: 0; }
+  figure { margin: 0; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 8.6pt; }
+  th { text-align: left; font-size: 7.5pt; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 800; padding: 0 6px 5px; border-bottom: 1.5px solid var(--ink); }
+  td { padding: 7px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td.area { width: 30%; font-weight: 700; }
+  td.area span { display: block; font-weight: 500; color: var(--muted); font-size: 8pt; }
+  td.ans { width: 21%; }
+  td.lv { width: 13%; white-space: nowrap; font-weight: 700; font-size: 8pt; }
+  td.lv i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+  .l1 { color: var(--low); } .l1 i { background: var(--low); }
+  .l3 { color: #8E6210; } .l3 i { background: var(--mid); }
+  .l5 { color: var(--strong); } .l5 i { background: var(--strong); }
+  .ptitle td { background: #F6F0E4; font-weight: 800; font-size: 8.5pt; letter-spacing: .06em; text-transform: uppercase; padding: 5px 6px; border-bottom: 0; }
+  .ptitle td span { float: right; letter-spacing: 0; text-transform: none; }
+
+  .steps { counter-reset: s; display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+  .steps li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; font-size: 9pt; }
+  .steps li::before { counter-increment: s; content: counter(s); width: 20px; height: 20px; border-radius: 50%; background: var(--ink); color: #fff; font-weight: 800; font-size: 8.5pt; display: grid; place-items: center; }
+  .steps b { display: block; font-size: 9.5pt; }
+  .tag { display: inline-block; font-size: 7pt; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; margin-left: 4px; vertical-align: 1px; }
+  .tag.low { background: #FBEDEB; color: var(--low); } .tag.mid { background: #FDF4E4; color: #8E6210; }
+  .callout { background: #FBF5E9; border-left: 3px solid var(--stage); padding: 9px 12px; border-radius: 0 8px 8px 0; font-size: 9pt; margin: 10px 0; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .box { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .box ul { margin: 4px 0 0; padding-left: 15px; font-size: 9pt; }
+  .draft { display: inline-block; font-size: 7pt; font-weight: 800; letter-spacing: .08em; color: #8E6210; background: #FDF4E4; border: 1px dashed #C9A253; padding: 0 5px; border-radius: 3px; margin-left: 4px; vertical-align: 1px; }
+  .foot { margin-top: auto; padding-top: 8px; border-top: 1px solid var(--line); font-size: 7.5pt; color: var(--muted); display: flex; justify-content: space-between; }
+  .grow { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
+</style>
+</head>
+<body>
+
+<!-- ============ PAGE 1: summary ============ -->
+<section class="page">
+  <div class="head">
+    <div class="logo">COMPASS GROUP<small>Education · Dining Readiness Index</small></div>
+    <div class="meta"><span class="sample">SAMPLE</span><br>Report date: 18 Nov 2026</div>
+  </div>
+  <p class="eyebrow">Dining Readiness Report</p>
+  <h1>How future-ready is Greenwood International School's dining?</h1>
+  <p class="for">Prepared for <b>Anita Rao</b>, Principal · Greenwood International School</p>
+
+  <div class="scorecard">
+    <div class="num"><b>27 <span>/ 45</span></b><em>Developing Stage</em></div>
+    <div class="txt">
+      <h3>What your score means</h3>
+      <p>The institution has established several good practices. The next opportunity is to strengthen standardisation, nutritional accountability and operational consistency.</p>
+      <div class="ladder">
+        <div class="r"><i></i>Foundation<br>9-15</div>
+        <div class="r"><i></i>Emerging<br>17-21</div>
+        <div class="h"><i></i>Developing<br>23-29</div>
+        <div><i></i>Advanced<br>31-37</div>
+        <div><i></i>Future-Ready<br>39-45</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Your three areas</h2>
+  <div class="pillars">
+    <div class="pc mid"><small>Nutrition</small><b>11 <span>/ 15</span></b><em>In progress</em><p>Menus start from nutrition targets. Nutrition data and ingredient limits cover only part of the menu.</p></div>
+    <div class="pc mid"><small>Food Safety</small><b>9 <span>/ 15</span></b><em>In progress</em><p>Records, labels and reviews are in place. Audits, allergen controls and data-led reviews are the next step.</p></div>
+    <div class="pc low"><small>Awareness &amp; Sustainability</small><b>7 <span>/ 15</span></b><em>Needs attention</em><p>Campaigns and green initiatives exist. Communication with families is mostly one way.</p></div>
+  </div>
+
+  <div class="grow">
+    <figure class="figure">
+      <img src="img/cafeteria-today.png" alt="Illustrated cafeteria showing Greenwood International School's answers">
+      <figcaption><span>Your cafeteria today, built from your 9 answers</span><span class="key"><i style="background:var(--strong)"></i>Strong<i style="background:var(--mid)"></i>In progress<i style="background:var(--low)"></i>Needs attention</span></figcaption>
+    </figure>
+  </div>
+  <div class="foot"><span>Sample report with example answers · Compass Group Dining Readiness Index</span><span>1 / 3</span></div>
+</section>
+
+<!-- ============ PAGE 2: detailed assessment ============ -->
+<section class="page">
+  <div class="head">
+    <div class="logo">COMPASS GROUP<small>Education · Dining Readiness Index</small></div>
+    <div class="meta">Greenwood International School<br>Score 27 / 45 · Developing Stage</div>
+  </div>
+  <p class="eyebrow">Detailed assessment</p>
+  <h2>What each answer tells us</h2>
+  <p class="muted" style="margin-bottom:10px">Each of your 9 answers is scored 1, 3 or 5. Here is what your answer shows about each area.</p>
+  <table>
+    <thead><tr><th>Area</th><th>Your answer</th><th>Level</th><th>What this means</th></tr></thead>
+    <tbody>
+      <tr class="ptitle"><td colspan="4">1 · Nutrition <span>11 / 15 · In progress</span></td></tr>
+      <tr><td class="area">Nutrition strategy &amp; menu design<span>What shapes your menu decisions</span></td><td class="ans">Nutrition targets first</td><td class="lv l5"><i></i>Strong</td><td>Demonstrates nutrition by design, with science-led standards embedded before menu development, aligned with the Compass K12 Nutrition Guideline.</td></tr>
+      <tr><td class="area">Nutritional transparency &amp; validation<span>How you prove the food is nutritious</span></td><td class="ans">Data for some meals</td><td class="lv l3"><i></i>In progress</td><td>Some nutritional assessment is undertaken, but consistency across meal occasions, nutrients and menu cycles may need strengthening.</td></tr>
+      <tr><td class="area">Healthy ingredient standards<span>Sugar, salt, fried and processed foods</span></td><td class="ans">Some limits in place</td><td class="lv l3"><i></i>In progress</td><td>Some limits exist for specific items, but standards may not yet cover the full menu consistently. <span class="draft">DRAFT</span></td></tr>
+
+      <tr class="ptitle"><td colspan="4">2 · Food Safety <span>9 / 15 · In progress</span></td></tr>
+      <tr><td class="area">Food safety &amp; operational governance<span>How standards are followed every day</span></td><td class="ans">Documented and inspected</td><td class="lv l3"><i></i>In progress</td><td>Demonstrates structured food safety practices, but the frequency, effectiveness and accountability of compliance monitoring may require further assessment.</td></tr>
+      <tr><td class="area">Allergen management<span>Keeping a student with an allergy safe</span></td><td class="ans">Labels and a list</td><td class="lv l3"><i></i>In progress</td><td>Allergen labelling and records exist, but controls across preparation, training and service may not be consistent. <span class="draft">DRAFT</span></td></tr>
+      <tr><td class="area">Continuous improvement<span>What happens when you spot an improvement</span></td><td class="ans">Periodic reviews</td><td class="lv l3"><i></i>In progress</td><td>Demonstrates an improvement-oriented approach, but opportunities remain to strengthen measurable outcomes, nutritional validation, and systematic review.</td></tr>
+
+      <tr class="ptitle"><td colspan="4">3 · Awareness &amp; Sustainability <span>7 / 15 · Needs attention</span></td></tr>
+      <tr><td class="area">Nutrition education &amp; student wellbeing<span>Helping students choose well on their own</span></td><td class="ans">Campaigns and sessions</td><td class="lv l3"><i></i>In progress</td><td>Demonstrates an awareness-based approach, with opportunities to create more consistent, experiential, and age-appropriate food literacy programmes.</td></tr>
+      <tr><td class="area">Sustainability &amp; responsible food practices<span>How sustainability shows up</span></td><td class="ans">Some green initiatives</td><td class="lv l3"><i></i>In progress</td><td>Demonstrates active sustainability initiatives, although their integration, monitoring and consistency across operations may vary.</td></tr>
+      <tr><td class="area">Communication &amp; feedback<span>Keeping families and students informed</span></td><td class="ans">Menus on display</td><td class="lv l1"><i></i>Needs attention</td><td>Information is shared one way and feedback is informal, with limited evidence that it shapes decisions. <span class="draft">DRAFT</span></td></tr>
+    </tbody>
+  </table>
+  <div class="foot"><span>Explanations for the 6 original questions are from the Compass scorecard document. DRAFT rows are new questions pending Compass review.</span><span>2 / 3</span></div>
+</section>
+
+<!-- ============ PAGE 3: future-ready view + next steps ============ -->
+<section class="page">
+  <div class="head">
+    <div class="logo">COMPASS GROUP<small>Education · Dining Readiness Index</small></div>
+    <div class="meta">Greenwood International School<br>Score 27 / 45 · Developing Stage</div>
+  </div>
+  <p class="eyebrow">Future-ready view</p>
+  <h2>What a future-ready cafeteria looks like</h2>
+  <figure class="figure" style="margin-bottom:10px">
+    <img src="img/cafeteria-future.png" alt="Illustrated future-ready cafeteria with every area at its strongest level">
+    <figcaption><span>Every area at its strongest: nutrition targets on the menu board, an allergen-safe zone, a Teaching Kitchen, a "You said, we did" board</span></figcaption>
+  </figure>
+
+  <div class="callout"><b>Your next stage: Advanced (31+).</b> You need 4 more points. Moving your feedback point from "Menus on display" to "Open and two-way" adds 4 points on its own.</div>
+
+  <p class="eyebrow" style="margin-top:4px">Recommended next steps <span class="draft">DRAFT</span></p>
+  <ol class="steps">
+    <li><span><b>Make feedback two-way <span class="tag low">Needs attention</span></b>Put up a monthly "You said, we did" board in the cafeteria and run a short 3-question feedback survey each term.</span></li>
+    <li><span><b>Share nutrition data for your top dishes <span class="tag mid">In progress</span></b>Start with nutrient values for the 10 most-served dishes and show them on the menu board.</span></li>
+    <li><span><b>Agree a simple ingredient limit list <span class="tag mid">In progress</span></b>For example: fried snacks no more than twice a week, water as the default drink, fruit or salad at every meal.</span></li>
+    <li><span><b>Tighten allergen controls <span class="tag mid">In progress</span></b>Add allergen information to every recipe card and run a 30-minute allergen refresher for serving staff each term.</span></li>
+  </ol>
+
+  <div class="two" style="margin-top:12px">
+    <div class="box"><h3>Benefits for your institution <span class="draft">FROM AASTHA</span></h3><ul><li>Placeholder: benefits of reaching Advanced Stage</li><li>Placeholder: impact on student wellbeing and trust</li></ul></div>
+    <div class="box"><h3>Benefits for you as a leader <span class="draft">FROM AASTHA</span></h3><ul><li>Placeholder: confidence with parents and inspections</li><li>Placeholder: clear evidence for the board</li></ul></div>
+  </div>
+
+  <div class="grow">
+    <div class="box" style="display:flex;justify-content:space-between;align-items:center;gap:12px;background:#141210;color:#fff;border-color:#141210">
+      <div><h3 style="color:#E2CC95">Talk to your Compass contact</h3><p style="margin:0;font-size:9pt">See how Compass Group supports institutions at every stage.</p></div>
+      <div style="text-align:right;font-size:9pt">Contact name and email<br><span style="color:#B3AA9E">to be confirmed</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>Recommendations are our draft for Compass review. Stage steps and benefits will come from Aastha's content.</span><span>3 / 3</span></div>
+</section>
+
+</body>
+</html>
