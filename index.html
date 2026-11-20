@@ -96,7 +96,7 @@
   .done-row { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--navy); }
   .done-row .dots { display: flex; gap: 4px; } .done-row .dots i { width: 9px; height: 9px; border-radius: 50%; animation: wPop .4s var(--ease) both; }
   .done-row .dots i:nth-child(2) { animation-delay: .05s; } .done-row .dots i:nth-child(3) { animation-delay: .1s; } .done-row .dots i:nth-child(4) { animation-delay: .15s; } .done-row .dots i:nth-child(5) { animation-delay: .2s; } .done-row .dots i:nth-child(6) { animation-delay: .25s; } .done-row .dots i:nth-child(7) { animation-delay: .3s; } .done-row .dots i:nth-child(8) { animation-delay: .35s; } .done-row .dots i:nth-child(9) { animation-delay: .4s; }
-  /* Juju intro screen */
+  /* Jojo intro screen */
   .meet { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 18px; align-items: center; margin: 8px 0 18px; }
   .meet-av { width: 112px; height: auto; display: block; filter: drop-shadow(0 10px 12px rgba(29,53,94,.25)); animation: lisaIn .5s var(--ease) both; }
   .meet h2 { margin: 0 0 6px; font-size: clamp(24px, 2.4vw, 30px); line-height: 1.15; text-wrap: balance; }
@@ -433,7 +433,7 @@
   @keyframes lisaIn { from { opacity: 0; transform: translateY(-8px) scale(.97); } to { opacity: 1; transform: none; } }
   .ls-bub small { display: block; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #FFC845; }
   .ls-bub p { margin: 2px 0 0; font-size: 14px; line-height: 1.4; color: #fff; }
-  /* result screen: Juju to the right of the score */
+  /* result screen: Jojo to the right of the score */
   .score-row { display: flex; align-items: center; gap: 14px 18px; flex-wrap: wrap; }
   .score-row .score { flex: none; }
   .juju-score { flex: 1 1 240px; min-width: 0; display: grid; grid-template-columns: 50px minmax(0, 1fr); gap: 10px; align-items: end; }
@@ -548,7 +548,7 @@
         <div class="scene3d" id="today3d" aria-hidden="true"></div>
         <div class="lisa-say" id="lisaSay" role="status" aria-live="polite" hidden>
           <img class="ls-av" src="img/juju.png" alt="" width="197" height="240">
-          <div class="ls-bub"><small>Juju · your nutrition guide</small><p id="lisaText"></p></div>
+          <div class="ls-bub"><small>Jojo · your nutrition guide</small><p id="lisaText"></p></div>
         </div>
         <div class="compare-ui" id="compareUI" hidden>
           <svg id="future" aria-hidden="true"></svg>
@@ -587,7 +587,7 @@
   <section class="panel"><div id="screen" class="screen" aria-live="polite"></div></section>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="cafe3d.js?v=20261120k"></script>
+<script src="cafe3d.js?v=20261120m"></script>
 <script src="quiz-data.js?v=20261120a"></script>
 <script>
 (function () {
@@ -929,7 +929,7 @@
   /* 3D scene by default; ?scene=flat keeps the illustrated SVG version */
   const USE3D = !!(window.THREE && window.Cafe3D) && new URLSearchParams(location.search).get('scene') !== 'flat';
   const PCOL = ['#EE7624', '#3F97B5', '#2E9E8F']; // Chartwells orange, blue, teal per area
-  // Juju, the Compass Group mascot (replaced Lisa, 19 Nov client call), in both versions since 20 Nov
+  // Jojo, the Compass Group mascot (replaced Lisa, 19 Nov client call), in both versions since 20 Nov
   const LISA = USE3D;
   const LISA_TIPS = [ // drafted from the Compass nutrition team's notes; for their sign-off
     'Many institution menus are planned to fill plates. Planning protein and fibre first is where nutrition starts.',
@@ -1241,27 +1241,27 @@
     ]);
     document.body.classList.add('on-details');
     later(() => name.focus({ preventScroll: true }), 400);
-    // details page: the camera moves in on Juju, who speaks from a bubble over the head
+    // details page: the camera moves in on Jojo, who speaks from a bubble over the head
     if (LISA) later(() => today.lisaFocus('Your score is ready. I have put your 4-page report together. Add your details to unlock it.'), 700);
   }
 
-  // "Let's talk to Juju": the mascot's hello, the first screen of the Compass version, before the landing page
+  // "Let's talk to Jojo": the mascot's hello, the first screen of the Compass version, before the landing page
   function meet() {
     clearTimers();
     compareUI.hidden = true;
     today.render(variantFor(role));
     today.quiz(answers, -1);
     today.zoom(FULL);
-    setCaption('Meet Juju,', 'your guide through the cafeteria.');
+    setCaption('Meet Jojo,', 'your guide through the cafeteria.');
     progress(-1);
     const go = h('button', { className: 'btn', type: 'button', textContent: 'Let\u2019s begin \u2192' });
     go.onclick = intro;
     show([
       h('div', { className: 'meet' }, [
-        h('img', { className: 'meet-av', src: 'img/juju.png', alt: 'Juju, the Compass Group mascot', width: 197, height: 240 }),
+        h('img', { className: 'meet-av', src: 'img/juju.png', alt: 'Jojo, the Compass Group mascot', width: 197, height: 240 }),
         h('div', {}, [
-          h('p', { className: 'eyebrow', textContent: 'Let\u2019s talk to Juju' }),
-          h('h2', { textContent: 'Hi, I am Juju.' }),
+          h('p', { className: 'eyebrow', textContent: 'Let\u2019s talk to Jojo' }),
+          h('h2', { textContent: 'Hi, I am Jojo.' }),
           h('p', { className: 'meet-lead', textContent: 'I will ask you 9 quick questions about your cafeteria, one area at a time, and build it in front of you as you answer.' })
         ])
       ]),
@@ -1307,9 +1307,9 @@
     today.zoom(FULL);
     later(() => today.reveal(mine, 280), 350);
     setCaption('Your cafeteria', 'today');
-    // Juju speaks from beside the score on this screen (19 Nov: the card over the scene got lost)
+    // Jojo speaks from beside the score on this screen (19 Nov: the card over the scene got lost)
     const jujuText = h('p');
-    const jujuBox = LISA ? h('div', { className: 'juju-score', role: 'status', ariaLive: 'polite', hidden: true }, [h('img', { className: 'ls-av', src: 'img/juju.png', alt: '', width: 197, height: 240 }), h('div', { className: 'ls-bub' }, [h('small', { textContent: 'Juju' }), jujuText])]) : null;
+    const jujuBox = LISA ? h('div', { className: 'juju-score', role: 'status', ariaLive: 'polite', hidden: true }, [h('img', { className: 'ls-av', src: 'img/juju.png', alt: '', width: 197, height: 240 }), h('div', { className: 'ls-bub' }, [h('small', { textContent: 'Jojo' }), jujuText])]) : null;
     const jujuSay = text => { if (!jujuBox) return; jujuText.textContent = text; jujuBox.hidden = false; jujuBox.classList.remove('pop'); void jujuBox.offsetWidth; jujuBox.classList.add('pop'); };
     if (LISA) {
       const ps = Q.pillars.map((pl, n) => Q.pillarScore(answers, n)), best = ps.indexOf(Math.max(...ps)), nx = Q.stages[si + 1];
@@ -1405,7 +1405,7 @@
         h('div', { className: 'dv-top' }, [back, chip]),
         h('div', { className: 'dv-head' }, [h('p', { className: 'eyebrow', textContent: 'In-depth analysis' }), h('h2', { textContent: 'What your answers show, and how to get to 45' }),
           h('p', { className: 'lead', textContent: 'For each area: where you are today, what to upgrade, and what you gain.' })]),
-        ...(LISA ? [h('div', { className: 'lisa-say dv-lisa' }, [lisaSay.el.querySelector('.ls-av').cloneNode(true), h('div', {}, [h('small', { textContent: 'Juju · your nutrition guide' }), h('p', { textContent: 'I have gone through your 9 answers. Each area starts with what is already working, then the next steps that move your score, and what your students, parents and institution gain.' })])])] : []),
+        ...(LISA ? [h('div', { className: 'lisa-say dv-lisa' }, [lisaSay.el.querySelector('.ls-av').cloneNode(true), h('div', {}, [h('small', { textContent: 'Jojo · your nutrition guide' }), h('p', { textContent: 'I have gone through your 9 answers. Each area starts with what is already working, then the next steps that move your score, and what your students, parents and institution gain.' })])])] : []),
         h('div', { className: 'dv-grid' }, cards),
         h('div', { className: 'dv-cta' }, [h('div', {}, [h('b', { textContent: 'Your cafeteria at 45 / 45' }), h('p', { textContent: 'Compare your cafeteria today with a future-ready one, every area at its strongest.' })]), fut])
       ]);

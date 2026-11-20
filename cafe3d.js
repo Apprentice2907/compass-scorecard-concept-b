@@ -86,7 +86,7 @@
     return g;
   }
 
-  // Juju, the Compass Group mascot: coral capsule body, cream face and belly, big eyes, little flippers,
+  // Jojo, the Compass Group mascot: coral capsule body, cream face and belly, big eyes, little flippers,
   // white shoes and a glowing ring on top (from the client's character sheet)
   function lisaFigure(x, y) {
     const g = new T.Group();
@@ -456,7 +456,7 @@
       halo.rotation.x = -Math.PI / 2; halo.position.y = .012; me.add(halo); me.userData.halo = halo;
       meLabel = document.createElement('div'); meLabel.className = 'p3-you'; meLabel.textContent = 'YOU'; overlay.appendChild(meLabel);
     }
-    // Juju, the Compass mascot (internal names still say lisa): walks a step behind the guest
+    // Jojo, the Compass mascot (internal names still say lisa): walks a step behind the guest
     let lisa = null, lisaLabel = null, lisaBubble = null, lisaFocusOn = false, lpos = null, trail = null;
     const LISA_HOME = [ENTRY[0][0] + .7, ENTRY[0][1] - .5];
     if (opts.walker && opts.lisa) {
@@ -465,7 +465,7 @@
       const lh = new T.Mesh(new T.CircleGeometry(.34, 32), new T.MeshBasicMaterial({ color: lin('#E2554C'), transparent: true, opacity: .35, depthWrite: false }));
       lh.rotation.x = -Math.PI / 2; lh.position.y = .012; lisa.add(lh); lisa.userData.halo = lh;
       scene.add(lisa);
-      lisaLabel = document.createElement('div'); lisaLabel.className = 'p3-you p3-lisa'; lisaLabel.textContent = 'JUJU'; overlay.appendChild(lisaLabel);
+      lisaLabel = document.createElement('div'); lisaLabel.className = 'p3-you p3-lisa'; lisaLabel.textContent = 'JOJO'; overlay.appendChild(lisaLabel);
       lisaBubble = document.createElement('div'); lisaBubble.className = 'p3-bubble'; lisaBubble.hidden = true; overlay.appendChild(lisaBubble);
     }
 
@@ -588,7 +588,7 @@
       if (!lisa) return;
       if (!text) { if (lisaFocusOn) view(-1, 900); return; }
       lisaFocusOn = true; T_.lamps.visible = false;
-      lisaBubble.innerHTML = ''; const nm = document.createElement('b'); nm.textContent = 'Juju'; const tx = document.createElement('span'); tx.textContent = text;
+      lisaBubble.innerHTML = ''; const nm = document.createElement('b'); nm.textContent = 'Jojo'; const tx = document.createElement('span'); tx.textContent = text;
       lisaBubble.append(nm, tx); lisaBubble.hidden = false; lisaLabel.style.display = 'none';
       lisaBubble.classList.remove('pop'); void lisaBubble.offsetWidth; lisaBubble.classList.add('pop');
       if (REAL) return;

@@ -18,12 +18,12 @@ email them a 4-page report afterwards.
 
 ## 2. Flow on screen
 
-1. **Meet Juju.** Juju, the Compass mascot, introduces the quiz.
+1. **Meet Jojo.** Jojo, the Compass mascot, introduces the quiz.
 2. **Landing.** The guest gives their institution and role (5 K-12 roles, 5 higher education roles, Other).
 3. **9 questions.** There are 3 areas: Nutrition, Food Safety, and Awareness & Sustainability.
 4. **Loader.** The scoring loader runs for 5 seconds.
 5. **Details form.** Name, email, phone and consent.
-6. **Result.** Score and stage, the 3 area cards, Juju beside the score, and a Today vs Future-ready slider.
+6. **Result.** Score and stage, the 3 area cards, Jojo beside the score, and a Today vs Future-ready slider.
 
 Built for a vertical 1080 x 1920 event screen. It also works on a laptop, a tablet and a phone.
 
@@ -31,9 +31,9 @@ Built for a vertical 1080 x 1920 event screen. It also works on a laptop, a tabl
 
 | File | What it is |
 |---|---|
-| `index.html` | The whole quiz: flow, layout, Juju's lines, roles, results |
+| `index.html` | The whole quiz: flow, layout, Jojo's lines, roles, results |
 | `quiz-data.js` | Questions, options, scoring, stages, area bands, answer insights, `Q.record()` |
-| `cafe3d.js` | The 3D cafeteria (three.js r128), including the Juju figure |
+| `cafe3d.js` | The 3D cafeteria (three.js r128), including the Jojo figure |
 | `report/sample-report.html` | The 4-page report, static HTML |
 | `report/question-variants.html` | Question wording variants (internal) |
 | `build_chartwells.py` | Copies the quiz and report into the Chartwells deploy folder |
@@ -141,12 +141,12 @@ A prompt that works for a new report:
 
 ## 7. Open items
 
-- SME sign-off on the questions, scoring and Juju's tips. The SME doc still says "Lisa"; the mascot is now Juju.
-- Confirm the "Juju" spelling with the client.
+- SME sign-off on the questions, scoring and Jojo's tips. The SME doc still says "Lisa"; the mascot is now Jojo.
+- Mascot name confirmed as Jojo by Dipanshu Roy (Compass), 20 Nov.
 - Consent wording from Compass legal.
 - The client's sending domain and email provider, and where lead data is stored.
 - The score screen says "In progress / Needs attention" but the report says "Building well / Room to grow". This is
   not aligned yet; keep the report wording.
 - Edge case: a total of 31 made of 7 B + 2 C answers needs 8 points to reach the next stage, but the 3 suggested steps
   only give 6. This is not fixed.
-- The sample report pictures were captured before Juju was added to the scene.
+- The sample report pictures were captured before Jojo was added to the scene.

@@ -64,7 +64,7 @@ the sample answers.
    ```bash
    python -m http.server 8766 --bind 127.0.0.1
    ```
-2. Open `http://127.0.0.1:8766/?brand=chartwells` in Playwright (the Chartwells palette). Since 20 Nov, Juju, the Compass mascot, appears in both versions, so new captures will include her. The current sample images were taken before that change.
+2. Open `http://127.0.0.1:8766/?brand=chartwells` in Playwright (the Chartwells palette). Since 20 Nov, Jojo, the Compass mascot, appears in both versions, so new captures will include her. The current sample images were taken before that change.
 3. Pick the sample institution and role, then answer the 9 questions with the sample answers.
 4. Fill the details form with test data and submit.
 5. Hide the YOU tag, then screenshot the `#stageBox` element to `report\img\cafeteria-today.png`.
