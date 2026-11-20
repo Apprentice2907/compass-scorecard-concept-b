@@ -19,13 +19,16 @@ window.QUIZ = (function () {
       options: [
         { key: 'A', score: 1, headline: 'Taste, variety and budget',
           text: 'Student preferences, variety and cost lead. Nutrition is checked along the way.',
-          explanation: 'Nutrition is considered, but there is no indication of a defined nutritional framework guiding menu decisions.' },
+          explanation: 'Nutrition is considered, but there is no indication of a defined nutritional framework guiding menu decisions.',
+          insight: 'Your menus already balance taste, variety and cost, which students value. Adding clear nutrition targets on top turns good meals into planned nutrition.' },
         { key: 'B', score: 3, headline: 'Balanced meals',
           text: 'Menus are built around food groups and seasonal produce, with nutrition weighed alongside taste and cost.',
-          explanation: 'Demonstrates nutrition-conscious menu planning but does not establish whether age-specific nutritional benchmarks and meal-level targets consistently guide decisions.' },
+          explanation: 'Demonstrates nutrition-conscious menu planning but does not establish whether age-specific nutritional benchmarks and meal-level targets consistently guide decisions.',
+          insight: 'Balanced meals are already your standard. Setting age-wise nutrition targets for each meal is the natural next step, and it builds on what you do today.' },
         { key: 'C', score: 5, headline: 'Nutrition targets first',
           text: 'Age-specific nutrition targets come first. Chefs and nutritionists turn them into recipes, portions and menu rotations.',
-          explanation: 'Demonstrates nutrition by design, with science-led standards embedded before menu development, aligned with the Compass K12 Nutrition Guideline.' }
+          explanation: 'Demonstrates nutrition by design, with science-led standards embedded before menu development, aligned with the Compass K12 Nutrition Guideline.',
+          insight: 'You plan menus from science-led nutrition targets, in line with the Compass K12 Nutrition Guideline. This is the strongest foundation a cafeteria can have.' }
       ]
     },
     {
@@ -35,13 +38,16 @@ window.QUIZ = (function () {
       options: [
         { key: 'A', score: 1, headline: 'Menus and ingredients',
           text: 'We can share planned menus and ingredient lists.',
-          explanation: 'Menu transparency exists, but there is limited evidence of quantified nutritional assessment or systematic validation.' },
+          explanation: 'Menu transparency exists, but there is limited evidence of quantified nutritional assessment or systematic validation.',
+          insight: 'You already share menus and ingredients openly, which families appreciate. Adding nutrient values for each meal gives them, and you, the full picture.' },
         { key: 'B', score: 3, headline: 'Data for some meals',
           text: 'Nutrition information for selected meals, reviewed from time to time.',
-          explanation: 'Some nutritional assessment is undertaken, but consistency across meal occasions, nutrients and menu cycles may need strengthening.' },
+          explanation: 'Some nutritional assessment is undertaken, but consistency across meal occasions, nutrients and menu cycles may need strengthening.',
+          insight: 'You measure nutrition for some meals, so the habit is already there. Extending it to every meal and menu cycle makes your nutrition easy to show.' },
         { key: 'C', score: 5, headline: 'Measured against benchmarks',
           text: 'Nutrient values for every menu, checked against benchmarks and reviewed by a nutritionist.',
-          explanation: 'Demonstrates measurable nutritional accountability through nutrient analysis, independent validation and structured scorecard-based assessment.' }
+          explanation: 'Demonstrates measurable nutritional accountability through nutrient analysis, independent validation and structured scorecard-based assessment.',
+          insight: 'You check meals against benchmarks, with nutrient analysis and independent validation. This is nutritional accountability at its best.' }
       ]
     },
     {
@@ -51,13 +57,16 @@ window.QUIZ = (function () {
       options: [
         { key: 'A', score: 1, headline: 'Kept in moderation',
           text: 'We try to limit them, but there are no set rules.',
-          explanation: 'DRAFT: Healthier choices are encouraged, but there are no defined standards limiting sugar, salt, fried or processed foods.' },
+          explanation: 'DRAFT: Healthier choices are encouraged, but there are no defined standards limiting sugar, salt, fried or processed foods.',
+          insight: 'Healthier choices are already encouraged in your cafeteria. Written limits for sugar, salt, fried and processed foods will make that consistent every day.' },
         { key: 'B', score: 3, headline: 'Some limits in place',
           text: 'We have guidelines for a few items, like fried snacks or sugary drinks.',
-          explanation: 'DRAFT: Some limits exist for specific items, but standards may not yet cover the full menu consistently.' },
+          explanation: 'DRAFT: Some limits exist for specific items, but standards may not yet cover the full menu consistently.',
+          insight: 'You have limits in place for key items, a solid start. Applying them across the full menu makes healthy eating the default.' },
         { key: 'C', score: 5, headline: 'Clear standards',
           text: 'Set limits for sugar, salt, fried and processed foods, with fresh, whole ingredients as the default.',
-          explanation: 'DRAFT: Demonstrates defined ingredient standards, with fresh, whole foods as the default and clear limits on less healthy items.' }
+          explanation: 'DRAFT: Demonstrates defined ingredient standards, with fresh, whole foods as the default and clear limits on less healthy items.',
+          insight: 'Fresh, whole ingredients are your default, with clear limits on less healthy items. Students get the benefit at every meal.' }
       ]
     },
 
@@ -69,13 +78,16 @@ window.QUIZ = (function () {
       options: [
         { key: 'A', score: 1, headline: 'Good hygiene',
           text: 'Our team follows hygiene practices and fixes issues as they come up.',
-          explanation: 'Indicates reliance on operational practices and reactive issue resolution, with limited evidence of documented monitoring and audit mechanisms.' },
+          explanation: 'Indicates reliance on operational practices and reactive issue resolution, with limited evidence of documented monitoring and audit mechanisms.',
+          insight: 'Your team keeps good hygiene day to day. Turning it into written checklists with regular audits protects that work and makes it easy to show inspectors.' },
         { key: 'B', score: 3, headline: 'Documented and inspected',
           text: 'Food safety records, trained food handlers and regular kitchen inspections.',
-          explanation: 'Demonstrates structured food safety practices, but the frequency, effectiveness and accountability of compliance monitoring may require further assessment.' },
+          explanation: 'Demonstrates structured food safety practices, but the frequency, effectiveness and accountability of compliance monitoring may require further assessment.',
+          insight: 'Your safety practices are documented and inspected, a strong base. Regular independent audits and certification build full confidence.' },
         { key: 'C', score: 5, headline: 'Audited and certified',
           text: 'Documented safety systems, regular audits, tracked corrective actions and valid certifications.',
-          explanation: 'Demonstrates a governed food-service environment with documented standards, trained personnel, audit mechanisms and continuous compliance monitoring.' }
+          explanation: 'Demonstrates a governed food-service environment with documented standards, trained personnel, audit mechanisms and continuous compliance monitoring.',
+          insight: 'Audited, certified and continuously monitored: your kitchen runs to the highest standard of food safety governance.' }
       ]
     },
     {
@@ -85,13 +97,16 @@ window.QUIZ = (function () {
       options: [
         { key: 'A', score: 1, headline: 'The team is aware',
           text: 'Our chefs and serving team know which students have allergies and take care when serving.',
-          explanation: 'DRAFT: Allergy awareness relies on individual staff knowledge, with limited documented controls at preparation and service.' },
+          explanation: 'DRAFT: Allergy awareness relies on individual staff knowledge, with limited documented controls at preparation and service.',
+          insight: 'Your team is aware of allergies and cares about getting it right. A written allergen system for recipes, preparation and service makes that care consistent at every meal.' },
         { key: 'B', score: 3, headline: 'Labels and a list',
           text: 'Allergens are labelled on the menu and the cafeteria keeps a list of students with allergies.',
-          explanation: 'DRAFT: Allergen labelling and records exist, but controls across preparation, training and service may not be consistent.' },
+          explanation: 'DRAFT: Allergen labelling and records exist, but controls across preparation, training and service may not be consistent.',
+          insight: 'Allergen labels and records are in place, which families rely on. Linking them to staff training and checks at the counter completes the system.' },
         { key: 'C', score: 5, headline: 'A full allergen system',
           text: 'Allergen records for every recipe, separate preparation, trained staff and a check at the point of service.',
-          explanation: 'DRAFT: Demonstrates a documented allergen management system covering recipes, preparation, staff training and point-of-service checks.' }
+          explanation: 'DRAFT: Demonstrates a documented allergen management system covering recipes, preparation, staff training and point-of-service checks.',
+          insight: 'You run a full allergen system, from recipes to checks at the counter. Families of children with allergies can trust your cafeteria.' }
       ]
     },
     {
@@ -101,13 +116,16 @@ window.QUIZ = (function () {
       options: [
         { key: 'A', score: 1, headline: 'We react to feedback',
           text: 'Changes come when students, parents or staff raise a concern.',
-          explanation: 'Indicates a largely reactive improvement process, with limited evidence of structured performance assessment or forward planning.' },
+          explanation: 'Indicates a largely reactive improvement process, with limited evidence of structured performance assessment or forward planning.',
+          insight: 'You listen and act when feedback comes in. A short regular review of menus and results helps you spot improvements before anyone asks.' },
         { key: 'B', score: 3, headline: 'Periodic reviews',
           text: 'We review menus and feedback from time to time and try new recipes.',
-          explanation: 'Demonstrates an improvement-oriented approach, but opportunities remain to strengthen measurable outcomes, nutritional validation, and systematic review.' },
+          explanation: 'Demonstrates an improvement-oriented approach, but opportunities remain to strengthen measurable outcomes, nutritional validation, and systematic review.',
+          insight: 'You review performance regularly, so improvement is already part of the routine. Tracking a few clear measures each term will show the progress you are making.' },
         { key: 'C', score: 5, headline: 'A data-led cycle',
           text: 'We use nutrition, feedback and audit data to find gaps, test changes and measure results.',
-          explanation: 'Demonstrates a data-led continuous improvement cycle, integrating nutrition governance, culinary innovation, validation and site-level monitoring.' }
+          explanation: 'Demonstrates a data-led continuous improvement cycle, integrating nutrition governance, culinary innovation, validation and site-level monitoring.',
+          insight: 'You run a data-led improvement cycle that brings together nutrition, new recipes and site checks. Your cafeteria keeps getting better by design.' }
       ]
     },
 
@@ -119,13 +137,16 @@ window.QUIZ = (function () {
       options: [
         { key: 'A', score: 1, headline: 'Healthy meals and reminders',
           text: 'We serve balanced meals and encourage healthy eating.',
-          explanation: 'Food provision is established, but structured opportunities to build nutrition knowledge and influence eating behaviour are limited.' },
+          explanation: 'Food provision is established, but structured opportunities to build nutrition knowledge and influence eating behaviour are limited.',
+          insight: 'You serve healthy meals and encourage good choices. Hands-on sessions, such as a teaching kitchen, help students learn to choose well for themselves.' },
         { key: 'B', score: 3, headline: 'Campaigns and sessions',
           text: 'Health campaigns, workshops and talks on healthier choices.',
-          explanation: 'Demonstrates an awareness-based approach, with opportunities to create more consistent, experiential, and age-appropriate food literacy programmes.' },
+          explanation: 'Demonstrates an awareness-based approach, with opportunities to create more consistent, experiential, and age-appropriate nutrition education programmes.',
+          insight: 'Your campaigns and sessions already get students thinking about food. Making them regular, hands-on and matched to each age group builds lasting habits.' },
         { key: 'C', score: 5, headline: 'Hands-on learning',
           text: 'Students learn by doing: cooking sessions, food exploration and kitchen experiences.',
-          explanation: 'Demonstrates integration of food literacy into the student experience, extending nutrition beyond meal provision into education and behaviour development.' }
+          explanation: 'Demonstrates integration of nutrition education into the student experience, extending nutrition beyond meal provision into education and behaviour development.',
+          insight: 'Nutrition education is part of everyday life at your institution, from the cafeteria to hands-on learning. Students learn healthy habits, not just eat healthy meals.' }
       ]
     },
     {
@@ -135,13 +156,16 @@ window.QUIZ = (function () {
       options: [
         { key: 'A', score: 1, headline: 'We discourage waste',
           text: 'We ask students and staff to avoid wasting food.',
-          explanation: 'Indicates awareness of sustainability, but limited evidence of structured food-service practices or measurable outcomes.' },
+          explanation: 'Indicates awareness of sustainability, but limited evidence of structured food-service practices or measurable outcomes.',
+          insight: 'Your team already discourages waste. Measuring food waste and setting simple targets turns that intention into results you can report.' },
         { key: 'B', score: 3, headline: 'Some green initiatives',
           text: 'Food waste reduction, responsible sourcing or saving resources in some areas.',
-          explanation: 'Demonstrates active sustainability initiatives, although their integration, monitoring and consistency across operations may vary.' },
+          explanation: 'Demonstrates active sustainability initiatives, although their integration, monitoring and consistency across operations may vary.',
+          insight: 'You have green initiatives running, a good base. Bringing them together with regular tracking makes sustainability part of how the kitchen runs.' },
         { key: 'C', score: 5, headline: 'Part of every decision',
           text: 'Sustainability shapes sourcing, menus, resources and waste, and we track the results.',
-          explanation: 'Demonstrates a systematic approach to responsible food-service operations, with sustainability integrated into planning and operational decision-making.' }
+          explanation: 'Demonstrates a systematic approach to responsible food-service operations, with sustainability integrated into planning and operational decision-making.',
+          insight: 'Sustainability is built into every decision, from planning to service. Your cafeteria leads by example.' }
       ]
     },
     {
@@ -151,13 +175,16 @@ window.QUIZ = (function () {
       options: [
         { key: 'A', score: 1, headline: 'Menus on display',
           text: 'Menus are shared, and feedback comes in informally.',
-          explanation: 'DRAFT: Information is shared one way and feedback is informal, with limited evidence that it shapes decisions.' },
+          explanation: 'DRAFT: Information is shared one way and feedback is informal, with limited evidence that it shapes decisions.',
+          insight: 'Menus are on display, so families know what is served. A simple way to give feedback, and sharing what changes as a result, builds trust.' },
         { key: 'B', score: 3, headline: 'Updates and surveys',
           text: 'We share menus and food updates, and run feedback surveys from time to time.',
-          explanation: 'DRAFT: Regular communication and periodic feedback exist, but the link between feedback and visible change may need strengthening.' },
+          explanation: 'DRAFT: Regular communication and periodic feedback exist, but the link between feedback and visible change may need strengthening.',
+          insight: 'You share updates and run surveys, so families have a voice. Showing what changed because of their feedback closes the loop.' },
         { key: 'C', score: 5, headline: 'Open and two-way',
           text: 'Menus, nutrition and sourcing are shared openly, feedback is collected regularly, and people see what changed.',
-          explanation: 'DRAFT: Demonstrates open, two-way communication where the community is informed and sees how feedback leads to change.' }
+          explanation: 'DRAFT: Demonstrates open, two-way communication where the community is informed and sees how feedback leads to change.',
+          insight: 'Communication is open and two-way, and families see their feedback lead to change. This builds real trust in your cafeteria.' }
       ]
     }
   ];
@@ -167,7 +194,7 @@ window.QUIZ = (function () {
     { min: 9, max: 15, name: 'Foundation Stage',
       desc: 'The institution has basic food-service practices in place, but nutrition, governance and wellbeing initiatives have significant opportunities for development.' },
     { min: 16, max: 22, name: 'Emerging Stage',
-      desc: 'The institution demonstrates awareness and has initiated several positive practices. However, these may not yet be consistently integrated into its food and wellbeing ecosystem.' },
+      desc: 'The institution demonstrates awareness and has initiated several positive practices. However, these may not yet be consistently part of everyday food and wellbeing practice.' },
     { min: 23, max: 30, name: 'Developing Stage',
       desc: 'The institution has established several good practices. The next opportunity is to strengthen standardisation, nutritional accountability and operational consistency.' },
     { min: 31, max: 38, name: 'Advanced Stage',

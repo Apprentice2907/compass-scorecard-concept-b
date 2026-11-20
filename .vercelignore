@@ -1,3 +1,8 @@
 .env*
 .vercel
 .gitignore
+report/question-variants.html
+report/Question-Variants-Suhani.pdf
+build_chartwells.py
+docs
+NOTE.md

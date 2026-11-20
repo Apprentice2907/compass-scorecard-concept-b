@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/chartwells", "destination": "/index.html" },
+    { "source": "/chartwells/", "destination": "/index.html" }
+  ]
+}
