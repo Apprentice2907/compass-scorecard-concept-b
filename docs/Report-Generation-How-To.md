@@ -154,6 +154,8 @@ Proposed flow, to confirm with Purusharth:
 6. **Email.** Send it from the client's own domain through an email provider, with the PDF attached and the score in
    the email body.
 
+**Full score rule (Prinkit, 23 Nov).** A guest who scores 45 / 45 still gets a next step with Chartwells. Page 3 swaps the game plan for a short "Keep it future-ready" section: Chartwells can help maintain the score with yearly reviews, fresh menus and regular food safety audits. Page 4 keeps the next step with Chartwells. A guest at Future-Ready but below 45 gets the steps to 45 / 45.
+
 Open decisions:
 - report generation approach (Purusharth)
 - client sending domain and email provider

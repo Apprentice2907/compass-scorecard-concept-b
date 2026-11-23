@@ -64,6 +64,7 @@ Banned filler words, which read as machine-written: *delve, seamless, robust, ho
 - Each step is something concrete the institution can do, written as a verb plus an object: "Publish the weekly menu with nutrition notes".
 - Steps come only from the answers given. Never recommend something the guest already does at the top level.
 - Chartwells' role is described as support ("how Chartwells helps"). We don't pressure the reader with lines like "act now" or "limited time".
+- A full score (45 / 45) still ends with a next step: Chartwells helps the institution maintain it. Never tell a top scorer there is nothing left to do.
 - Don't promise timelines or prices in the report. Next steps say "review these results with Chartwells".
 
 ## 8. Brand

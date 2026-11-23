@@ -588,7 +588,7 @@
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="cafe3d.js?v=20261120m"></script>
-<script src="quiz-data.js?v=20261120a"></script>
+<script src="quiz-data.js?v=20261123a"></script>
 <script>
 (function () {
   const Q = window.QUIZ;
@@ -1314,7 +1314,9 @@
     if (LISA) {
       const ps = Q.pillars.map((pl, n) => Q.pillarScore(answers, n)), best = ps.indexOf(Math.max(...ps)), nx = Q.stages[si + 1];
       later(() => jujuSay(t + ' out of 45 puts you at ' + st.name + '. ' + Q.pillars[best].name + ' is your strongest area. ' +
-        (nx ? 'You are ' + (nx.min - t) + ' points from ' + nx.name + ': your steps are on the right.' : 'Every area is at its best. Keep it there.')), 600);
+        (nx ? 'You are ' + (nx.min - t) + ' points from ' + nx.name + ': your steps are on the right.'
+          : t === 45 ? 'Every area is at its best. Chartwells can help you keep it that way.'
+          : 'You are ' + (45 - t) + ' points from 45: your steps are on the right.')), 600);
     }
     legend();
     // future-ready view for the slider (built once the reveal has played)
@@ -1420,11 +1422,13 @@
     function route() {
       const nx = Q.stages[si + 1];
       const open = answers.map((k, i) => ({ i, gain: 5 - Q.opt(i, k).score })).filter(x => x.gain > 0).sort((a, b) => b.gain - a.gain || a.i - b.i);
-      if (!nx || !open.length) return h('div', { className: 'route done' }, [h('p', { className: 'rt-h' }, [h('b', { textContent: 'Every answer is at the strongest level.' }), ' Keep it there with yearly reviews and fresh menus.'])]);
-      const need = nx.min - t, pick = []; let got = 0;
+      // full score (Prinkit, 23 Nov): still offer Chartwells' support, framed as maintaining the score
+      if (!open.length) return h('div', { className: 'route done' }, [h('p', { className: 'rt-h' }, [h('b', { textContent: 'Every answer is at the strongest level.' }), ' The next step is keeping it there. Chartwells can help you maintain it with yearly reviews, fresh menus and regular food safety audits.'])]);
+      // top stage but not 45: the steps lead to 45 / 45
+      const need = nx ? nx.min - t : 45 - t, pick = []; let got = 0;
       for (const x of open) { if (got >= need || pick.length === 3) break; pick.push(x); got += x.gain; }
       return h('div', { className: 'route' }, [
-        h('p', { className: 'rt-h' }, [h('b', { textContent: need + ' points to ' + nx.name + '.' }), ' ' + (pick.length === 1 ? 'This change gets you there:' : 'These ' + pick.length + ' changes get you there:')]),
+        h('p', { className: 'rt-h' }, [h('b', { textContent: need + ' points to ' + (nx ? nx.name : '45 / 45') + '.' }), ' ' + (pick.length === 1 ? 'This change gets you there:' : 'These ' + pick.length + ' changes get you there:')]),
         h('ol', {}, pick.map(x => { const best = Q.questions[x.i].options.find(o => o.score === 5);
           return h('li', {}, [h('span', { className: 'rt-pts', textContent: '+' + x.gain }), h('div', {}, [h('b', { textContent: best.headline }), h('small', { textContent: Q.questions[x.i].area })])]); }))
       ]);

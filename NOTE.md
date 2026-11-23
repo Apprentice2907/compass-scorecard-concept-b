@@ -127,6 +127,7 @@ When Claude writes or edits any report line, it follows `docs/Report-Copy-Guardr
   - The "+X to next stage" figure matches the game plan.
 - **Game plan.** Steps come only from the guest's answers, written as a verb plus an object. Chartwells is described
   as support, never as pressure.
+- **Full score.** A guest at 45 / 45 still gets a next step: Chartwells helps them maintain it (Prinkit, 23 Nov).
 - **Brand.**
   - Write "Chartwells" and "Compass Group India".
   - The Chartwells logo goes on the left and the Compass logo on the right.

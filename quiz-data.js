@@ -13,7 +13,7 @@ window.QUIZ = (function () {
   const questions = [
     /* ---------- Pillar 1: Nutrition ---------- */
     {
-      pillar: 0, area: 'Nutrition Strategy & Menu Design', short: 'Menu board',
+      pillar: 0, area: 'Nutrition Strategy & Menu Design', short: 'Your cafeteria menu',
       phrase: 'set age-specific nutrition targets before menus are planned',
       text: 'What shapes your menu decisions most?',
       options: [
@@ -230,7 +230,7 @@ window.QUIZ = (function () {
       .sort((a, b) => a.score - b.score || a.i - b.i)
       .slice(0, 3)
       .map(x => questions[x.i].phrase);
-    if (!items.length) return 'You are setting the benchmark. The next step is to keep measuring, sharing and refining what already works.';
+    if (!items.length) return 'You are setting the benchmark. The next step is keeping it there, and Chartwells can help you maintain it.';
     const list = items.length === 1 ? items[0] : items.slice(0, -1).join(', ') + ' and ' + items[items.length - 1];
     return 'Where to focus next: ' + list + '.';
   }
