@@ -44,6 +44,7 @@
   header.top .brand .tt small { color: var(--muted); }
   .logos { display: flex; align-items: center; gap: 22px; } /* K12 guide: clear space = height of the "h" */
   .brand img.che { height: 46px; }
+  .brand img.ck12 { height: 27px; } /* one-line K12 logo (23 Nov) */
   .top .parent { height: 40px; }
   .brand .tt { border-left: 1px solid rgba(255,255,255,.28); padding-left: 14px; font-weight: 800; font-size: 15px; letter-spacing: .02em; line-height: 1.2; }
   .brand .tt small { display: block; font-weight: 500; font-size: 12px; color: rgba(255,255,255,.72); letter-spacing: .02em; }
@@ -483,7 +484,7 @@
     .unlock-h { font-size: 23px; margin-bottom: 10px; } .unlock-card { padding: 10px; gap: 10px; margin-bottom: 12px; } .lk-score b { font-size: 36px; } .unlock-form { gap: 9px; } .btn.unlock-btn { padding: 15px 20px; } .unlocks b { font-size: 13px; } .unlocks span { font-size: 11.5px; }
     .meta-chip { font-size: 12px; margin-bottom: 8px; } .intro-sub { font-size: 14.5px; margin-bottom: 10px; } .scene > .caption { font-size: 15px; }
     .why-h { margin-bottom: 8px; }
-    header.top { height: 64px; } .brand img { height: 46px; } .brand img.che { height: 40px; } .top .parent { height: 36px; }
+    header.top { height: 64px; } .brand img { height: 46px; } .brand img.che { height: 40px; } .brand img.ck12 { height: 24px; } .top .parent { height: 36px; }
     .stat { padding: 6px 10px; } .stat b { font-size: 22px; } .stat span { font-size: 11.5px; }
     .why { margin-bottom: 16px; } .wcard { aspect-ratio: 3 / 4.1; } .wcard:not(.has-stat) .txt span, .wcard .wb { display: none; } .wcard .wn { font-size: 28px; } .wcard .txt .wst { font-size: 11px; margin-top: 5px; } .wcard .wsolo { font-size: 15px; } .wcard .txt { padding: 10px 11px; }
     form { gap: 10px; }
@@ -503,7 +504,7 @@
   @media (max-width: 560px) {
     .stage-box svg { height: 34vh; height: 34svh; }
     .brand .tt { display: none; }
-    .brand img { height: 42px; } .brand img.che { height: 36px; } .top .parent { height: 30px; }
+    .brand img { height: 42px; } .brand img.che { height: 36px; } .brand img.ck12 { height: 20px; } .top .parent { height: 30px; }
     .pcards { grid-template-columns: 1fr; }
     .pcard small { min-height: 0; }
     .opt { font-size: 17px; padding: 15px 12px 15px 48px; }
@@ -536,7 +537,7 @@
 </head>
 <body>
 <header class="top">
-  <div class="brand"><div class="logos"><img src="img/chartwells-k12-1.svg" alt="Chartwells K12" width="855" height="837"><img class="che" src="img/chartwells-he-1.svg" alt="Chartwells Higher Education, by Compass Group" width="892" height="502"></div><div class="tt">Nutrition Readiness Score<small>A Compass India initiative</small></div></div>
+  <div class="brand"><div class="logos"><img class="ck12" src="img/chartwells-k12-2.svg" alt="Chartwells K12" width="950" height="186"><img class="che" src="img/chartwells-he-1.svg" alt="Chartwells Higher Education, by Compass Group" width="892" height="502"></div><div class="tt">Nutrition Readiness Score<small>A Compass India initiative</small></div></div>
   <img class="parent" src="img/compass-logo.png" alt="Compass Group" width="1274" height="484">
 </header>
 <main class="wrap">
