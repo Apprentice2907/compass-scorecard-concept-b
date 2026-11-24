@@ -99,7 +99,11 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;'
 function emailHtml(d) {
   const hi = d.lead.name ? 'Dear ' + esc(d.lead.name.split(' ')[0]) + ',' : 'Hello,';
   const who = d.lead.institution ? esc(d.lead.institution) + '’s' : 'your institution’s';
+  const logo = d.variant === 'uni'
+    ? `<img src="${BASE}/img/email-logo-he.png" width="150" height="85" alt="Chartwells by Compass Group" style="display:block;border:0">`
+    : `<img src="${BASE}/img/email-logo-k12.png" width="240" height="47" alt="Chartwells" style="display:block;border:0">`;
   return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#14181F;max-width:560px">
+<p style="margin:0 0 20px">${logo}</p>
 <p>${hi}</p>
 <p>Thank you for taking the Nutrition Readiness check with Chartwells. Your personal report is attached as a PDF.</p>
 <p>It shows ${who} score across nutrition, food safety, and awareness and sustainability, what is already working, and a game plan for the next 30 days, this term and this year.</p>

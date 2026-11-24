@@ -1022,6 +1022,25 @@
   const variantFor = r => (ROLES[1][1].includes(r) ? 'uni' : 'k12');
   const roleText = r => r;
 
+  /* report email: each finished check goes to /api/report, which prints the guest's PDF and emails it.
+     If the event Wi-Fi drops, the job waits on this device and is sent when the connection is back. */
+  const OUTBOX = 'readiness-outbox';
+  const outbox = () => { try { return JSON.parse(localStorage.getItem(OUTBOX) || '[]'); } catch (err) { return []; } };
+  const saveOutbox = list => { try { localStorage.setItem(OUTBOX, JSON.stringify(list.slice(-50))); } catch (err) { /* storage full or blocked */ } };
+  const postReport = job => fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(job) })
+    .then(r => r.json().catch(() => ({})).then(j => { if (!j.ok && (r.status >= 500 && r.status !== 503)) throw new Error(j.error || r.status); return j; }));
+  function sendReport(rec) {
+    const job = { answers: answers.slice(), lead: { name: rec.lead.name, email: rec.lead.email, role: rec.lead.role, institution: rec.lead.institution }, variant: variantFor(rec.lead.role), consent: true };
+    postReport(job).then(j => console.log('Report email:', j)).catch(() => saveOutbox(outbox().concat(job)));
+  }
+  function flushOutbox() {
+    const list = outbox(); if (!list.length || navigator.onLine === false) return;
+    saveOutbox([]);
+    list.forEach(job => postReport(job).catch(() => saveOutbox(outbox().concat(job))));
+  }
+  window.addEventListener('online', flushOutbox);
+  setTimeout(flushOutbox, 3000);
+
   /* ================= screens ================= */
   function intro() {
     clearTimers();
@@ -1337,6 +1356,7 @@
     const cards = Q.pillars.map((p, n) => { const sc = Q.pillarScore(answers, n), b = Q.band(sc);
       return h('div', { className: 'pcard ' + b.id }, [h('small', { textContent: p.name }), h('b', {}, [String(sc), h('span', { textContent: ' / 15' })]), h('em', { textContent: b.word })]); });
     const rec = Q.record(answers, lead);
+    sendReport(rec);
     console.log('Backend record (prototype):', rec);
     const next = h('button', { className: 'link next-guest', type: 'button', textContent: 'Start again for the next guest' });
     next.onclick = newGuest;
