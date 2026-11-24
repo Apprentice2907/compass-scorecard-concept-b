@@ -2,5 +2,8 @@
   "rewrites": [
     { "source": "/chartwells", "destination": "/index.html" },
     { "source": "/chartwells/", "destination": "/index.html" }
-  ]
+  ],
+  "functions": {
+    "api/report.js": { "memory": 2048, "maxDuration": 60 }
+  }
 }

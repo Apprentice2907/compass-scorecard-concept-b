@@ -1,0 +1,184 @@
+"""Merge the 81 pillar blocks, check them against the copy rules, and write
+pillar-blocks.json (for the report engine), pillar-blocks.csv (for client review)
+and pillar-blocks-review.html (printed to PDF for sharing).
+
+Run from this folder:  python build_blocks.py
+"""
+import csv, html, json, re, sys
+from pathlib import Path
+
+HERE = Path(__file__).parent
+
+PILLARS = [
+    ('nutrition', 'Nutrition', 'Serving counter', [
+        ('Menu planning', {1: 'Taste, variety and budget', 3: 'Balanced meals', 5: 'Nutrition targets first'}),
+        ('Nutrition proof', {1: 'Menus and ingredients', 3: 'Data for some meals', 5: 'Measured against benchmarks'}),
+        ('Ingredient standards', {1: 'Kept in moderation', 3: 'Some limits in place', 5: 'Clear standards'}),
+    ]),
+    ('safety', 'Food Safety', 'Kitchen', [
+        ('Daily safety', {1: 'Good hygiene', 3: 'Documented and inspected', 5: 'Audited and certified'}),
+        ('Allergens', {1: 'The team is aware', 3: 'Labels and a list', 5: 'A full allergen system'}),
+        ('Improvement', {1: 'We react to feedback', 3: 'Periodic reviews', 5: 'A data-led cycle'}),
+    ]),
+    ('awareness', 'Awareness & Sustainability', 'Dining hall', [
+        ('Nutrition education', {1: 'Healthy meals and reminders', 3: 'Campaigns and sessions', 5: 'Hands-on learning'}),
+        ('Sustainability', {1: 'We discourage waste', 3: 'Some green initiatives', 5: 'Part of every decision'}),
+        ('Communication', {1: 'Menus on display', 3: 'Updates and surveys', 5: 'Open and two-way'}),
+    ]),
+]
+FIELDS = ['headline', 'today', 'next', 'you', 'institution', 'families']
+LEVEL = {1: 'Room to grow', 3: 'Building well', 5: 'Strong'}
+
+def band(score):  # pillar score 3-15
+    return 'Strong' if score >= 13 else 'Building well' if score >= 9 else 'Room to grow'
+
+# copy rules (Report-Copy-Guardrails): no em/en dashes, no exclamation marks, banned words,
+# no health or academic outcome promises
+BANNED = [r'—', r'–', r'!', r'\bvendor', r'\bcanteen', r'food literacy', r'\bguarantee',
+          r'\bgrades?\b', r'\bacademic', r'\bcure', r'\bprevents? (?:illness|disease|obesity)', r'\bimprove[sd]? (?:health|marks|results in class)',
+          # docs/Report-Copy-Guardrails.md section 2: banned filler and words to avoid
+          r'\bdelve', r'\bseamless', r'\brobust', r'\bholistic', r'\bleverag', r'\bempower', r'\bjourney', r'\bunlock', r'\btransform',
+          r'\belevat', r'\brevolutionis', r'\bsupercharg', r'game-changer', r'cutting-edge', r'world-class', r'best-in-class', r'\bperfect',
+          r'gold standard', r'\bclient', r'\bcustomer', r'\bmess\b', r'allergen-free', r'100% safe', r'zero risk', r'\bTBC\b', r'\bdraft\b']
+
+problems, blocks = [], []
+for pid, pname, place, qs in PILLARS:
+    data = json.loads((HERE / f'{pid}.json').read_text(encoding='utf-8'))
+    expected = [f'{a}-{b}-{c}' for a in (1, 3, 5) for b in (1, 3, 5) for c in (1, 3, 5)]
+    missing = sorted(set(expected) - set(data)); extra = sorted(set(data) - set(expected))
+    if missing or extra: problems.append(f'{pname}: missing {missing} extra {extra}')
+    for code in expected:
+        vals = data.get(code)
+        if not vals or len(vals) != 6:
+            problems.append(f'{pname} {code}: needs 6 texts'); continue
+        lv = [int(x) for x in code.split('-')]
+        score = sum(lv)
+        b = dict(zip(FIELDS, vals))
+        for f, t in b.items():
+            for pat in BANNED:
+                if re.search(pat, t, re.I): problems.append(f'{pname} {code} {f}: matches {pat!r}')
+        words = sum(len(v.split()) for v in vals)
+        blocks.append({
+            'id': f'{pid}:{code}', 'pillar': pname, 'area': place, 'code': code,
+            'answers': [{'question': q[0], 'answer': q[1][l], 'level': LEVEL[l], 'points': l} for q, l in zip(qs, lv)],
+            'score': score, 'band': band(score), 'words': words, **b})
+
+if problems:
+    print('PROBLEMS:'); print('\n'.join(problems)); sys.exit(1)
+
+(HERE / 'pillar-blocks.json').write_text(json.dumps(blocks, indent=1, ensure_ascii=False), encoding='utf-8')
+
+# game-plan steps: one per question and starting level (1 or 3)
+steps = json.loads((HERE / 'steps.json').read_text(encoding='utf-8'))
+steps.pop('_note', None)
+for q in map(str, range(1, 10)):
+    s = steps.get(q)
+    if not s or not all(k in s for k in ('tag', 'priority', '1', '3')): problems.append(f'steps.json: question {q} incomplete')
+    for lv in ('1', '3'):
+        for t in (s or {}).get(lv, []):
+            for pat in BANNED:
+                if re.search(pat, t, re.I): problems.append(f'steps.json {q}/{lv}: matches {pat!r}')
+if problems:
+    print('PROBLEMS:'); print('\n'.join(problems)); sys.exit(1)
+
+# one script the report page (and the PDF server) loads: no fetch, so it also works from file://
+content = {'blocks': {b['id']: {f: b[f] for f in FIELDS} for b in blocks}, 'steps': steps}
+(HERE.parent / 'report-content.js').write_text(
+    '/* Generated by content/build_blocks.py. Edit the JSON files in content/, then rebuild. */\n'
+    'window.REPORT_CONTENT = ' + json.dumps(content, ensure_ascii=False) + ';\n', encoding='utf-8')
+
+with open(HERE / 'pillar-blocks.csv', 'w', newline='', encoding='utf-8-sig') as fh:
+    w = csv.writer(fh)
+    w.writerow(['ID', 'Pillar', 'Answer 1', 'Answer 2', 'Answer 3', 'Score /15', 'Band', 'Headline', 'Where you are today',
+                'Your next step', 'What it means for you', 'For your institution', 'For students and families', 'Approve (Y/N)', 'Edits'])
+    for b in blocks:
+        w.writerow([b['id'], b['pillar'], *[f"{a['answer']} ({a['points']})" for a in b['answers']], b['score'], b['band'],
+                    *[b[f] for f in FIELDS], '', ''])
+
+# ---------- review document ----------
+e = html.escape
+BAND_C = {'Strong': '#2F6B3A', 'Building well': '#9A6A12', 'Room to grow': '#A8402F'}
+PC = {'Nutrition': '#C27A2C', 'Food Safety': '#2D6E8E', 'Awareness & Sustainability': '#3C7F63'}
+words = [b['words'] for b in blocks]
+cards = []
+for pid, pname, place, qs in PILLARS:
+    cards.append(f'<h2 class="pill" style="--pc:{PC[pname]}">{e(pname)} <span>{e(place)} · 27 blocks · questions: {" / ".join(e(q[0]) for q in qs)}</span></h2>')
+    for b in [x for x in blocks if x['pillar'] == pname]:
+        ans = ''.join(f'<li><i class="l{a["points"]}">{a["points"]}</i>{e(a["question"])}: <b>{e(a["answer"])}</b></li>' for a in b['answers'])
+        cards.append(f'''<article class="card" style="--pc:{PC[pname]}">
+  <header><span class="id">{e(b['id'])}</span><span class="sc">{b['score']}/15 · <b style="color:{BAND_C[b['band']]}">{e(b['band'])}</b></span></header>
+  <ul class="ans">{ans}</ul>
+  <h3>{e(b['headline'])}</h3>
+  <p><em>Where you are today</em>{e(b['today'])}</p>
+  <p><em>Your next step</em>{e(b['next'])}</p>
+  <div class="aud"><p><em>For you</em>{e(b['you'])}</p><p><em>For your institution</em>{e(b['institution'])}</p><p><em>For students and families</em>{e(b['families'])}</p></div>
+</article>''')
+
+doc = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Report Content: 81 Pillar Blocks</title>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+@page {{ size: A4; margin: 12mm 13mm; }}
+* {{ box-sizing: border-box; }}
+body {{ font-family: 'Hanken Grotesk', Helvetica, Arial, sans-serif; color: #1E1B18; font-size: 9.2pt; line-height: 1.38; margin: 0; }}
+.top {{ display: flex; justify-content: space-between; border-bottom: 2px solid #B3985A; padding-bottom: 6px; margin-bottom: 12px; font-size: 8.5pt; }}
+.top b {{ letter-spacing: .14em; color: #7E6838; }} .top span {{ color: #6B645C; }}
+h1 {{ font-size: 21pt; letter-spacing: -.02em; margin: 0 0 6px; line-height: 1.1; }}
+.lede {{ font-size: 10.5pt; color: #444; margin: 0 0 10px; }}
+.intro h2 {{ font-size: 12pt; margin: 14px 0 6px; }}
+table {{ width: 100%; border-collapse: collapse; font-size: 9pt; margin: 0 0 8px; }}
+th {{ text-align: left; font-size: 7.6pt; letter-spacing: .08em; text-transform: uppercase; color: #6B645C; border-bottom: 1.5px solid #DDD3CC; padding: 4px 6px; }}
+td {{ border-bottom: 1px solid #EEE7DE; padding: 5px 6px; vertical-align: top; }}
+.aud3 {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 4px 0 10px; }}
+.aud3 div {{ background: #F6F0E4; border-radius: 9px; padding: 8px 10px; }}
+.aud3 b {{ display: block; font-size: 10pt; margin-bottom: 2px; }}
+ul.rules {{ margin: 0; padding-left: 16px; }} ul.rules li {{ margin-bottom: 2px; }}
+h2.pill {{ break-before: page; font-size: 17pt; margin: 0 0 10px; padding-bottom: 6px; border-bottom: 3px solid var(--pc); color: var(--pc); }}
+h2.pill span {{ display: block; font-size: 9pt; color: #6B645C; font-weight: 500; margin-top: 2px; }}
+.grid {{ columns: 2; column-gap: 10px; }}
+.card {{ break-inside: avoid; border: 1.3px solid #E2D9CE; border-top: 4px solid var(--pc); border-radius: 9px; padding: 8px 10px; margin: 0 0 10px; }}
+.card header {{ display: flex; justify-content: space-between; font-size: 8pt; color: #6B645C; }}
+.card .id {{ font-weight: 800; letter-spacing: .04em; }}
+.ans {{ list-style: none; padding: 0; margin: 5px 0 6px; font-size: 8.3pt; color: #444; }}
+.ans li {{ margin: 0 0 1px; }}
+.ans i {{ font-style: normal; display: inline-block; width: 14px; height: 14px; border-radius: 50%; text-align: center; line-height: 14px; font-size: 7.5pt; font-weight: 800; color: #fff; margin-right: 5px; }}
+.l1 {{ background: #A8402F; }} .l3 {{ background: #C08A2A; }} .l5 {{ background: #3C7F63; }}
+.card h3 {{ font-size: 10.6pt; line-height: 1.2; margin: 0 0 5px; }}
+.card p {{ margin: 0 0 5px; }}
+.card em {{ font-style: normal; display: block; font-size: 7.4pt; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #7E6838; }}
+.aud {{ background: #F7F3EE; border-radius: 7px; padding: 6px 8px 1px; margin-top: 6px; }}
+.aud p {{ margin-bottom: 5px; }}
+</style></head><body>
+<div class="top"><b>CHARTWELLS DINING READINESS · REPORT CONTENT</b><span>Draft for client review · 20 Nov 2026</span></div>
+<section class="intro">
+<h1>Report content: the 81 pillar blocks</h1>
+<p class="lede">Each guest's report picks one block per area (3 of the 81), based on their three answers in that area. Every sentence is written in advance and approved once, so the report needs no AI when it runs.</p>
+<h2>Who each block speaks to</h2>
+<div class="aud3">
+<div><b>For you</b>The leader reading the report: recognition, a programme they can present to their board, parents and inspectors.</div>
+<div><b>For your institution</b>The business case: reputation, families choosing and staying, fewer complaints, lower risk and waste.</div>
+<div><b>For students and families</b>Satisfaction: food they enjoy and trust, answers they can see, a voice in what changes.</div>
+</div>
+<h2>Where the blocks sit in the 5-page report</h2>
+<table>
+<tr><th style="width:22%">Page</th><th>Content</th><th style="width:30%">From the blocks</th></tr>
+<tr><td>1 · Your score</td><td>Score out of 45, stage, the three area cards, strongest area, cafeteria today</td><td>Headline + band for each area</td></tr>
+<tr><td>2 · Your three areas</td><td>A half page per area: where you are today and your next step</td><td>Today + next step</td></tr>
+<tr><td>3 · Each answer in depth</td><td>What each of the 9 answers tells us</td><td>Existing answer texts (quiz data)</td></tr>
+<tr><td>4 · Your game plan</td><td>Steps for the next 30 days, this term and this year, with the points each adds</td><td>Next steps, ordered by points gained</td></tr>
+<tr><td>5 · What changes</td><td>For you, for your institution, for students and families; then next step with Chartwells</td><td>The three audience lines from each area</td></tr>
+</table>
+<h2>How to read a block</h2>
+<p>The ID is the area and the points for its three answers, in question order. For example <b>nutrition:3-1-5</b> means 3 points for menu planning, 1 for nutrition proof and 5 for ingredient standards (11/15, Building well). Bands: 13–15 Strong, 9–11 Building well, 3–7 Room to grow.</p>
+<h2>Copy rules applied (checked automatically)</h2>
+<ul class="rules"><li>No em dashes or exclamation marks; never "vendor", "canteen" or "food literacy".</li>
+<li>No health or academic outcome promises; no statistics inside the blocks (sourced stats live on fixed pages).</li>
+<li>Positive consultant tone: what works first, then the next step.</li>
+<li>Block length: {min(words)} to {max(words)} words, average {sum(words)//len(words)}.</li></ul>
+</section>
+<div class="grid">{''.join(cards)}</div>
+</body></html>'''
+# the pillar headings must break the 2-column flow, so close and reopen the grid around them
+doc = doc.replace('<div class="grid"><h2', '<h2').replace('</article><h2', '</article></div><h2')
+doc = re.sub(r'(</h2>)(<article)', r'\1<div class="grid">\2', doc)
+(HERE / 'pillar-blocks-review.html').write_text(doc, encoding='utf-8')
+print(f'ok: {len(blocks)} blocks, {min(words)}-{max(words)} words each (avg {sum(words)//len(words)})')
