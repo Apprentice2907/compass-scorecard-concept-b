@@ -107,7 +107,7 @@ function emailHtml(d) {
 <p>${hi}</p>
 <p>Thank you for taking the Nutrition Readiness check with Chartwells. Your personal report is attached as a PDF.</p>
 <p>It shows ${who} score across nutrition, food safety, and awareness and sustainability, what is already working, and a game plan for the next 30 days, this term and this year.</p>
-<p>Your Chartwells contact will be in touch to go through it with you. You can also write to us at enquiries@compassgroup-chartwells.co.in or call +91 74284 58309.</p>
+<p>Your Chartwells contact will be in touch to go through it with you. You can also write to us at sarika.chauhan@compass-group.co.in or call +91 96671 80483.</p>
 <p>Warm regards,<br>The Chartwells team<br><span style="color:#5A6170">Chartwells by Compass India · Serving up happy &amp; healthy</span></p>
 </div>`;
 }
