@@ -224,7 +224,7 @@
   /* keep the WebGL picture readable so each cafeteria can be frozen into an image before printing */
   (function () { const gc = HTMLCanvasElement.prototype.getContext; HTMLCanvasElement.prototype.getContext = function (t, a) { if (/webgl/.test(t)) a = Object.assign({}, a, { preserveDrawingBuffer: true }); return gc.call(this, t, a); }; })();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="cafe3d.js?v=20261120m"></script>
 <script src="quiz-data.js?v=20261123a"></script>
 <script src="report/report-content.js"></script>
