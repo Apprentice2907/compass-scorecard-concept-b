@@ -8,7 +8,9 @@
    Email is sent through Microsoft Graph when GRAPH_* is set (Compass's own mailbox), otherwise through Resend.
 
    Environment variables (set in Vercel, never in code):
-     GRAPH_TENANT_ID, GRAPH_CLIENT_ID, GRAPH_CLIENT_SECRET   Entra ID app registration with the Mail.Send application permission
+     GRAPH_TENANT_ID, GRAPH_CLIENT_ID   Entra ID app registration with the Mail.Send application permission
+     GRAPH_CLIENT_SECRET                client secret, or instead a certificate:
+     GRAPH_CERT_PRIVATE_KEY, GRAPH_CERT_THUMBPRINT   certificate private key (PEM) and its thumbprint (hex, as shown in Entra ID)
      GRAPH_SENDER        the one mailbox the app may send as, e.g. CompassDiningReadinessVercel@compass-group.co.in
      RESEND_API_KEY      fallback email service key (resend.com)
      REPORT_FROM         Resend sender, e.g. "Chartwells Dining Readiness <report@reports.example.com>"
@@ -16,6 +18,7 @@
      REPORT_BASE_URL     the site's own address, e.g. https://compass-dining-readiness.vercel.app (defaults to the Vercel production URL)
      ALLOWED_ORIGINS     extra sites allowed to send reports, comma separated (the site itself is always allowed)
      EVENT_KEY           optional shared key; when set, requests must send it in the X-Event-Key header
+                         (and then the per-network limit is skipped, since venue tablets share one address)
      ALLOW_PREVIEW       1 to turn on the GET preview (testing only)
      REPORT_TO_OVERRIDE  optional: send every report to this address instead of the guest (testing only)
      CHROME_PATH         local testing only: path to a desktop Chrome */
@@ -31,6 +34,7 @@ async function loadLibs() {
   return libs;
 }
 
+const crypto = require('crypto');
 const KEYS = /^[ABC]{9}$/;
 const EMAIL = /^[^\s@<>"',;:\\()[\]]{1,64}@[A-Za-z0-9.-]{1,190}\.[A-Za-z]{2,24}$/;
 const clip = (v, n) => String(v == null ? '' : v).replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, n);
@@ -106,11 +110,25 @@ function emailHtml(d) {
 
 /* ---------- sending ---------- */
 let graphToken = null;
+const b64url = b => Buffer.from(b).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+// a client secret, or a signed client assertion (certificate credential, RFC 7523)
+function graphCredential() {
+  if (process.env.GRAPH_CERT_PRIVATE_KEY && process.env.GRAPH_CERT_THUMBPRINT) return { client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer', client_assertion: graphAssertion() };
+  return { client_secret: process.env.GRAPH_CLIENT_SECRET };
+}
+function graphAssertion() {
+  const now = Math.floor(Date.now() / 1000), id = process.env.GRAPH_CLIENT_ID;
+  const head = { alg: 'RS256', typ: 'JWT', x5t: b64url(Buffer.from(process.env.GRAPH_CERT_THUMBPRINT.replace(/[^0-9a-f]/gi, ''), 'hex')) };
+  const body = { aud: `https://login.microsoftonline.com/${process.env.GRAPH_TENANT_ID}/oauth2/v2.0/token`, iss: id, sub: id, jti: crypto.randomUUID(), nbf: now, exp: now + 600 };
+  const data = b64url(JSON.stringify(head)) + '.' + b64url(JSON.stringify(body));
+  const key = process.env.GRAPH_CERT_PRIVATE_KEY.replace(/\\n/g, '\n');   // PEM pasted on one line with \n
+  return data + '.' + b64url(crypto.createSign('RSA-SHA256').update(data).sign(key));
+}
 async function graphAccessToken() {
   if (graphToken && graphToken.exp > Date.now() + 60000) return graphToken.value;
   const r = await fetch(`https://login.microsoftonline.com/${encodeURIComponent(process.env.GRAPH_TENANT_ID)}/oauth2/v2.0/token`, {
     method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ client_id: process.env.GRAPH_CLIENT_ID, client_secret: process.env.GRAPH_CLIENT_SECRET, scope: 'https://graph.microsoft.com/.default', grant_type: 'client_credentials' })
+    body: new URLSearchParams(Object.assign({ client_id: process.env.GRAPH_CLIENT_ID, scope: 'https://graph.microsoft.com/.default', grant_type: 'client_credentials' }, graphCredential()))
   });
   const j = await r.json().catch(() => ({}));
   if (!r.ok || !j.access_token) throw new Error('Graph token: ' + (j.error_description || j.error || r.status));
@@ -141,7 +159,7 @@ async function sendResend(to, subject, html, pdf) {
   });
   if (!r.ok) { const t = await r.text().catch(() => ''); throw new Error('Resend ' + r.status + ' ' + t.slice(0, 300)); }
 }
-const provider = () => (process.env.GRAPH_TENANT_ID && process.env.GRAPH_CLIENT_ID && process.env.GRAPH_CLIENT_SECRET && process.env.GRAPH_SENDER) ? 'graph' : process.env.RESEND_API_KEY ? 'resend' : '';
+const provider = () => (process.env.GRAPH_TENANT_ID && process.env.GRAPH_CLIENT_ID && process.env.GRAPH_SENDER && (process.env.GRAPH_CLIENT_SECRET || (process.env.GRAPH_CERT_PRIVATE_KEY && process.env.GRAPH_CERT_THUMBPRINT))) ? 'graph' : process.env.RESEND_API_KEY ? 'resend' : '';
 
 /* ---------- handler ---------- */
 module.exports = async (req, res) => {
@@ -183,7 +201,8 @@ module.exports = async (req, res) => {
     const email = clip(body.lead && body.lead.email, 120);
     if (!EMAIL.test(email)) return res.status(400).json({ ok: false, error: 'A valid email is required' });
     const data = readData({ answers: Array.isArray(body.answers) ? body.answers.join('') : '', lead: body.lead, variant: body.variant });
-    if (limited('ip:' + ip, 20, 10 * 60e3) || limited('to:' + email.toLowerCase(), 3, 60 * 60e3)) return res.status(429).json({ ok: false, error: 'Too many requests' });
+    // venue tablets share one internet address: allow a busy stand (100 per 10 minutes), or skip this limit with EVENT_KEY
+    if ((!process.env.EVENT_KEY && limited('ip:' + ip, 100, 10 * 60e3)) || limited('to:' + email.toLowerCase(), 3, 60 * 60e3)) return res.status(429).json({ ok: false, error: 'Too many requests' });
     const via = provider();
     if (!via) return res.status(503).json({ ok: false, error: 'Email is not set up yet' });
 
