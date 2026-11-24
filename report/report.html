@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../">
+<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap" rel="stylesheet">
+<title>Nutrition Readiness Report</title>
+<style>
+
+  /* Arial only (K12 brand guide). Heavy weights map to Arial Bold, never Arial Black */
+  @font-face { font-family: 'Brand Arial'; src: local('Arial'), local('ArialMT'); font-weight: 100 549; }
+  @font-face { font-family: 'Brand Arial'; src: local('Arial Bold'), local('Arial-BoldMT'); font-weight: 550 1000; }
+  @page { size: A4; margin: 0; }
+  :root {
+    --navy: #1D355E; --navy-2: #2A4675; --yellow: #FFC845; --pink: #ED9CAD; --red: #F63440; --teal: #3CBFAE; --orange: #EE7624; --blue: #3F97B5;
+    --ink: #14181F; --muted: #5A6170; --line: #E3E1DC; --soft: #F6F4F0;
+    --stage: #B9831A; --low: #B03A2E; --mid: #B9831A; --strong: #2F6B2C;
+    --teal-d: #2A9A8B; --tint: #E3F5F2;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: #D8D6D1; font-family: 'Brand Arial', Arial, Arimo, Helvetica, sans-serif; /* K12 brand guide: Arial for web and office */ color: var(--ink); font-size: 10pt; line-height: 1.42; }
+  .page { width: 210mm; height: 297mm; margin: 10mm auto; background: #fff; position: relative; padding: 14mm 16mm 12mm; overflow: hidden; display: flex; flex-direction: column; }
+  @media print { body { background: #fff; } .page { margin: 0; break-after: page; } .page:last-child { break-after: auto; } }
+  @media screen and (max-width: 820px) { .page { transform-origin: top left; } }
+
+  h1 { font-size: 26pt; line-height: 1.06; margin: 0 0 6px; letter-spacing: -.02em; text-wrap: balance; }
+  h2 { font-size: 16pt; line-height: 1.15; margin: 0 0 6px; letter-spacing: -.01em; text-wrap: balance; }
+  h3 { font-size: 10.5pt; margin: 0 0 4px; }
+  p { margin: 0 0 6px; }
+  .muted { color: var(--muted); }
+  .eyebrow { font-size: 8pt; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--navy); margin: 0 0 4px; }
+  .dots { display: inline-flex; gap: 4px; vertical-align: middle; margin-right: 6px; }
+  .dots i { width: 7px; height: 7px; border-radius: 50%; display: block; }
+
+  /* running header (pages 2-4) */
+  .head { display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid var(--navy); padding-bottom: 8px; margin-bottom: 14px; }
+  .head img { height: 13mm; display: block; }
+  .head .lg { display: flex; align-items: center; gap: 4mm; }
+  .head img.che { height: 11mm; }
+  .head img.ck12 { height: 6.5mm; }
+  .head .rt { display: flex; align-items: center; gap: 5mm; text-align: right; }
+  .head img.parent { height: 8mm; padding-left: 5mm; border-left: 1px solid var(--line); }
+  .meta { text-align: right; font-size: 8.5pt; color: var(--muted); line-height: 1.35; }
+  .meta b { color: var(--ink); }
+  .foot { margin-top: auto; padding-top: 8px; border-top: 1px solid var(--line); font-size: 7.5pt; color: var(--muted); display: flex; justify-content: space-between; }
+
+  /* ---------- page 1: cover + snapshot ---------- */
+  .cover { margin: -14mm -16mm 0; background: var(--navy); color: #fff; padding: 12mm 16mm 10mm; position: relative; overflow: hidden; }
+  .cover .top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 9mm; }
+  .cover .top img { height: 18mm; display: block; }
+  .cover .top { background: #fff; border-radius: 4mm; padding: 4mm 6mm; color: var(--navy); align-items: center; }
+  .cover .top .lg { display: flex; align-items: center; gap: 6mm; }
+  .cover .top img.che { height: 15mm; }
+  .cover .top img.ck12 { height: 8.5mm; }
+  .cover .top img.parent { height: 11mm; margin: 0 0 3mm auto; }
+  .cover .top .date { text-align: right; }
+  .cover .top .date b { color: var(--navy); }
+  .cover .date { font-size: 8.5pt; text-align: right; color: rgba(255,255,255,.75); line-height: 1.4; }
+  .cover .date b { color: #fff; }
+  .cover .eyebrow { color: var(--yellow); }
+  .cover h1 { color: #fff; max-width: 150mm; }
+  .cover .for { font-size: 10.5pt; color: rgba(255,255,255,.82); margin: 0; }
+  .cover .for b { color: #fff; }
+  .cover .hook { margin-top: 6mm; font-size: 10pt; color: rgba(255,255,255,.88); max-width: 150mm; border-left: 3px solid var(--yellow); padding-left: 10px; }
+
+  .scorecard { display: grid; grid-template-columns: 50mm 1fr; border-radius: 12px; overflow: hidden; border: 1.5px solid var(--stage); margin: 8mm 0 10px; }
+  .scorecard .num { background: var(--stage); color: #fff; padding: 12px 16px; display: flex; flex-direction: column; justify-content: center; }
+  .scorecard .num small { font-size: 7.5pt; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; opacity: .9; }
+  .scorecard .num b { font-size: 44pt; line-height: 1; letter-spacing: -.03em; margin-top: 2px; }
+  .scorecard .num b span { font-size: 15pt; font-weight: 600; opacity: .85; }
+  .scorecard .num em { font-style: normal; font-weight: 800; font-size: 13pt; margin-top: 6px; }
+  .scorecard .txt { padding: 12px 16px; background: #FBF6EA; }
+  .ladder { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 9px; }
+  .ladder div { font-size: 7.5pt; color: var(--muted); font-weight: 600; line-height: 1.3; }
+  .ladder i { display: block; height: 6px; border-radius: 3px; background: var(--line); margin-bottom: 3px; }
+  .ladder .r i { background: #D9C49A; } .ladder .h { color: var(--ink); font-weight: 800; } .ladder .h i { background: var(--stage); }
+
+  .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+  .pc { border-radius: 10px; padding: 9px 12px; border: 1.5px solid; }
+  .pc small { display: block; font-size: 7.8pt; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+  .pc b { display: block; font-size: 19pt; line-height: 1.15; }
+  .pc b span { font-size: 10pt; color: var(--muted); font-weight: 600; }
+  .pc em { font-style: normal; font-weight: 800; font-size: 8.5pt; }
+  .pc p { font-size: 8.4pt; color: #3D4250; margin: 4px 0 0; }
+  .pc.low { border-color: var(--low); background: #FBEDEB; } .pc.low em { color: var(--low); }
+  .pc.mid { border-color: var(--mid); background: #FDF4E4; } .pc.mid em { color: #8E6210; }
+  .pc.strong { border-color: var(--strong); background: #ECF4EA; } .pc.strong em { color: var(--strong); }
+
+  .glance { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .duo { flex: 1; min-height: 0; display: grid; grid-template-columns: 58mm 1fr; gap: 8px; }
+  .duo .glance { grid-template-columns: 1fr; grid-auto-rows: 1fr; margin: 0; }
+  .duo .glance div { display: flex; flex-direction: column; justify-content: center; font-size: 9.2pt; padding: 10px 12px; }
+  .duo .grow { min-height: 0; }
+  .glance div { border-radius: 10px; padding: 8px 12px; font-size: 8.8pt; background: var(--soft); }
+  .glance b { display: block; font-size: 7.8pt; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 2px; }
+  .glance .s b { color: var(--strong); } .glance .o b { color: var(--low); }
+
+  .figure { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #F7F3EE; display: flex; flex-direction: column; min-height: 0; }
+  .figure img { display: block; width: 100%; flex: 1; min-height: 0; object-fit: contain; }
+  .figure figcaption { font-size: 8pt; color: var(--muted); padding: 6px 10px; border-top: 1px solid var(--line); background: #fff; display: flex; justify-content: space-between; gap: 8px; }
+  .key i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin: 0 3px 0 8px; }
+  figure { margin: 0; }
+  .grow { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .grow > .figure { flex: 1; }
+
+  /* ---------- page 2: detail table ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: 8.4pt; line-height: 1.38; }
+  th { text-align: left; font-size: 7.5pt; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 800; padding: 0 6px 5px; border-bottom: 1.5px solid var(--navy); }
+  td { padding: 5.5px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td.area { width: 29%; font-weight: 700; }
+  td.area span { display: block; font-weight: 500; color: var(--muted); font-size: 8pt; }
+  td.ans { width: 20%; }
+  td.lv { width: 14%; white-space: nowrap; font-weight: 700; font-size: 8pt; }
+  td.lv i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+  .l1 { color: var(--low); } .l1 i { background: var(--low); }
+  .l3 { color: #8E6210; } .l3 i { background: var(--mid); }
+  .l5 { color: var(--strong); } .l5 i { background: var(--strong); }
+  .ptitle td { background: #EEF1F6; color: var(--navy); font-weight: 800; font-size: 8.5pt; letter-spacing: .06em; text-transform: uppercase; padding: 5px 6px; border-bottom: 0; }
+  .ptitle td span { float: right; letter-spacing: 0; text-transform: none; }
+  .howto { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .howto div { background: var(--soft); border-radius: 10px; padding: 8px 10px; font-size: 8.4pt; }
+  .howto b { display: block; font-size: 9pt; }
+
+  /* ---------- page 3: game plan ---------- */
+  .callout { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; background: var(--navy); color: #fff; border-radius: 12px; padding: 12px 16px; margin: 6px 0 12px; }
+  .callout .big { font-size: 26pt; font-weight: 800; line-height: 1; color: var(--yellow); }
+  .callout .big small { display: block; font-size: 7.5pt; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.75); margin-top: 3px; }
+  .callout p { margin: 0; font-size: 9.4pt; }
+  .callout b { color: #fff; }
+  .phase { display: grid; grid-template-columns: 30mm 1fr; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); }
+  .phase:first-of-type { border-top: 0; }
+  .phase .when { font-weight: 800; font-size: 10pt; }
+  .phase .when small { display: block; font-weight: 600; font-size: 7.8pt; color: var(--muted); }
+  .phase .when i { display: block; width: 26px; height: 5px; border-radius: 3px; margin-bottom: 6px; }
+  .acts { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+  .acts li { font-size: 8.9pt; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: start; }
+  .acts li b { display: block; font-size: 9.4pt; }
+  .pts { font-size: 7.5pt; font-weight: 800; padding: 2px 7px; border-radius: 999px; white-space: nowrap; background: #ECF4EA; color: var(--strong); }
+  .area-tag { display: inline-block; font-size: 7pt; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-left: 4px; }
+  .track { display: flex; align-items: center; gap: 8px; font-size: 8.4pt; color: var(--muted); margin-top: 8px; }
+  .track span { white-space: nowrap; }
+  .track .bar { flex: 1; height: 8px; border-radius: 4px; background: var(--line); position: relative; overflow: hidden; }
+  .track .bar i { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 4px; }
+
+  /* ---------- page 4: benefits ---------- */
+  .ben { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px; }
+  .bcol { border-radius: 14px; padding: 11px 14px; }
+  .bcol.inst { background: #EAF6F4; } .bcol.lead { background: #FFF4D6; }
+  .bcol h2 { font-size: 13.5pt; margin-bottom: 8px; }
+  .bcol ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .bcol li { display: grid; grid-template-columns: 12px 1fr; gap: 8px; font-size: 9pt; }
+  .bcol li::before { content: ''; width: 9px; height: 9px; border-radius: 50%; margin-top: 4px; }
+  .bcol.inst li::before { background: var(--teal); } .bcol.lead li::before { background: var(--orange); }
+  .bcol li b { display: block; font-size: 9.6pt; }
+  .cta { margin-top: auto; background: var(--navy); color: #fff; border-radius: 14px; padding: 12px 18px; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; position: relative; overflow: hidden; }
+  .cta h2 { color: #fff; font-size: 14pt; margin-bottom: 3px; }
+  .cta p { margin: 0; font-size: 9pt; color: rgba(255,255,255,.85); }
+  .cta .contact { text-align: right; font-size: 9pt; line-height: 1.5; }
+  .cta .contact b { color: var(--yellow); }
+  .page4-foot { margin-top: 10px; }
+  table.sup { font-size: 9pt; } table.sup td:first-child { width: 34mm; font-weight: 700; } table.sup td { padding: 4.5px 6px; }
+  .journey { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 6px; }
+  .journey div { border-radius: 10px; padding: 9px 9px 10px; font-size: 8pt; background: var(--soft); color: var(--muted); position: relative; }
+  .journey b { display: block; color: var(--ink); font-size: 9pt; margin-bottom: 2px; }
+  .journey i { display: block; height: 5px; border-radius: 3px; margin-bottom: 7px; background: var(--line); }
+  .journey .here { background: #FDF4E4; color: #3D4250; outline: 1.5px solid var(--stage); }
+  .journey .here i { background: var(--stage); }
+  .journey .next { background: #ECF4EA; color: #3D4250; }
+  .journey .next i { background: var(--strong); }
+  .journey em { display: inline-block; font-style: normal; font-size: 6.8pt; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--stage); border-radius: 999px; padding: 1px 6px; margin-bottom: 5px; }
+  .journey .next em { background: var(--strong); }
+
+  /* Chartwells theme (K12 brand guide): cool white grounds, navy headings, teal accents, confetti dots */
+  :root { --soft: #F3F6FA; --line: #DDE4EC; }
+  body { background: #E4E9F0; }
+  .eyebrow { color: var(--teal-d); }
+  h2 { color: var(--navy); } .cta h2 { color: #fff; }
+  .scorecard .txt { background: #F0FAF8; }
+  .glance .s b { color: var(--teal-d); } .glance .o b { color: var(--orange); }
+  .ptitle td { background: var(--tint); color: var(--navy); }
+  .howto div, .glance div { background: var(--soft); }
+  .pts { background: #DDF3EF; color: #1F7A6E; }
+  .bcol.inst { background: var(--tint); } .bcol.lead { background: #FCEEF1; }
+  .bcol.lead li::before { background: var(--pink); }
+  .journey .next { background: var(--tint); } .journey .next i, .journey .next em { background: #2E9E8F; }
+  th { border-bottom-color: var(--teal); }
+  .head { border-bottom-color: var(--teal); }
+  .foot { border-top-color: var(--line); }
+  .confetti { position: absolute; right: -6mm; bottom: -8mm; width: 64mm; height: auto; pointer-events: none; }
+  .cover h1, .cover .hook { max-width: 128mm; }
+  .area-tag { color: var(--teal-d); }
+  /* why it matters (page 4) */
+  .why { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+  .why div { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; border: 1.5px solid var(--tint); background: #F7FBFA; border-radius: 12px; padding: 7px 12px; }
+  .why b { font-size: 20pt; line-height: 1; color: var(--teal-d); letter-spacing: -.02em; white-space: nowrap; }
+  .why span { font-size: 8.8pt; color: #3D4250; line-height: 1.35; }
+  .src { font-size: 7.3pt; color: var(--muted); margin: 5px 0 0; }
+
+  /* ---------- per-guest report additions (same look as sample-report.html) ---------- */
+  .ben.three { grid-template-columns: repeat(3, 1fr); gap: 9px; }
+  .ben.three .bcol { padding: 10px 12px; }
+  .ben.three .bcol h2 { font-size: 12pt; }
+  .ben.three .bcol li { font-size: 8.6pt; }
+  .ben.three .bcol li b { font-size: 8.6pt; letter-spacing: .04em; text-transform: uppercase; color: var(--navy); }
+  .bcol.fam { background: #FFF6DC; } .bcol.fam li::before { background: var(--yellow); }
+  .pts.keep { background: var(--tint); color: #1F7A6E; }
+  /* the guest's own 3D cafeteria, drawn live and frozen into an image for print */
+  .scene-host { position: relative; flex: 1; min-height: 0; background: #F2EFEA; }
+  .scene-host .cafe3d, .scene-host .c3box { position: absolute; inset: 0; overflow: hidden; }
+  .scene-host canvas, .scene-host img.shot { position: absolute; inset: 0; width: 100% !important; height: 100% !important; display: block; object-fit: contain; }
+  .c3-overlay { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .p3 { --pc: #888; position: absolute; left: 0; top: 0; width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 50%; background: #fff; border: 2px solid var(--pc); color: var(--pc); font: 700 10px/16px 'Brand Arial', Arial, Helvetica, sans-serif; text-align: center; box-shadow: 0 3px 8px -3px rgba(30,27,24,.45); }
+  .p3.r1 { --pc: var(--low); background: var(--pc); color: #fff; } .p3.r3 { --pc: var(--mid); background: var(--pc); color: #fff; } .p3.r5 { --pc: var(--strong); background: var(--pc); color: #fff; }
+  .p3.hide, .p3-you, .p3-bubble { display: none; }
+  .scene-fallback { position: absolute; inset: 0; display: grid; place-items: center; font-size: 9pt; color: var(--muted); text-align: center; padding: 10px; }
+  .err { max-width: 600px; margin: 40px auto; background: #fff; padding: 20px; border-radius: 10px; font-family: Arial, sans-serif; }
+</style>
+</head>
+<body>
+<div id="report"></div>
+<script>
+  /* keep the WebGL picture readable so each cafeteria can be frozen into an image before printing */
+  (function () { const gc = HTMLCanvasElement.prototype.getContext; HTMLCanvasElement.prototype.getContext = function (t, a) { if (/webgl/.test(t)) a = Object.assign({}, a, { preserveDrawingBuffer: true }); return gc.call(this, t, a); }; })();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="cafe3d.js?v=20261120m"></script>
+<script src="quiz-data.js?v=20261123a"></script>
+<script src="report/report-content.js"></script>
+<script src="report/report-engine.js"></script>
+<script>
+(function () {
+  const Q = window.QUIZ, C = window.REPORT_CONTENT;
+  const e = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const first = t => String(t).split(/(?<=\.)\s/)[0];
+  const lc = t => t.charAt(0).toLowerCase() + t.slice(1);
+  const STAGE_COL = ['#B03A2E', '#C8641E', '#B9831A', '#5E8F34', '#2F6B2C'];
+  const PCOL = ['#EE7624', '#3F97B5', '#2E9E8F'];      // Chartwells orange, blue, teal per area (as in the quiz)
+  const ORDER = [0, 1, 2, 3, 4, 5, 6, 8, 7];             // quiz question -> cafeteria station
+  const UNI_ROLES = /vice chancellor|dean|registrar|campus|universit|college|higher/i;
+
+  /* input: window.REPORT_DATA from the PDF server, or the URL hash for previews:
+     report/report.html#a=CBBBBBBBA&n=Anita%20Rao&r=Principal&i=Greenwood%20International%20School&d=2026-11-18 */
+  const DEMO = { answers: 'CBBBBBBBA'.split(''), lead: { name: 'Anita Rao', role: 'Principal', institution: 'Greenwood International School' }, date: '2026-11-18' };
+  function input() {
+    if (window.REPORT_DATA) return window.REPORT_DATA;
+    const h = new URLSearchParams(location.hash.slice(1));
+    if (!h.get('a')) return DEMO;
+    return { answers: h.get('a').toUpperCase().split(''), lead: { name: h.get('n') || '', role: h.get('r') || '', institution: h.get('i') || '' }, date: h.get('d') || '' };
+  }
+  const fmtDate = d => (d ? new Date(d) : new Date()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  // what your score means: one line per stage, then the next step from the guest's own top steps
+  const MEANS = [
+    '{I} has the basics of food service in place, with a lot of room to grow.',
+    '{I} has started several good practices, ready to become part of every day.',
+    '{I} has good practices in place across most areas.',
+    '{I} runs a mature food programme across most areas.',
+    '{I} is strong across nutrition, food safety, and awareness and sustainability.'
+  ];
+  // 45 / 45: the plan is about keeping it there, with Chartwells' support (Report-Copy-Guardrails section 7)
+  const KEEP = [
+    { when: 'Next 30 days', steps: [
+      ['Review these results with Chartwells', 'Go through your scores together and agree what to keep measuring each term.', 'All areas'],
+      ['Share your results with families', 'Show parents your nutrition data, audit record and feedback results, so they see the standard you keep.', 'Communication']] },
+    { when: 'This term', steps: [
+      ['Refresh menus with the seasons', 'Chartwells chefs and nutritionists update menus to your age-wise targets, so variety stays high.', 'Nutrition'],
+      ['Keep audits and training current', 'Regular food safety and allergen audits, with refresher training for every food handler.', 'Food safety']] },
+    { when: 'This year', steps: [
+      ['Retake the assessment', 'Compare your scores area by area each year to show the standard holds.', 'Improvement'],
+      ['Add new experiences for students', 'Food festivals, Teaching Kitchen sessions and Farm to School activities keep students involved.', 'Education']] }
+  ];
+
+  function render(data) {
+    const R = window.buildReport(Q, C, data.answers, data.lead);
+    const inst = R.lead.institution.trim(), name = R.lead.name.trim(), role = R.lead.role.trim();
+    const I = inst || 'Your institution', instShort = inst ? inst.replace(/\s+(international|public|senior secondary|secondary|high|higher secondary)?\s*(school|college|university|institute)$/i, '').trim() || inst : 'your institution';
+    const variant = data.variant || (UNI_ROLES.test(role) ? 'uni' : 'k12');
+    const date = fmtDate(data.date);
+    document.documentElement.style.setProperty('--stage', STAGE_COL[R.stageIndex]);
+    const W = n => ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'][n] || String(n);
+
+    const LOGOS = '<div class="lg"><img class="ck12" src="img/chartwells-k12-2.svg" alt="Chartwells K12"><img class="che" src="img/chartwells-he-1.svg" alt="Chartwells Higher Education, by Compass Group"></div>';
+    const head = () => `<div class="head">${LOGOS}<div class="rt"><div class="meta"><b>${e(I)}</b><br>Score ${R.total} / 45 · ${e(R.stage.name)}</div><img class="parent" src="img/compass-logo.png" alt="Compass Group"></div></div>`;
+    const foot = (n, txt) => `<div class="foot"><span>${txt || 'Chartwells by Compass India · Nutrition Readiness Report' + (inst ? ' · ' + e(inst) : '')}</span><span>${n} / 4</span></div>`;
+    const keyLegend = '<span class="key"><i style="background:var(--strong)"></i>Strong<i style="background:var(--mid)"></i>Building well<i style="background:var(--low)"></i>Room to grow</span>';
+
+    /* ---------- page 1: cover + snapshot ---------- */
+    const ladder = R.stages.map((s, k) => `<div class="${k < R.stageIndex ? 'r' : k === R.stageIndex ? 'h' : ''}"><i></i>${e(s.short)}<br>${s.lo}-${s.hi}</div>`).join('');
+    const nextPhr = R.steps.slice(0, 3).map(s => s.phrase);
+    const listJoin = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+    const means = R.full
+      ? `${e(I)} is at the strongest level in every area. The next step is keeping it there, with yearly reviews, fresh menus and regular audits.`
+      : `${e(MEANS[R.stageIndex].replace('{I}', I))} The next step is to ${e(listJoin(nextPhr))}.`;
+    const cards = R.areas.map(a => {
+      const st = R.steps.find(s => s.pillar === a.n);
+      return `<div class="pc ${a.band.id}"><small>${e(a.name)}</small><b>${a.score} <span>/ 15</span></b><em>${e(a.band.word)}</em><p>${e(a.block.headline)}.${st ? ' Next: ' + e(lc(st.title)) + '.' : ''}</p></div>`;
+    }).join('');
+    const s1 = R.steps[0];
+    const win = R.full
+      ? '<b>Keeping it future-ready</b>Chartwells can help you maintain your score with yearly reviews, fresh menus and regular food safety audits.'
+      : `<b>Your quickest win</b>${e(s1.title)} adds ${s1.gain} points${R.next && s1.scoreAfter >= R.next.min ? ' and takes you to the ' + e(R.next.name) : R.next ? ' towards the ' + e(R.next.name) : ' towards 45 / 45'}.`;
+    const p1 = `<section class="page" data-page="1">
+      <div class="cover">
+        <div class="top">${LOGOS}<div class="date"><img class="parent" src="img/compass-logo.png" alt="Compass Group"><b>${e(date)}</b></div></div>
+        <p class="eyebrow">Nutrition Readiness Report</p>
+        <h1${(inst || '').length > 30 ? ' style="font-size:' + ((inst || '').length > 48 ? 19 : 22) + 'pt"' : ''}>How ready is ${e(inst || 'your institution')} to deliver nutrition, not just meals?</h1>
+        <p class="for">${name ? 'Prepared for <b>' + e(name) + '</b>' + (role ? ', ' + e(role) : '') : 'Your personal report'}</p>
+        <svg class="confetti" viewBox="0 0 240 200" aria-hidden="true"><circle cx="196" cy="150" r="70" fill="#FFC845"/><circle cx="118" cy="58" r="17" fill="#ED9CAD"/><circle cx="160" cy="34" r="9" fill="#F63440"/><circle cx="92" cy="128" r="12" fill="#3CBFAE"/><circle cx="214" cy="40" r="13" fill="#3F97B5"/><circle cx="58" cy="176" r="8" fill="#EE7624"/><circle cx="140" cy="102" r="6" fill="#FFFFFF" opacity=".85"/></svg>
+        <p class="hook">Built from your 9 answers, this report shows where ${inst ? e(instShort) + "'s" : 'your'} cafeteria stands on nutrition, food safety, and awareness and sustainability: what is already working, and the steps that take you to the next stage.</p>
+      </div>
+      <div class="scorecard">
+        <div class="num"><small>Your readiness score</small><b>${R.total} <span>/ 45</span></b><em>${e(R.stage.name)}</em></div>
+        <div class="txt"><h3>What your score means</h3><p>${means}</p><div class="ladder">${ladder}</div></div>
+      </div>
+      <div class="pillars">${cards}</div>
+      <div class="duo">
+        <div class="glance">
+          <div class="s"><b>Your strongest area</b>${e(first(R.best.insight))}</div>
+          <div class="o">${win}</div>
+        </div>
+        <div class="grow"><figure class="figure"><div class="scene-host" data-scene="today"></div>
+          <figcaption><span>${R.full ? 'Your cafeteria today: every area at Strong' : 'Your cafeteria today'}</span>${keyLegend}</figcaption></figure></div>
+      </div>
+      ${foot(1, 'Chartwells by Compass India · Nutrition Readiness Report')}
+    </section>`;
+
+    /* ---------- page 2: each answer ---------- */
+    const rows = R.areas.map(a => `<tr class="ptitle"><td colspan="4">${a.n + 1} · ${e(a.name)} <span>${a.score} / 15 · ${e(a.band.word)}</span></td></tr>` +
+      a.answers.map(x => `<tr><td class="area">${e(x.area.replace(' and ', ' & '))}<span>${e(x.question)}</span></td><td class="ans">${e(x.answer)}</td><td class="lv ${x.level.cls}"><i></i>${e(x.level.word)}</td><td>${e(x.insight)}</td></tr>`).join('')).join('');
+    const p2 = `<section class="page" data-page="2">${head()}
+      <p class="eyebrow">In depth</p>
+      <h2>What each answer tells us</h2>
+      <p class="muted" style="margin-bottom:10px">Each answer scores 1, 3 or 5 points. For each of the nine areas: what is already working, and what comes next.</p>
+      <table><thead><tr><th>Area</th><th>Your answer</th><th>Level</th><th>What is working, and what is next</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="howto">
+        <div><b><span class="dots"><i style="background:var(--strong)"></i></span>Strong · 5 points</b>A clear system that works every day and is measured.</div>
+        <div><b><span class="dots"><i style="background:var(--mid)"></i></span>Building well · 3 points</b>Good practice in place, ready to be made consistent.</div>
+        <div><b><span class="dots"><i style="background:var(--low)"></i></span>Room to grow · 1 point</b>Good intentions in place, ready for a set process.</div>
+      </div>
+      ${foot(2)}</section>`;
+
+    /* ---------- page 3: game plan (or keeping it future-ready at 45 / 45) ---------- */
+    const BARS = { 'Next 30 days': 'var(--red)', 'This term': 'var(--yellow)', 'This year': 'var(--teal)' };
+    let callout, phases, intro3, title3, track;
+    if (R.full) {
+      title3 = 'Keeping it future-ready';
+      intro3 = 'Every answer is at the strongest level. These steps keep it there, with Chartwells alongside you.';
+      callout = `<div class="callout"><div class="big">45<small>of 45</small></div><p><b>Every area is at Strong.</b> The next step is keeping it there. Chartwells can help you maintain it with yearly reviews, fresh menus and regular food safety audits.</p></div>`;
+      phases = KEEP.map(p => `<div class="phase"><div class="when"><i style="background:${BARS[p.when]}"></i>${p.when}</div><ul class="acts">${p.steps.map(([t, d, tag]) => `<li><span><b>${e(t)} <span class="area-tag">${e(tag)}</span></b>${e(d)}</span><span class="pts keep">Maintain</span></li>`).join('')}</ul></div>`).join('');
+      track = `<div class="track"><span>Today <b style="color:var(--ink)">45</b></span><div class="bar"><i style="width:100%;background:var(--stage)"></i></div><span>Keep it at <b style="color:var(--ink)">45</b></span></div>`;
+    } else {
+      const n = R.steps.length;
+      title3 = 'Your game plan';
+      intro3 = `${n === 1 ? '1 step' : n + ' steps'} over the next year. Each one names the area it improves and the points it adds to your score.`;
+      const reach = R.stepsToNext === 1 ? `Step 1 adds ${R.steps[0].gain >= R.toNext ? 'those' : ''} ${R.steps[0].gain} points.`.replace('  ', ' ') : `Steps 1 to ${R.stepsToNext} add ${R.steps.slice(0, R.stepsToNext).reduce((a, s) => a + s.gain, 0)} points.`;
+      const goal = R.next
+        ? `<b>You are ${R.toNext} points from the ${e(R.next.name)} (${R.next.lo}+).</b> ${reach} Completing all ${W(n)} step${n > 1 ? 's' : ''} brings every area to Strong (45 / 45).`
+        : `<b>You are ${R.toNext} points from 45 / 45.</b> Completing ${n > 1 ? 'all ' + W(n) + ' steps' : 'this step'} brings every area to Strong.`;
+      callout = `<div class="callout"><div class="big">+${R.toNext}<small>to ${R.next ? e(R.next.short) : '45 / 45'}</small></div><p>${goal}</p></div>`;
+      phases = R.phases.map(p => `<div class="phase"><div class="when"><i style="background:${BARS[p.when]}"></i>${p.when}</div><ul class="acts">${p.steps.map(s => `<li><span><b>${e(s.title)} <span class="area-tag">${e(s.tag)}</span></b>${e(s.text)}</span><span class="pts">+${s.gain}</span></li>`).join('')}</ul></div>`).join('');
+      track = `<div class="track"><span>Today <b style="color:var(--ink)">${R.total}</b></span><div class="bar"><i style="width:${Math.round(R.total / 45 * 100)}%;background:var(--stage)"></i></div><span>After 30 days <b style="color:var(--ink)">${R.after30}</b></span><span>Full plan <b style="color:var(--ink)">45</b></span></div>`;
+    }
+    const p3 = `<section class="page" data-page="3">${head()}
+      <p class="eyebrow">${R.full ? 'Next steps' : 'Recommendations and next steps'}</p>
+      <h2>${title3}</h2>
+      <p class="muted" style="margin-bottom:4px">${intro3}</p>
+      ${callout}${phases}
+      <div class="grow" style="margin-top:8px"><figure class="figure"><div class="scene-host" data-scene="future"></div>
+        <figcaption><span>${R.full ? 'Your cafeteria at 45 / 45: nutrition targets on the menu board, an allergen-safe zone, a Teaching Kitchen and a "You said, we did" board' : 'The same cafeteria with every area at Strong: nutrition targets on the menu board, an allergen-safe zone, a Teaching Kitchen and a "You said, we did" board'}</span></figcaption></figure></div>
+      ${track}
+      ${foot(3)}</section>`;
+
+    /* ---------- page 4: what it means ---------- */
+    const bcol = (cls, title, field) => `<div class="bcol ${cls}"><h2>${title}</h2><ul>${R.areas.map(a => `<li><span><b>${e(a.name)}</b>${e(a.block[field])}</span></li>`).join('')}</ul></div>`;
+    const jr = R.stages.map((s, k) => {
+      const here = k === R.stageIndex, nx = R.next && k === R.stageIndex + 1;
+      const tag = here ? '<em>You are here</em>' : nx ? `<em>Next${R.after30 >= R.next.min ? ' · 30 days' : ''}</em>` : '';
+      const DESC = ['Food is served; practices depend on individuals.', 'Basic standards exist in a few areas.', 'Good practices, not yet consistent.', 'Clear systems in most areas, measured.', 'Every area strong, open and improving.'];
+      return `<div class="${here ? 'here' : nx ? 'next' : ''}">${tag}<i></i><b>${e(s.short)}</b>${s.lo}-${s.hi} · ${DESC[k]}</div>`;
+    }).join('');
+    const p4 = `<section class="page" data-page="4">${head()}
+      <p class="eyebrow">Benefits</p>
+      <h2>${R.full ? 'What keeping it future-ready means' : 'What reaching the next stages means'}</h2>
+      <p class="muted" style="margin-bottom:8px">What changes for ${e(inst ? instShort : 'your institution')}, for you, and for students and families, ${R.full ? 'as you keep every area at Strong' : 'as the steps in your game plan are completed'}.</p>
+      <div class="ben three">
+        ${bcol('inst', 'For your institution', 'institution')}
+        ${bcol('lead', 'For you as a leader', 'you')}
+        ${bcol('fam', 'For students and families', 'families')}
+      </div>
+      <p class="eyebrow" style="margin-top:10px">How Chartwells supports each step</p>
+      <table class="sup">
+        <tr><td>Nutrition</td><td>Nutritionists set age-wise targets and chefs build the menu to meet them, with nutrient values for every menu cycle.</td></tr>
+        <tr><td>Food safety</td><td>Documented food safety and allergen procedures, staff training and regular audits.</td></tr>
+        <tr><td>Nutrition education</td><td>Hands-on sessions for students, such as the Teaching Kitchen.</td></tr>
+        <tr><td>Communication</td><td>Menus, nutrition information and feedback results shared with families.</td></tr>
+      </table>
+      <p class="eyebrow" style="margin-top:10px">Your path to Future-Ready</p>
+      <div class="journey">${jr}</div>
+      <p class="eyebrow" style="margin-top:10px">Why it matters</p>
+      <div class="why">
+        <div><b>81%</b><span>of health professionals say institution cafeterias, including educational institutes, lack a healthy, nutritious spread.</span></div>
+        <div><b>1 in 2</b><span>students eat at least one meal at their educational institute every day, so the cafeteria shapes their habits.</span></div>
+      </div>
+      <p class="src">Source: Nourishing India's Next Generation, a Compass Group India school food study, 2026.</p>
+      <div class="cta" style="margin-top:10px"><div>
+        <h2>${R.full ? 'Next step: keep it future-ready with Chartwells' : 'Next step: review these results with Chartwells'}</h2>
+        <p>${R.full ? 'We will review your results with you each year and help you keep every area at its strongest.' : 'We will go through your scores with you and agree which steps to start with.'}</p></div>
+        <div class="contact"><b>enquiries@compassgroup-chartwells.co.in</b><br>+91 74284 58309</div></div>
+      ${foot(4, 'Chartwells by Compass India · Serving up happy &amp; healthy, one meal at a time')}</section>`;
+
+    document.getElementById('report').innerHTML = p1 + p2 + p3 + p4;
+    document.title = 'Nutrition Readiness Report' + (inst ? ' · ' + inst : '');
+    return { R, inst, variant };
+  }
+
+  /* each guest's own cafeteria: today (their answer levels, pins coloured by level) and the future-ready version */
+  let scenes = [];
+  function drawScenes(R, inst, variant) {
+    window.REPORT_READY = false;
+    const hosts = [...document.querySelectorAll('.scene-host')];
+    if (!(window.THREE && window.Cafe3D)) { hosts.forEach(h => h.innerHTML = '<div class="scene-fallback">Cafeteria picture unavailable</div>'); window.REPORT_READY = true; return Promise.resolve(); }
+    scenes.forEach(c => c.remove()); scenes = [];
+    return Promise.all(hosts.map(host => new Promise(res => {
+      const box = document.createElement('div'); box.className = 'c3box'; host.appendChild(box); scenes.push(box);
+      const k = Cafe3D.create(box, { colors: Q.questions.map(q => PCOL[q.pillar]), order: ORDER });
+      if (k.setLogo) k.setLogo(variant);
+      k.setSign(inst ? inst.toUpperCase() : 'YOUR INSTITUTION');
+      const future = host.dataset.scene === 'future';
+      for (let i = 0; i < 9; i++) { const L = future ? 5 : R.levels[i]; k.setLevel(i, L); k.pin(i, future ? 'hide' : 'r' + L); }
+      k.setLive(future);
+      k.view(-1, 0);
+      // let the layers spring in and the textures load, then freeze the frame into an image
+      setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+        const cv = box.querySelector('canvas');
+        try { const img = new Image(); img.className = 'shot'; img.alt = future ? 'The same cafeteria with every area at Strong' : 'Your cafeteria today, built from your 9 answers'; img.src = cv.toDataURL('image/png'); cv.after(img); cv.style.visibility = 'hidden'; } catch (err) { /* keep the live canvas */ }
+        res();
+      })), 2600);
+    }))).then(() => document.fonts ? document.fonts.ready : null).then(() => { window.REPORT_READY = true; });
+  }
+
+  window.reportOverflow = () => [...document.querySelectorAll('.page')].filter(p => p.scrollHeight > p.clientHeight + 1).map(p => +p.dataset.page);
+  window.renderReport = (d, pictures = true) => { const out = render(d); if (pictures) drawScenes(out.R, out.inst, out.variant); return out.R; };
+
+  // #fittest=1: render all 19,683 answer sets (no pictures) with a long name and institution, and list any page that overflows
+  if (/fittest=1/.test(location.hash)) {
+    const K = 'ABC', lead = { name: 'Dr. Anuradha Venkataraman-Krishnamurthy', role: 'Vice Chancellor / Campus Director', institution: 'St. Xavier’s International Residential School and Junior College' };
+    const res = { rendered: 0, errors: [], overflow: {}, worst: [0, 0, 0, 0] };
+    for (let c = 0; c < 19683; c++) {
+      const a = []; let x = c; for (let i = 0; i < 9; i++) { a.push(K[x % 3]); x = Math.floor(x / 3); }
+      try { render({ answers: a, lead }); res.rendered++; } catch (err) { res.errors.push(a.join('') + ': ' + err.message); continue; }
+      document.querySelectorAll('.page').forEach((p, k) => { const r = p.scrollHeight / p.clientHeight; if (r > res.worst[k]) res.worst[k] = +r.toFixed(3); });
+      const o = window.reportOverflow(); if (o.length) res.overflow[a.join('')] = o;
+    }
+    res.overflowCount = Object.keys(res.overflow).length;
+    res.overflow = Object.fromEntries(Object.entries(res.overflow).slice(0, 20));
+    document.body.innerHTML = '<pre id="fit">' + e(JSON.stringify(res)) + '</pre>';
+    return;
+  }
+  try { window.renderReport(input()); }
+  catch (err) { document.getElementById('report').innerHTML = '<div class="err"><b>Report could not be built.</b><br>' + e(err.message) + '</div>'; window.REPORT_READY = true; }
+})();
+</script>
+</body>
+</html>

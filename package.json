@@ -1,0 +1,10 @@
+{
+  "name": "compass-scorecard-concept-b",
+  "private": true,
+  "description": "Nutrition Readiness quiz (static) plus the report API that prints and emails each guest's PDF",
+  "engines": { "node": "22.x" },
+  "dependencies": {
+    "@sparticuz/chromium": "131.0.1",
+    "puppeteer-core": "23.10.4"
+  }
+}
