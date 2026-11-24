@@ -15,6 +15,7 @@
      RESEND_API_KEY      fallback email service key (resend.com)
      REPORT_FROM         Resend sender, e.g. "Chartwells Dining Readiness <report@reports.example.com>"
      REPORT_REPLY_TO     optional reply-to address
+     REPORT_BCC          optional hidden copy of every report (comma separated), e.g. the Chartwells contact
      REPORT_BASE_URL     the site's own address, e.g. https://compass-dining-readiness.vercel.app (defaults to the Vercel production URL)
      ALLOWED_ORIGINS     extra sites allowed to send reports, comma separated (the site itself is always allowed)
      EVENT_KEY           optional shared key; when set, requests must send it in the X-Event-Key header
@@ -95,6 +96,7 @@ function readData(src) {
   };
 }
 
+const BCC = (process.env.REPORT_BCC || '').split(',').map(a => a.trim()).filter(a => /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(a)).slice(0, 3);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 function emailHtml(d) {
   const hi = d.lead.name ? 'Dear ' + esc(d.lead.name.split(' ')[0]) + ',' : 'Hello,';
@@ -145,6 +147,7 @@ async function sendGraph(to, subject, html, pdf) {
       message: {
         subject, body: { contentType: 'HTML', content: html },
         toRecipients: [{ emailAddress: { address: to } }],
+        bccRecipients: BCC.map(a => ({ emailAddress: { address: a } })),
         replyTo: process.env.REPORT_REPLY_TO ? [{ emailAddress: { address: process.env.REPORT_REPLY_TO } }] : [],
         attachments: [{ '@odata.type': '#microsoft.graph.fileAttachment', name: 'Nutrition-Readiness-Report.pdf', contentType: 'application/pdf', contentBytes: pdf.toString('base64') }]
       },
@@ -156,7 +159,7 @@ async function sendGraph(to, subject, html, pdf) {
 async function sendResend(to, subject, html, pdf) {
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST', headers: { Authorization: 'Bearer ' + process.env.RESEND_API_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: process.env.REPORT_FROM || 'Chartwells Dining Readiness <onboarding@resend.dev>', to: [to], reply_to: process.env.REPORT_REPLY_TO || undefined, subject, html,
+    body: JSON.stringify({ from: process.env.REPORT_FROM || 'Chartwells Dining Readiness <onboarding@resend.dev>', to: [to], bcc: BCC.length ? BCC : undefined, reply_to: process.env.REPORT_REPLY_TO || undefined, subject, html,
       attachments: [{ filename: 'Nutrition-Readiness-Report.pdf', content: pdf.toString('base64') }] })
   });
   if (!r.ok) { const t = await r.text().catch(() => ''); throw new Error('Resend ' + r.status + ' ' + t.slice(0, 300)); }
