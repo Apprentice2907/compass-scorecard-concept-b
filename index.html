@@ -1030,7 +1030,7 @@
   const postReport = job => fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(job) })
     .then(r => r.json().catch(() => ({})).then(j => { if (!j.ok && (r.status >= 500 && r.status !== 503)) throw new Error(j.error || r.status); return j; }));
   function sendReport(rec) {
-    const job = { answers: answers.slice(), lead: { name: rec.lead.name, email: rec.lead.email, role: rec.lead.role, institution: rec.lead.institution }, variant: variantFor(rec.lead.role), consent: true };
+    const job = { answers: answers.slice(), lead: { name: rec.lead.name, email: rec.lead.email, phone: rec.lead.phone, role: rec.lead.role, institution: rec.lead.institution }, variant: variantFor(rec.lead.role), consent: true };
     postReport(job).then(j => console.log('Report email:', j)).catch(() => saveOutbox(outbox().concat(job)));
   }
   function flushOutbox() {

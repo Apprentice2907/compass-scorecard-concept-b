@@ -15,6 +15,8 @@
      RESEND_API_KEY      fallback email service key (resend.com)
      REPORT_FROM         Resend sender, e.g. "Chartwells Dining Readiness <report@reports.example.com>"
      REPORT_REPLY_TO     optional reply-to address
+     SHEET_WEBHOOK_URL   optional: Google Apps Script web-app URL that adds one row per guest to the team's sheet
+     SHEET_SECRET        shared key the sheet script checks (required with SHEET_WEBHOOK_URL)
      REPORT_BCC          optional hidden copy of every report (comma separated), e.g. the Chartwells contact
      REPORT_BASE_URL     the site's own address, e.g. https://compass-dining-readiness.vercel.app (defaults to the Vercel production URL)
      ALLOWED_ORIGINS     extra sites allowed to send reports, comma separated (the site itself is always allowed)
@@ -94,6 +96,29 @@ function readData(src) {
     variant: src.variant === 'uni' ? 'uni' : src.variant === 'k12' ? 'k12' : undefined,
     date: new Date().toISOString().slice(0, 10)
   };
+}
+
+/* ---------- lead log: one row per guest in the Chartwells team's Google Sheet (optional) ----------
+   SHEET_WEBHOOK_URL is the sheet's Apps Script web-app address, SHEET_SECRET the shared key it checks.
+   Logging never blocks or fails the guest's email. */
+const POINTS = { A: 1, B: 3, C: 5 };
+const STAGES = [[15, 'Foundation'], [22, 'Emerging'], [30, 'Developing'], [38, 'Advanced'], [45, 'Future-Ready']];
+async function logLead(data, email, phone, status) {
+  const url = process.env.SHEET_WEBHOOK_URL, secret = process.env.SHEET_SECRET;
+  if (!url || !secret) return;
+  const pts = data.answers.map(k => POINTS[k]);
+  const sum = a => a.reduce((x, y) => x + y, 0), total = sum(pts);
+  // a leading = + - @ would make the sheet run the cell as a formula; prefix such cells with an apostrophe
+  const cell = v => /^[=+\-@]/.test(String(v)) ? "'" + v : v;
+  const row = {
+    secret, time: new Date().toISOString(), name: cell(data.lead.name), email: cell(email), phone: cell(phone),
+    role: cell(data.lead.role), institution: cell(data.lead.institution), variant: data.variant || '',
+    total, stage: STAGES.find(s => total <= s[0])[1],
+    nutrition: sum(pts.slice(0, 3)), safety: sum(pts.slice(3, 6)), awareness: sum(pts.slice(6, 9)),
+    answers: data.answers.join(''), status
+  };
+  try { await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(row), signal: AbortSignal.timeout(8000) }); }
+  catch (err) { console.error('sheet log failed:', err.message); }
 }
 
 const BCC = (process.env.REPORT_BCC || '').split(',').map(a => a.trim()).filter(a => /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(a)).slice(0, 3);
@@ -214,8 +239,14 @@ module.exports = async (req, res) => {
     const pdf = await makePdf(data);
     const to = process.env.REPORT_TO_OVERRIDE || email;
     const subject = `${data.lead.name ? data.lead.name.split(' ')[0] + ', your' : 'Your'} Nutrition Readiness Report for ${data.lead.institution || 'your institution'}`;
+    const phone = clip(body.lead && body.lead.phone, 30);
     try { await (via === 'graph' ? sendGraph : sendResend)(to, subject, emailHtml(data), pdf); }
-    catch (err) { console.error('send failed:', err.message); return res.status(502).json({ ok: false, error: 'The email could not be sent' }); }
+    catch (err) {
+      console.error('send failed:', err.message);
+      await logLead(data, email, phone, 'email failed');
+      return res.status(502).json({ ok: false, error: 'The email could not be sent' });
+    }
+    await logLead(data, email, phone, 'sent');
     return res.status(200).json({ ok: true });
   } catch (err) {
     console.error(err);
