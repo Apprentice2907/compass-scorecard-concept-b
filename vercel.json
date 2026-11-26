@@ -7,6 +7,14 @@
     {
       "source": "/chartwells/",
       "destination": "/index.html"
+    },
+    {
+      "source": "/kiosk",
+      "destination": "/kiosk.html"
+    },
+    {
+      "source": "/kiosk/",
+      "destination": "/kiosk.html"
     }
   ],
   "functions": {

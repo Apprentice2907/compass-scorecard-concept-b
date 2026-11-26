@@ -8,7 +8,9 @@
      .setLive(on)     the future-ready life: chefs, crowds, plants, steam
      .pin(i, state)   '', 'current', 'done', 'r1', 'r3', 'r5'
      .highlight(i)    glowing ring at station i (-1 for none)
-     .setSign(text)   .view(i or -1, ms)   .goTo(i)   .resetWalk() */
+     .setSign(text)   .view(i or -1, ms)   .goTo(i)   .resetWalk()
+   Kiosk options (all off by default): zoom (0.5-1, closer overview), focus [x, y] (grid point the overview centres on),
+   drift (slow camera pan on the overview), ambient (number of guests walking the aisles with trays), pixelRatio. */
 (function () {
   const T = window.THREE;
   const RM = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -400,7 +402,7 @@
     el.classList.add('cafe3d');
     if (REAL) el.classList.add('cinematic');
     const renderer = new T.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(REAL ? 1.5 : 2, window.devicePixelRatio || 1));
+    renderer.setPixelRatio(opts.pixelRatio || Math.min(REAL ? 1.5 : 2, window.devicePixelRatio || 1));
     renderer.outputEncoding = T.sRGBEncoding; renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
     renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
     el.appendChild(renderer.domElement);
@@ -456,6 +458,21 @@
       halo.rotation.x = -Math.PI / 2; halo.position.y = .012; me.add(halo); me.userData.halo = halo;
       meLabel = document.createElement('div'); meLabel.className = 'p3-you'; meLabel.textContent = 'YOU'; overlay.appendChild(meLabel);
     }
+    // kiosk: guests walking loops along the aisles, most carrying a tray (opts.ambient = how many)
+    const LOOPS = [
+      [[2.8, 2.45], [7.0, 2.45], [7.0, 5.47], [2.8, 5.47]],
+      [[7.0, 8.9], [7.0, 1.6], [8.8, 1.6], [8.8, 5.2], [7.0, 5.2]],
+      [[2.8, 5.47], [2.8, 2.45], [7.0, 2.45], [7.0, 8.6], [4.6, 8.6], [4.6, 5.47]],
+      [[8.8, 2.35], [10.9, 2.35], [10.9, 2.5], [8.8, 2.5]]
+    ];
+    const SHIRTS = ['#3F97B5', '#EE7624', '#3CBFAE', '#F63440', '#5B4B8A', '#E0A93B', '#2D6E8E', '#8E2C48'];
+    const amb = Array.from({ length: opts.ambient || 0 }, (_, n) => {
+      const pts = LOOPS[n % LOOPS.length], seg = pts.map((p, k) => { const q = pts[(k + 1) % pts.length]; return Math.hypot(q[0] - p[0], q[1] - p[1]); });
+      const len = seg.reduce((a, b) => a + b, 0);
+      const g = person(pts[0][0], pts[0][1], { kid: n % 3 !== 2, tray: n % 4 !== 3, c: SHIRTS[n % SHIRTS.length], s: n % 5 });
+      delete g.userData.bob; scene.add(g);
+      return { g, pts, seg, len, d: (n * 2.9) % len, v: .55 + (n % 3) * .12 };
+    });
     // Jojo, the Compass mascot (internal names still say lisa): walks a step behind the guest
     let lisa = null, lisaLabel = null, lisaBubble = null, lisaFocusOn = false, lpos = null, trail = null;
     const LISA_HOME = [ENTRY[0][0] + .7, ENTRY[0][1] - .5];
@@ -485,13 +502,18 @@
       return { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, w, h };
     }
     // wide, short frames (landing page) get a little margin so the top pins are not cut
-    const fullRect = () => fitRect(roomPts, W / H > 1.15 ? .3 : -.15);
+    const fullRect = () => {
+      const r = fitRect(roomPts, W / H > 1.15 ? .3 : -.15);
+      if (!opts.zoom) return r;
+      const f = toCam(V(...(opts.focus || [6, 5])));
+      return { cx: r.cx + (f.x - r.cx) * .8, cy: r.cy + (f.y - r.cy) * .8, w: r.w * opts.zoom, h: r.h * opts.zoom };
+    };
     function stationRect(i) {
       const z = Z[i], b = z.bb, st = z.stand[z.stand.length - 1];
       const pts = [b.min, b.max, new T.Vector3(b.min.x, b.max.y, b.max.z), new T.Vector3(b.max.x, b.min.y, b.min.z), V(st[0], st[1], 0), V(st[0], st[1], 1.6), z.pinAt];
       const r = fitRect(pts, .9); const m = z.minW || 6.8; if (r.w < m) { r.h *= m / r.w; r.w = m; } return r;
     }
-    function applyRect() { if (!rect) return; camera.left = rect.cx - rect.w / 2; camera.right = rect.cx + rect.w / 2; camera.top = rect.cy + rect.h / 2; camera.bottom = rect.cy - rect.h / 2; camera.updateProjectionMatrix(); }
+    function applyRect(dx = 0, dy = 0) { if (!rect) return; camera.left = rect.cx + dx - rect.w / 2; camera.right = rect.cx + dx + rect.w / 2; camera.top = rect.cy + dy + rect.h / 2; camera.bottom = rect.cy + dy - rect.h / 2; camera.updateProjectionMatrix(); }
     // cinematic mode: a real lens, gliding between stations, plus post effects
     const persp = new T.PerspectiveCamera(28, 1, .1, 200);
     const DIR = new T.Vector3(1, .6, 1.08).normalize();
@@ -609,6 +631,21 @@
       requestAnimationFrame(frame);
       if (!W || !H || !el.clientWidth) return;
       if (tw) { const p = Math.min(1, (now - tw.t0) / tw.ms), e = ease(p); rect = { cx: tw.from.cx + (tw.to.cx - tw.from.cx) * e, cy: tw.from.cy + (tw.to.cy - tw.from.cy) * e, w: tw.from.w + (tw.to.w - tw.from.w) * e, h: tw.from.h + (tw.to.h - tw.from.h) * e }; applyRect(); if (p >= 1) tw = null; }
+      if (opts.drift && !REAL && viewing < 0 && !tw && rect && !lisaFocusOn && !RM()) {
+        const s = now / 1000; applyRect(Math.sin(s * .11) * rect.w * .07, Math.sin(s * .083 + 1) * rect.h * .05);
+      }
+      if (amb.length) {
+        const dt = Math.min(.05, (now - (frame.last || now)) / 1000);
+        amb.forEach(a => {
+          if (!RM()) a.d = (a.d + a.v * dt) % a.len;
+          let d = a.d, k = 0; while (d > a.seg[k]) { d -= a.seg[k]; k++; }
+          const p = a.pts[k], q = a.pts[(k + 1) % a.pts.length], f = a.seg[k] ? d / a.seg[k] : 0;
+          a.g.position.set(p[0] + (q[0] - p[0]) * f, Math.abs(Math.sin(now / 1000 * 9 + a.v * 7)) * .045, p[1] + (q[1] - p[1]) * f);
+          const face = Math.atan2(q[0] - p[0], q[1] - p[1]);
+          a.g.rotation.y += Math.atan2(Math.sin(face - a.g.rotation.y), Math.cos(face - a.g.rotation.y)) * .2;
+        });
+      }
+      frame.last = now;
       Z.forEach(z => ['base', 'l1', 'l3', 'l5', 'fx'].forEach(k => {
         const g = z.layers[k], u = g.userData; if (!u.t0) return;
         const p = Math.max(0, Math.min(1, (now - u.t0) / u.dur)); if (now < u.t0) return;

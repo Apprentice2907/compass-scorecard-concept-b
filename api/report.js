@@ -109,7 +109,7 @@ function scoreOf(data) {
   const sum = a => a.reduce((x, y) => x + y, 0), total = sum(pts);
   return { total, stage: STAGES.find(s => total <= s[0])[1], nutrition: sum(pts.slice(0, 3)), safety: sum(pts.slice(3, 6)), awareness: sum(pts.slice(6, 9)) };
 }
-async function logLead(data, email, phone, status) {
+async function logLead(data, email, phone, status, appNo = '') {
   const url = process.env.SHEET_WEBHOOK_URL, secret = process.env.SHEET_SECRET;
   if (!url || !secret) return;
   const sc = scoreOf(data);
@@ -119,7 +119,7 @@ async function logLead(data, email, phone, status) {
     secret, time: new Date().toISOString(), name: cell(data.lead.name), email: cell(email), phone: cell(phone),
     role: cell(data.lead.role), institution: cell(data.lead.institution), variant: data.variant || '',
     total: sc.total, stage: sc.stage, nutrition: sc.nutrition, safety: sc.safety, awareness: sc.awareness,
-    answers: data.answers.join(''), status
+    answers: data.answers.join(''), appNo, status: appNo ? status + ' · App ' + appNo : status
   };
   try { await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(row), signal: AbortSignal.timeout(8000) }); }
   catch (err) { console.error('sheet log failed:', err.message); }
@@ -142,16 +142,16 @@ function emailHtml(d) {
 }
 
 // the details email the Chartwells contact gets for each guest (internal; reply goes straight to the guest)
-function teamHtml(d, email, phone, status) {
+function teamHtml(d, email, phone, status, appNo = '') {
   const sc = scoreOf(d);
   const row = (k, v) => `<tr><td style="padding:6px 12px 6px 0;color:#5A6170;vertical-align:top;width:38%">${k}</td><td style="padding:6px 0;font-weight:bold;vertical-align:top;word-break:break-word">${v || '–'}</td></tr>`;
   const when = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;color:#14181F;max-width:560px">
-<p style="margin:0 0 4px;font-size:16px;font-weight:bold">New guest at the Nutrition Readiness check</p>
-<p style="margin:0 0 14px;color:#5A6170">${when} IST · their report is attached · reply to this email to write to the guest</p>
+<p style="margin:0 0 4px;font-size:16px;font-weight:bold">${status === 'registered' ? 'Guest registered with the sales team' : 'New guest at the Nutrition Readiness check'}</p>
+<p style="margin:0 0 14px;color:#5A6170">${when} IST · their report is attached${status === 'registered' ? ' · match this application number to the details the sales team noted' : ' · reply to this email to write to the guest'}</p>
 <table style="border-collapse:collapse;font-size:14px;width:100%;table-layout:fixed">
-${row('Name', esc(d.lead.name))}${row('Email', esc(email))}${row('Phone', esc(phone))}${row('Role', esc(d.lead.role))}${row('Institution', esc(d.lead.institution))}${row('Type', d.variant === 'uni' ? 'Higher Ed' : 'K-12')}
-${row('Score', sc.total + ' / 45 · ' + sc.stage + ' stage')}${row('Nutrition', sc.nutrition + ' / 15')}${row('Food Safety', sc.safety + ' / 15')}${row('Awareness &amp; Sustain&shy;ability', sc.awareness + ' / 15')}${row('Report email', status === 'sent' ? 'Sent to the guest' : 'Could not be sent to the guest: please send them this PDF')}
+${appNo ? row('Application no.', esc(appNo)) : ''}${row('Name', esc(d.lead.name))}${row('Email', esc(email))}${row('Phone', esc(phone))}${row('Role', esc(d.lead.role))}${row('Institution', esc(d.lead.institution))}${row('Type', d.variant === 'uni' ? 'Higher Ed' : 'K-12')}
+${row('Score', sc.total + ' / 45 · ' + sc.stage + ' stage')}${row('Nutrition', sc.nutrition + ' / 15')}${row('Food Safety', sc.safety + ' / 15')}${row('Awareness &amp; Sustain&shy;ability', sc.awareness + ' / 15')}${row('Report email', status === 'sent' ? 'Sent to the guest' : status === 'registered' ? 'Not sent: the guest registered with the sales team, please send them this PDF' : 'Could not be sent to the guest: please send them this PDF')}
 </table>
 </div>`;
 }
@@ -245,6 +245,22 @@ module.exports = async (req, res) => {
     body = body || {};
     if (Buffer.byteLength(JSON.stringify(body)) > MAX_BODY) return res.status(413).json({ ok: false, error: 'Request too large' });
 
+    const appNo = /^\d{3,6}$/.test(String(body.appNo || '')) ? String(body.appNo) : '';
+    // kiosk: the guest chose to register with the sales team instead of typing their details.
+    // No personal data comes in; the team gets the result and the PDF under the application number.
+    if (body.register === true) {
+      if (!appNo) return res.status(400).json({ ok: false, error: 'An application number is required' });
+      const data = readData({ answers: Array.isArray(body.answers) ? body.answers.join('') : '', lead: {}, variant: body.variant });
+      if (!process.env.EVENT_KEY && limited('ip:' + ip, 100, 10 * 60e3)) return res.status(429).json({ ok: false, error: 'Too many requests' });
+      const via = provider();
+      if (TEAM.length && via) {
+        const sc = scoreOf(data);
+        try { await (via === 'graph' ? sendGraph : sendResend)(TEAM, `Registered with sales team: Application ${appNo} (${sc.total}/45)`, teamHtml(data, '', '', 'registered', appNo), await makePdf(data)); }
+        catch (err) { console.error('team email failed:', err.message); }
+      }
+      await logLead(data, '', '', 'registered with sales person', appNo);
+      return res.status(200).json({ ok: true });
+    }
     if (body.consent !== true) return res.status(400).json({ ok: false, error: 'Consent is required' });
     const email = clip(body.lead && body.lead.email, 120);
     if (!EMAIL.test(email)) return res.status(400).json({ ok: false, error: 'A valid email is required' });
@@ -265,11 +281,11 @@ module.exports = async (req, res) => {
     // the Chartwells contact gets the guest's details and report either way, so no guest is lost
     if (TEAM.length) {
       const sc = scoreOf(data);
-      const teamSubject = `New guest: ${data.lead.name || email}${data.lead.institution ? ', ' + data.lead.institution : ''} (${sc.total}/45)`;
-      try { await send(TEAM, teamSubject, teamHtml(data, email, phone, status), pdf, email); }
+      const teamSubject = `New guest: ${data.lead.name || email}${data.lead.institution ? ', ' + data.lead.institution : ''} (${sc.total}/45)${appNo ? ' · App ' + appNo : ''}`;
+      try { await send(TEAM, teamSubject, teamHtml(data, email, phone, status, appNo), pdf, email); }
       catch (err) { console.error('team email failed:', err.message); }
     }
-    await logLead(data, email, phone, status);
+    await logLead(data, email, phone, status, appNo);
     if (status !== 'sent') return res.status(502).json({ ok: false, error: 'The email could not be sent' });
     return res.status(200).json({ ok: true });
   } catch (err) {

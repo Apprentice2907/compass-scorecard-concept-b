@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<base href="/">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How good is your cafeteria? · Chartwells</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+  /* Kiosk version for a portrait totem (1080 x 1920): top half talks, bottom half shows the cafeteria.
+     Everything is sized in container units (cqw) so it scales with the screen. */
+  @font-face { font-family: 'Brand Arial'; src: local('Arial'), local('ArialMT'); font-weight: 100 549; }
+  @font-face { font-family: 'Brand Arial'; src: local('Arial Bold'), local('Arial-BoldMT'); font-weight: 550 1000; }
+  :root {
+    --navy: #1D355E; --navy-2: #13264A; --yellow: #FFC845; --pink: #ED9CAD; --red: #F63440; --teal: #3CBFAE; --orange: #EE7624; --blue: #3F97B5;
+    --low: #C0392B; --mid: #D68A1A; --strong: #3E7D3A; --ink: #14181F; --scene: #F3EEE7; --ease: cubic-bezier(.2,.8,.2,1);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; background: #0B1730; overflow: hidden; }
+  body { font-family: 'Brand Arial', Arial, Helvetica, sans-serif; color: #fff; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+  /* the totem is 9:16; on any other screen the kiosk keeps that shape, centred */
+  .kiosk { position: relative; width: min(100vw, 56.25vh); height: min(100vh, 177.78vw); margin: 0 auto; top: 50%; translate: 0 -50%; container-type: size; overflow: hidden; background: var(--navy); display: grid; grid-template-rows: 46cqh 54cqh; transition: grid-template-rows .6s var(--ease); }
+  .kiosk.tall { grid-template-rows: 56cqh 44cqh; }
+  .kiosk.tall.xl { grid-template-rows: 63cqh 37cqh; }
+  .kiosk.tall .brand { height: 8cqw; margin-bottom: 1cqw; }
+  .kiosk.tall .top { background-image: none; }
+
+  /* ---------- top half ---------- */
+  .top { position: relative; padding: 4cqw 7cqw 3.5cqw; display: flex; flex-direction: column; min-height: 0;
+    background-color: var(--navy);
+    background-image: radial-gradient(circle at 88% 14%, rgba(255,200,69,.55) 0 2.2cqw, transparent 2.3cqw), radial-gradient(circle at 94% 26%, rgba(237,156,173,.55) 0 1.5cqw, transparent 1.6cqw), radial-gradient(circle at 82% 30%, rgba(60,191,174,.5) 0 1.1cqw, transparent 1.2cqw), radial-gradient(circle at 92% 40%, rgba(246,52,64,.45) 0 .8cqw, transparent .9cqw); }
+  .brand { display: flex; align-items: center; gap: 4cqw; height: 11cqw; flex: none; margin-bottom: 2cqw; }
+  .brand img { height: 100%; width: auto; display: block; }
+  .brand .sep { width: 2px; height: 70%; background: rgba(255,255,255,.35); }
+  .view { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: safe center; animation: viewIn .45s var(--ease) both; }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(2cqw); } }
+  .home, .res { display: flex; flex-direction: column; }
+  .eyebrow { margin: 0 0 2cqw; color: var(--yellow); font-weight: 800; font-size: 3.2cqw; letter-spacing: .14em; text-transform: uppercase; }
+  h1 { margin: 0; font-size: 9cqw; line-height: 1.02; font-weight: 800; letter-spacing: -.02em; }
+  h1 em { font-style: normal; color: var(--yellow); }
+  .lead { margin: 2cqw 0 0; font-size: 4.2cqw; line-height: 1.3; color: rgba(255,255,255,.88); }
+  .lead b { color: #fff; }
+  .cta { margin-top: 4cqw; display: inline-flex; align-items: center; justify-content: center; gap: 3cqw; align-self: flex-start; min-width: 62cqw; padding: 3.8cqw 8cqw; border: 0; border-radius: 999px; background: var(--yellow); color: var(--navy); font: 800 6.4cqw 'Brand Arial', Arial, sans-serif; letter-spacing: .01em; cursor: pointer; box-shadow: 0 2cqw 5cqw -1.5cqw rgba(0,0,0,.55); animation: ctaPulse 2.4s ease-in-out infinite; }
+  .cta .arr { font-size: 1.1em; }
+  .cta:active { transform: scale(.97); }
+  @keyframes ctaPulse { 0%, 100% { box-shadow: 0 2cqw 5cqw -1.5cqw rgba(0,0,0,.55), 0 0 0 0 rgba(255,200,69,.55); } 50% { box-shadow: 0 2cqw 5cqw -1.5cqw rgba(0,0,0,.55), 0 0 0 3cqw rgba(255,200,69,0); } }
+  .ghost { margin-top: 3cqw; align-self: flex-start; background: none; border: 2px solid rgba(255,255,255,.5); color: #fff; border-radius: 999px; padding: 3cqw 6cqw; font: 700 4.2cqw 'Brand Arial', Arial, sans-serif; cursor: pointer; }
+  .hint { margin: 4cqw 0 0; font-size: 3.4cqw; color: rgba(255,255,255,.7); display: flex; align-items: center; gap: 2cqw; }
+  .hint i { font-style: normal; display: inline-grid; place-items: center; width: 6cqw; height: 6cqw; border-radius: 50%; background: rgba(255,255,255,.15); }
+
+  /* question */
+  .qbar { display: flex; align-items: center; justify-content: space-between; gap: 3cqw; margin-bottom: 3cqw; }
+  .qcount { font-size: 3.4cqw; font-weight: 800; color: rgba(255,255,255,.75); letter-spacing: .06em; }
+  .dots { display: flex; gap: 1.2cqw; }
+  .dots i { width: 2.6cqw; height: 2.6cqw; border-radius: 50%; background: rgba(255,255,255,.2); }
+  .dots i.on { background: var(--c); } .dots i.now { background: #fff; box-shadow: 0 0 0 .8cqw rgba(255,255,255,.25); }
+  .back { background: none; border: 0; color: rgba(255,255,255,.75); font: 700 3.6cqw 'Brand Arial', Arial, sans-serif; padding: 1cqw 0; cursor: pointer; }
+  .area { display: inline-flex; align-items: center; gap: 2cqw; font-size: 3.4cqw; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--c); margin: 0 0 1.5cqw; }
+  .area::before { content: ''; width: 3cqw; height: 3cqw; border-radius: 50%; background: var(--c); }
+  .qtext { margin: 0 0 3.5cqw; font-size: 7cqw; line-height: 1.15; font-weight: 800; }
+  .opts { display: grid; gap: 2cqw; }
+  .opt { display: grid; grid-template-columns: 6.5cqw 1fr; align-items: center; gap: 3cqw; text-align: left; width: 100%; border: 2px solid rgba(255,255,255,.22); background: rgba(255,255,255,.07); color: #fff; border-radius: 3cqw; padding: 2.6cqw 3.2cqw; cursor: pointer; font-family: inherit; animation: optIn .4s var(--ease) both; }
+  .opt:nth-child(2) { animation-delay: .06s; } .opt:nth-child(3) { animation-delay: .12s; }
+  @keyframes optIn { from { opacity: 0; transform: translateY(2cqw); } }
+  .opt .k { display: grid; place-items: center; width: 6.5cqw; height: 6.5cqw; border-radius: 50%; background: rgba(255,255,255,.14); font-size: 3.8cqw; font-weight: 800; }
+  .opt b { display: block; font-size: 4.6cqw; line-height: 1.15; }
+  .opt small { display: block; margin-top: .6cqw; font-size: 3cqw; line-height: 1.3; color: rgba(255,255,255,.72); }
+  .opt.picked { background: var(--yellow); border-color: var(--yellow); color: var(--navy); }
+  .opt.picked .k { background: var(--navy); color: var(--yellow); } .opt.picked small { color: rgba(29,53,94,.8); }
+
+  /* result */
+  .appno { display: inline-flex; align-items: baseline; gap: 2cqw; align-self: flex-start; background: rgba(255,255,255,.1); border-radius: 999px; padding: 1.2cqw 3.6cqw; font-size: 3.2cqw; font-weight: 700; color: rgba(255,255,255,.8); margin-bottom: 1.5cqw; }
+  .appno b { color: var(--yellow); font-size: 4.2cqw; letter-spacing: .08em; }
+  .score { display: flex; align-items: center; gap: 5cqw; }
+  .big { font-size: 18cqw; line-height: .9; font-weight: 800; letter-spacing: -.04em; }
+  .big span { font-size: 6cqw; letter-spacing: 0; color: rgba(255,255,255,.6); margin-left: 1cqw; }
+  .stage { display: inline-block; margin-top: 1.5cqw; padding: 1.2cqw 3.4cqw; border-radius: 999px; background: var(--stage, var(--mid)); font-size: 4cqw; font-weight: 800; }
+  .bars { display: grid; gap: 1.4cqw; margin-top: 2.5cqw; }
+  .bars div { display: grid; grid-template-columns: 30cqw 1fr 9cqw; align-items: center; gap: 2.5cqw; font-size: 3.2cqw; }
+  .bars i { height: 2.2cqw; border-radius: 99px; background: rgba(255,255,255,.15); overflow: hidden; }
+  .bars u { display: block; height: 100%; border-radius: 99px; background: var(--c); width: 0; transition: width 1s var(--ease) .3s; }
+  .bars b { text-align: right; }
+  .ask { margin: 3cqw 0 0; font-size: 4.4cqw; font-weight: 800; }
+  .row { display: flex; flex-wrap: wrap; gap: 2.5cqw; align-items: center; }
+  .row .cta { margin-top: 2.5cqw; min-width: 0; padding: 3.6cqw 6cqw; font-size: 5cqw; }
+  .row .ghost { margin-top: 2.5cqw; }
+
+  /* form */
+  .form { display: grid; grid-template-columns: 1fr 1fr; gap: 1.8cqw 2.5cqw; margin-top: 2cqw; }
+  .form > .wide { grid-column: 1 / -1; }
+  .form label { display: grid; gap: .8cqw; font-size: 3.2cqw; font-weight: 700; color: rgba(255,255,255,.85); }
+  .form input[type=text], .form input[type=email], .form input[type=tel] { font: 400 4.6cqw 'Brand Arial', Arial, sans-serif; padding: 2.2cqw 2.6cqw; border-radius: 2.2cqw; border: 2px solid transparent; background: #fff; color: var(--ink); width: 100%; user-select: text; -webkit-user-select: text; }
+  .form input:focus { outline: none; border-color: var(--yellow); }
+  .form .consent { grid-template-columns: 6cqw 1fr; align-items: start; gap: 2cqw; font-weight: 400; font-size: 3cqw; color: rgba(255,255,255,.8); }
+  .form .consent input { width: 5cqw; height: 5cqw; margin: .3cqw 0 0; accent-color: var(--yellow); }
+  .form .row .cta { animation: none; }
+  .err { color: #FFB4A8; font-size: 3.2cqw; margin: 0; min-height: 1em; }
+
+  /* done / registered */
+  .ticket { margin-top: 2.5cqw; align-self: flex-start; background: #fff; color: var(--navy); border-radius: 4cqw; padding: 3cqw 6cqw; box-shadow: 0 2cqw 6cqw -2cqw rgba(0,0,0,.6); }
+  .ticket small { display: block; font-size: 3.4cqw; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #2A9A8B; }
+  .ticket b { display: block; font-size: 13cqw; line-height: 1; letter-spacing: .06em; }
+  .countdown { margin-top: 3cqw; font-size: 3.2cqw; color: rgba(255,255,255,.6); }
+
+  /* ---------- bottom half: the cafeteria ---------- */
+  .stagebox { position: relative; overflow: hidden; background: var(--scene); }
+  .s3 { position: absolute; inset: 0; }
+  .s3 canvas { display: block; width: 100% !important; height: 100% !important; }
+  .s3.after { clip-path: inset(0 0 0 var(--split, 50%)); }
+  .stagebox.single .s3.after, .stagebox.single .handle, .stagebox.single .tag { display: none; }
+  .stagebox::before { content: ''; position: absolute; inset: 0 0 auto; height: 6cqw; background: linear-gradient(rgba(29,53,94,.35), transparent); z-index: 3; pointer-events: none; }
+  .handle { position: absolute; top: 0; bottom: 0; left: var(--split, 50%); width: 0; z-index: 4; pointer-events: none; }
+  .handle::before { content: ''; position: absolute; top: 0; bottom: 0; left: -2px; width: 4px; background: #fff; box-shadow: 0 0 2cqw rgba(0,0,0,.3); }
+  .handle span { position: absolute; top: 50%; left: 0; translate: -50% -50%; width: 13cqw; height: 13cqw; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; font-size: 5.5cqw; font-weight: 800; box-shadow: 0 1.5cqw 4cqw -1cqw rgba(0,0,0,.55); border: .7cqw solid #fff; }
+  .drag { position: absolute; inset: 0; z-index: 5; cursor: ew-resize; touch-action: none; }
+  .stagebox.single .drag { display: none; }
+  .tag { position: absolute; top: 3cqw; z-index: 4; padding: 1.6cqw 3.4cqw; border-radius: 999px; font-size: 3.2cqw; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; pointer-events: none; box-shadow: 0 1cqw 3cqw -1cqw rgba(0,0,0,.4); }
+  .tag.l { left: 3cqw; background: #fff; color: var(--navy); }
+  .tag.r { right: 3cqw; background: var(--teal); color: #fff; }
+  /* Jojo, the Compass mascot, speaks from the corner of the cafeteria (as in the main quiz) */
+  .jojo { position: absolute; left: 2.5cqw; right: 2.5cqw; bottom: 2.5cqw; z-index: 6; display: flex; align-items: flex-end; gap: 1.5cqw; pointer-events: none; }
+  .jojo img { width: 15cqw; height: auto; flex: none; filter: drop-shadow(0 1.5cqw 1.5cqw rgba(29,53,94,.35)); }
+  .jojo div { position: relative; margin-bottom: 4cqw; background: #fff; color: var(--ink); border: 2px solid #E2554C; border-radius: 3.5cqw; padding: 2cqw 3cqw; box-shadow: 0 2cqw 4cqw -2cqw rgba(29,53,94,.55); max-width: 76cqw; }
+  .jojo div::before { content: ''; position: absolute; left: -2.2cqw; bottom: 2.5cqw; width: 3.5cqw; height: 3.5cqw; background: #fff; border-left: 2px solid #E2554C; border-bottom: 2px solid #E2554C; transform: rotate(45deg); }
+  .jojo b { display: block; font-size: 2.6cqw; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #C2412F; }
+  .jojo p { margin: .4cqw 0 0; font-size: 3.4cqw; line-height: 1.35; }
+  .jojo.pop div { animation: bubIn .5s var(--ease) both; }
+  .jojo[hidden] { display: none; }
+  @keyframes bubIn { from { opacity: 0; transform: translateY(2cqw) scale(.96); } }
+  .kiosk.tall .jojo img { width: 11cqw; } .kiosk.tall .jojo p { font-size: 3.1cqw; }
+  .p3-you { position: absolute; left: 0; top: 0; translate: -50% -100%; background: var(--navy); color: var(--yellow); font: 800 2.4cqw 'Brand Arial', Arial, sans-serif; letter-spacing: .1em; padding: .8cqw 2cqw; border-radius: 999px; box-shadow: 0 1cqw 2cqw -1cqw rgba(0,0,0,.5); }
+  .p3-you.p3-lisa { background: #E2554C; color: #fff; }
+  .p3-bubble { display: none !important; }
+
+  /* 3D pins (from the main quiz) */
+  .c3-overlay { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .p3 { --pc: var(--pc0); position: absolute; left: 0; top: 0; width: 6cqw; height: 6cqw; margin: -3cqw 0 0 -3cqw; border-radius: 50%; background: #fff; border: 2px solid var(--pc); color: var(--pc); font: 800 3cqw/5.4cqw 'Brand Arial', Arial, sans-serif; text-align: center; box-shadow: 0 1cqw 2cqw -1cqw rgba(30,27,24,.45); }
+  .p3.current { background: var(--pc); color: #fff; animation: p3pulse 1.2s ease-in-out infinite; }
+  .p3.done { background: var(--pc); color: #fff; }
+  .p3.r1 { --pc: var(--low); background: var(--pc); color: #fff; } .p3.r3 { --pc: var(--mid); background: var(--pc); color: #fff; } .p3.r5 { --pc: var(--strong); background: var(--pc); color: #fff; }
+  .p3.hide { display: none; }
+  @keyframes p3pulse { 50% { box-shadow: 0 0 0 2cqw transparent, 0 0 0 1cqw rgba(255,255,255,.6); } }
+
+  /* scoring wait */
+  .spin { width: 14cqw; height: 14cqw; border-radius: 50%; border: 1.6cqw solid rgba(255,255,255,.15); border-top-color: var(--yellow); animation: spin .9s linear infinite; margin-bottom: 4cqw; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="kiosk" id="kiosk">
+  <section class="top">
+    <div class="brand" aria-label="Chartwells by Compass Group">
+      <img src="img/chartwells-logo-white.svg" alt="Chartwells">
+      <span class="sep" aria-hidden="true"></span>
+      <img src="img/compass-logo-white.png" alt="Compass Group">
+    </div>
+    <div class="view" id="view"></div>
+  </section>
+  <section class="stagebox" id="stage">
+    <div class="s3 before" id="before"></div>
+    <div class="s3 after" id="after"></div>
+    <span class="tag l" id="tagL">Typical cafeteria</span>
+    <span class="tag r" id="tagR">Future-ready</span>
+    <div class="handle" id="handle"><span aria-hidden="true">‹ ›</span></div>
+    <div class="drag" id="drag" role="slider" aria-label="Compare the two cafeterias" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0"></div>
+    <div class="jojo" id="jojo" role="status" aria-live="polite"><img src="img/juju.png" alt="" width="197" height="240"><div><b>Jojo</b><p id="cap"></p></div></div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="cafe3d.js?v=20261126k"></script>
+<script src="quiz-data.js?v=20261123a"></script>
+<script>
+(function () {
+  'use strict';
+  const Q = window.QUIZ, N = Q.questions.length, RM = Q.reducedMotion();
+  const PCOL = ['#EE7624', '#3F97B5', '#2E9E8F'];
+  const ORDER = [0, 1, 2, 3, 4, 5, 6, 8, 7];          // same station order as the main quiz
+  const IDLE_MS = 75000;                               // back to the start after this long untouched
+  const $ = id => document.getElementById(id);
+  const h = (tag, props = {}, kids = []) => { const e = document.createElement(tag); Object.assign(e, props); kids.forEach(k => k != null && e.append(k)); return e; };
+  const view = $('view'), stage = $('stage'), kiosk = $('kiosk');
+  const JOJO_TIPS = [ // same tips as the main quiz (Compass nutrition team's notes)
+    'Many institution menus are planned to fill plates. Planning protein and fibre first is where nutrition starts.',
+    'A nutrient check for each meal shows exactly where a menu stands.',
+    'Sugar, salt and fried food add up over a week. Clear limits keep the whole menu balanced.',
+    'Written checklists and regular audits turn good habits into proof.',
+    'One clear allergen process, from recipe to counter, protects every child at every meal.',
+    'Tracking plate waste shows which dishes students actually enjoy.',
+    'Children fed well also need to learn to choose well.',
+    'Seasonal, local food cuts waste and adds variety to the menu.',
+    'When institution meals connect with home, healthy habits last.'
+  ];
+  const cap = { set textContent(t) { say(t); } };
+  function say(t) { const j = $('jojo'); if (!t) { j.hidden = true; return; } $('cap').textContent = t; j.hidden = false; j.classList.remove('pop'); void j.offsetWidth; j.classList.add('pop'); }
+  let timers = [];
+  const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+  const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+  function show(nodes) { view.replaceChildren(...nodes); view.style.animation = 'none'; void view.offsetWidth; view.style.animation = ''; }
+
+  /* ---------- the cafeteria: two scenes, same camera, split by a drag line ---------- */
+  const has3D = !!(window.THREE && window.Cafe3D);
+  const base = { colors: Q.questions.map(q => PCOL[q.pillar]), order: ORDER, zoom: .62, focus: [6.2, 5.2], drift: true, pixelRatio: Math.min(1.5, window.devicePixelRatio || 1) };
+  const before = has3D ? Cafe3D.create($('before'), Object.assign({}, base, { ambient: 2, walker: true, lisa: true })) : null;
+  const after = has3D ? Cafe3D.create($('after'), Object.assign({}, base, { ambient: 7 })) : null;
+  const pins = (k, st) => { for (let i = 0; i < N; i++) k.pin(i, st); };
+  function sceneTypical() {     // home: an everyday cafeteria against a future-ready one
+    if (!has3D) return;
+    for (let i = 0; i < N; i++) { before.setLevel(i, 1); after.setLevel(i, 5); }
+    before.setLive(false); after.setLive(true); pins(before, 'hide'); pins(after, 'hide');
+    before.highlight(-1); before.setSign('YOUR CAFETERIA'); after.setSign('FUTURE-READY');
+    before.resetWalk(); before.view(-1, 900); after.view(-1, 900);
+  }
+  let split = 50, auto = null;
+  function setSplit(v) { split = Math.max(4, Math.min(96, v)); stage.style.setProperty('--split', split + '%'); $('drag').setAttribute('aria-valuenow', Math.round(split)); }
+  function sweep(on) {         // the line glides on its own until someone touches it
+    cancelAnimationFrame(auto); auto = null; if (!on || RM) return;
+    const t0 = performance.now(), from = split;
+    const tick = now => { const s = (now - t0) / 1000; setSplit(50 + Math.sin(s * .55 + Math.asin(Math.max(-1, Math.min(1, (from - 50) / 30)))) * 30); auto = requestAnimationFrame(tick); };
+    auto = requestAnimationFrame(tick);
+  }
+  (function dragLine() {
+    const d = $('drag'); let down = false;
+    const at = e => { const r = d.getBoundingClientRect(); setSplit((e.clientX - r.left) / r.width * 100); };
+    d.addEventListener('pointerdown', e => { down = true; sweep(false); d.setPointerCapture(e.pointerId); at(e); });
+    d.addEventListener('pointermove', e => { if (down) at(e); });
+    ['pointerup', 'pointercancel'].forEach(ev => d.addEventListener(ev, () => { down = false; }));
+    d.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') setSplit(split - 5); if (e.key === 'ArrowRight') setSplit(split + 5); });
+  })();
+  function compare(on, left, right) { stage.classList.toggle('single', !on); if (left) $('tagL').textContent = left; if (right) $('tagR').textContent = right; }
+
+  /* ---------- application number: 0351, 0352 ... on this screen ---------- */
+  const APP_KEY = 'kiosk-next-app-no', APP_START = 351;
+  function nextAppNo() {
+    let n = APP_START;
+    try { n = Math.max(APP_START, parseInt(localStorage.getItem(APP_KEY), 10) || APP_START); localStorage.setItem(APP_KEY, String(n + 1)); } catch (err) { n = APP_START + Math.floor(Date.now() / 1000) % 9000; }
+    return String(n).padStart(4, '0');
+  }
+
+  /* ---------- sending, with a backup of every guest kept on this screen ---------- */
+  const OUTBOX = 'readiness-outbox', BACKUP = 'readiness-backup';
+  const load = k => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch (err) { return []; } };
+  const save = (k, list, max) => { try { localStorage.setItem(k, JSON.stringify(list.slice(-max))); } catch (err) { /* storage full or blocked */ } };
+  const markBackup = (id, f) => save(BACKUP, load(BACKUP).map(r => r.id === id ? Object.assign(r, f) : r), 2000);
+  const post = job => fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(job) })
+    .then(r => r.json().catch(() => ({})).then(j => { if (!j.ok && (r.status >= 500 && r.status !== 503)) throw new Error(j.error || r.status); return j; }));
+  function submit(job, row) {
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    job.id = id;
+    save(BACKUP, load(BACKUP).concat(Object.assign({ id, time: new Date().toISOString(), answers: job.answers.join(''), email_status: 'sending', note: '' }, row)), 2000);
+    post(job).then(j => markBackup(id, { email_status: j.ok ? (job.register ? 'registered with sales team' : 'sent') : 'not sent: ' + (j.error || '') }))
+      .catch(() => { markBackup(id, { email_status: 'waiting for internet' }); save(OUTBOX, load(OUTBOX).concat(job), 200); });
+  }
+  function flush() {
+    const list = load(OUTBOX); if (!list.length || navigator.onLine === false) return;
+    save(OUTBOX, [], 200);
+    list.forEach(job => post(job).then(j => markBackup(job.id, { email_status: j.ok ? (job.register ? 'registered (after retry)' : 'sent (after retry)') : 'not sent: ' + (j.error || '') })).catch(() => save(OUTBOX, load(OUTBOX).concat(job), 200)));
+  }
+  window.addEventListener('online', flush); setInterval(flush, 60000); setTimeout(flush, 3000);
+
+  /* ---------- screens ---------- */
+  let answers = new Array(N).fill(null), appNo = null, busy = false;
+  let idleT = 0;
+  const onHome = () => !!view.querySelector('.home');
+  function resetIdle() { clearTimeout(idleT); idleT = setTimeout(() => { if (!onHome()) home(); }, IDLE_MS); }
+  ['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, resetIdle, true));
+
+  function home() {
+    clearTimers(); answers = new Array(N).fill(null); appNo = null; busy = false;
+    kiosk.classList.remove('tall', 'xl');
+    sceneTypical(); compare(true, 'Typical cafeteria', 'Future-ready'); setSplit(50); sweep(true);
+    cap.textContent = 'Hi, I am Jojo. Drag the line to compare a typical cafeteria with a future-ready one, then tap Take the quiz.';
+    const go = h('button', { className: 'cta', type: 'button' }, [h('span', { textContent: 'Take the quiz' }), h('span', { className: 'arr', textContent: '→', ariaHidden: 'true' })]);
+    go.onclick = () => question(0);
+    show([h('div', { className: 'home' }, [
+      h('p', { className: 'eyebrow', textContent: 'Nutrition Readiness Check' }),
+      h('h1', {}, ['How good is ', h('em', { textContent: 'your cafeteria?' })]),
+      h('p', { className: 'lead' }, [h('b', { textContent: 'Find out in 60 seconds.' }), ' 9 quick questions, your score, and a look at your cafeteria future-ready.']),
+      go
+    ])]);
+  }
+
+  function question(i) {
+    clearTimers(); busy = false; sweep(false); compare(false); kiosk.classList.add('tall'); kiosk.classList.remove('xl');
+    if (has3D) {
+      if (i === 0) { for (let k = 0; k < N; k++) before.setLevel(k, 0); before.setLive(false); before.setSign('YOUR CAFETERIA'); }
+      for (let k = 0; k < N; k++) { before.setLevel(k, answers[k] ? Q.level(k, answers[k]) : (k === i ? 1 : 0)); before.pin(k, k === i ? 'current' : answers[k] ? 'done' : 'hide'); }
+      before.highlight(i); before.goTo(i);
+    }
+    const q = Q.questions[i], p = q.pillar;
+    cap.textContent = JOJO_TIPS[i];
+    const back = h('button', { className: 'back', type: 'button', textContent: i ? '← Back' : '← Start' });
+    back.onclick = () => (i ? question(i - 1) : home());
+    const dots = h('span', { className: 'dots', ariaHidden: 'true' }, answers.map((a, k) => { const d = h('i', { className: k === i ? 'now' : a ? 'on' : '' }); d.style.setProperty('--c', PCOL[Q.questions[k].pillar]); return d; }));
+    const opts = q.options.map(o => {
+      const b = h('button', { className: 'opt' + (answers[i] === o.key ? ' picked' : ''), type: 'button' }, [h('span', { className: 'k', textContent: o.key, ariaHidden: 'true' }), h('span', {}, [h('b', { textContent: o.headline })])]);
+      b.onclick = () => pick(i, o.key, b);
+      return b;
+    });
+    const area = h('p', { className: 'area', textContent: Q.pillars[p].name }); area.style.setProperty('--c', PCOL[p]);
+    show([h('div', { className: 'qbar' }, [back, dots, h('span', { className: 'qcount', textContent: (i + 1) + ' / ' + N })]),
+      area, h('h2', { className: 'qtext', textContent: q.text }), h('div', { className: 'opts', role: 'group', ariaLabel: 'Answers' }, opts)]);
+    fitText();
+  }
+  // long questions: shrink the question (then the answers) until all three answers are on screen.
+  // The top half grows over .6 s when the quiz starts, so measure again once it has.
+  function fitText() {
+    const run = () => {
+      const qt = view.querySelector('.qtext'); if (!qt) return;
+      const W = view.clientWidth / 100; let f = 6.6, o = 4.6, pad = 2.6;
+      const set = () => { qt.style.fontSize = (f * W) + 'px'; view.querySelectorAll('.opt').forEach(b => { b.style.paddingBlock = (pad * W) + 'px'; b.querySelector('b').style.fontSize = (o * W) + 'px'; }); };
+      set();
+      while (view.scrollHeight > view.clientHeight + 1 && f > 4.6) { f -= .2; if (pad > 1.8) pad -= .1; set(); }
+      while (view.scrollHeight > view.clientHeight + 1 && o > 3.8) { o -= .2; set(); }
+    };
+    run(); later(run, 650);
+  }
+
+  function pick(i, key, btn) {
+    if (busy) return; busy = true;
+    answers[i] = key;
+    view.querySelectorAll('.opt').forEach(o => o.classList.remove('picked')); btn.classList.add('picked');
+    if (has3D) { before.setLevel(i, Q.level(i, key)); before.pin(i, 'done'); }
+    later(() => (i + 1 < N ? question(i + 1) : scoring()), 700);
+  }
+
+  function scoring() {
+    clearTimers();
+    if (has3D) { before.highlight(-1); before.view(-1, 1200); pins(before, 'hide'); }
+    cap.textContent = 'Give me a moment. I am going through your 9 answers.';
+    show([h('div', { className: 'spin', ariaHidden: 'true' }), h('p', { className: 'eyebrow', textContent: 'All 9 answered' }), h('h1', { textContent: 'Working out your score…' })]);
+    later(result, 2200);
+  }
+
+  function result() {
+    clearTimers(); kiosk.classList.add('tall', 'xl');
+    if (!appNo) appNo = nextAppNo();
+    const t = Q.total(answers), st = Q.stage(t), si = Q.stageIndex(t);
+    if (has3D) {
+      for (let k = 0; k < N; k++) { before.setLevel(k, Q.level(k, answers[k])); before.pin(k, 'r' + Q.level(k, answers[k])); after.setLevel(k, 5); after.pin(k, 'hide'); }
+      before.setLive(false); after.setLive(true); before.view(-1, 0); after.view(-1, 0);
+    }
+    compare(true, 'Your cafeteria today', 'Future-ready'); setSplit(92);
+    later(() => { if (!RM) { const t0 = performance.now(); const glide = now => { const k = Math.min(1, (now - t0) / 1100); setSplit(92 - 42 * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(glide); }; requestAnimationFrame(glide); } else setSplit(50); }, 600);
+    const ps = Q.pillars.map((pl, n) => Q.pillarScore(answers, n)), best = ps.indexOf(Math.max(...ps));
+    cap.textContent = t + ' out of 45 puts you at ' + st.name + '. ' + Q.pillars[best].name + ' is your strongest area. Drag the line to see your cafeteria future-ready.';
+    const bars = Q.pillars.map((pl, n) => { const sc = Q.pillarScore(answers, n); const u = h('u'); u.style.setProperty('--c', PCOL[n]); later(() => { u.style.width = (sc / 15 * 100) + '%'; }, 50); return h('div', {}, [h('span', { textContent: pl.name.replace(' & Sustainability', ' & Sust.') }), h('i', {}, [u]), h('b', { textContent: sc + '/15' })]); });
+    const big = h('b', { textContent: '0' }); Q.countUp(big, t, 1100);
+    const report = h('button', { className: 'cta', type: 'button' }, [h('span', { textContent: 'Get my full report' }), h('span', { className: 'arr', textContent: '→', ariaHidden: 'true' })]);
+    report.onclick = form;
+    const reg = h('button', { className: 'ghost', type: 'button', textContent: 'Register with our team instead' });
+    reg.onclick = registered;
+    const box = h('div', { className: 'res' }, [
+      h('span', { className: 'appno' }, ['Application no.', h('b', { textContent: appNo })]),
+      h('div', { className: 'score' }, [h('div', { className: 'big' }, [big, h('span', { textContent: '/ 45' })]), h('div', {}, [h('p', { className: 'eyebrow', style: 'margin:0', textContent: 'Your stage' }), h('span', { className: 'stage', textContent: st.name.replace(' Stage', '') })])]),
+      h('div', { className: 'bars' }, bars),
+      h('p', { className: 'ask', textContent: 'Want your full 4-page report?' }),
+      h('div', { className: 'row' }, [report, reg])
+    ]);
+    box.style.setProperty('--stage', ['#B03A2E', '#C8641E', '#B9831A', '#5E8F34', '#2F6B2C'][si]);
+    show([box]);
+  }
+
+  function form() {
+    clearTimers();
+    const name = h('input', { type: 'text', name: 'name', autocomplete: 'off', required: true, placeholder: 'Your name' });
+    const phone = h('input', { type: 'tel', name: 'phone', autocomplete: 'off', required: true, inputMode: 'tel', pattern: '\\+?[0-9 ]{7,}', placeholder: '+91 98765 43210' });
+    const email = h('input', { type: 'email', name: 'email', autocomplete: 'off', required: true, placeholder: 'name@institution.edu.in' });
+    const consent = h('input', { type: 'checkbox', required: true });
+    const err = h('p', { className: 'err', role: 'alert' });
+    const send = h('button', { className: 'cta', type: 'submit' }, [h('span', { textContent: 'Email my report' }), h('span', { className: 'arr', textContent: '→', ariaHidden: 'true' })]);
+    const back = h('button', { className: 'ghost', type: 'button', textContent: 'Back' }); back.onclick = result;
+    const f = h('form', { className: 'form', noValidate: true }, [
+      h('label', { className: 'wide' }, ['Name', name]), h('label', {}, ['Mobile number', phone]), h('label', {}, ['Email', email]),
+      h('label', { className: 'consent wide' }, [consent, h('span', { textContent: 'I agree to Compass Group sending me my report and contacting me about it.' })]),
+      h('div', { className: 'wide' }, [err]), h('div', { className: 'row wide' }, [send, back])
+    ]);
+    f.onsubmit = e => {
+      e.preventDefault();
+      const bad = !name.value.trim() ? 'Please add your name.' : !phone.checkValidity() || !phone.value.trim() ? 'Please add a valid mobile number.' : !email.checkValidity() || !email.value.trim() ? 'Please add a valid email.' : !consent.checked ? 'Please tick the box so we can send your report.' : '';
+      if (bad) { err.textContent = bad; return; }
+      const lead = { name: name.value.trim(), email: email.value.trim(), phone: phone.value.trim(), role: '', institution: '' };
+      const t = Q.total(answers);
+      submit({ answers: answers.slice(), lead, variant: 'k12', consent: true, appNo },
+        { app_no: appNo, name: lead.name, email: lead.email, phone: lead.phone, total: t, stage: Q.stage(t).name });
+      done(lead);
+    };
+    say('');
+    show([h('p', { className: 'eyebrow', textContent: 'Application no. ' + appNo }), h('h2', { className: 'qtext', style: 'margin:0', textContent: 'Where should we send your report?' }), f]);
+    later(() => name.focus(), 350);
+  }
+
+  function finish(seconds) {
+    const c = h('p', { className: 'countdown' }); let left = seconds;
+    const tick = () => { c.textContent = 'Starting again for the next guest in ' + left + ' s'; if (left-- <= 0) home(); else later(tick, 1000); };
+    tick();
+    const btn = h('button', { className: 'cta', type: 'button', textContent: 'Finish' }); btn.onclick = home;
+    return [btn, c];
+  }
+
+  function done(lead) {
+    clearTimers(); document.activeElement && document.activeElement.blur && document.activeElement.blur();
+    say('Thank you. Your report is on its way. Our team will be in touch.');
+    show([h('p', { className: 'eyebrow', textContent: 'Thank you, ' + lead.name.split(' ')[0] }), h('h1', { style: 'font-size:8cqw', textContent: 'Your report is on its way.' }),
+      h('p', { className: 'lead' }, ['Sent to ', h('b', { textContent: lead.email }), '. It usually arrives in a minute.']),
+      h('div', { className: 'ticket' }, [h('small', { textContent: 'Application no.' }), h('b', { textContent: appNo })]), ...finish(20)]);
+  }
+
+  function registered() {
+    clearTimers();
+    const t = Q.total(answers);
+    submit({ answers: answers.slice(), register: true, variant: 'k12', appNo },
+      { app_no: appNo, name: '', email: '', phone: '', total: t, stage: Q.stage(t).name, email_status: 'registering' });
+    say('Show this number to anyone from our team. They will take it from here.');
+    show([h('p', { className: 'eyebrow', textContent: 'Register with our team' }), h('h1', { style: 'font-size:8cqw', textContent: 'Show this number to our team' }),
+      h('div', { className: 'ticket' }, [h('small', { textContent: 'Your application no.' }), h('b', { textContent: appNo })]),
+      h('p', { className: 'lead', textContent: 'A Chartwells team member will note your details and send you your full report.' }), ...finish(45)]);
+  }
+
+  /* ---------- team page: ?backup=1 shows what is saved on this screen ---------- */
+  function backupScreen() {
+    sweep(false);
+    const cols = ['time', 'app_no', 'name', 'email', 'phone', 'total', 'stage', 'answers', 'email_status'];
+    const cell = v => { let s = String(v == null ? '' : v); if (/^[=+\-@]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; };
+    const info = h('p', { className: 'lead' });
+    const refresh = () => { let next = APP_START; try { next = parseInt(localStorage.getItem(APP_KEY), 10) || APP_START; } catch (e) {} info.textContent = load(BACKUP).length + ' guests saved on this screen · ' + load(OUTBOX).length + ' waiting for internet · next application no. ' + String(next).padStart(4, '0'); };
+    const dl = h('button', { className: 'cta', type: 'button', textContent: 'Download backup (CSV)' });
+    dl.onclick = () => {
+      const rows = [cols.join(',')].concat(load(BACKUP).map(r => cols.map(c => cell(r[c])).join(',')));
+      const a = h('a', { href: URL.createObjectURL(new Blob(['﻿' + rows.join('\r\n')], { type: 'text/csv' })), download: 'chartwells-kiosk-guests-' + new Date().toLocaleDateString('en-CA') + '.csv' });
+      document.body.append(a); a.click(); a.remove();
+    };
+    const retry = h('button', { className: 'ghost', type: 'button', textContent: 'Retry waiting emails' }); retry.onclick = () => { flush(); later(refresh, 4000); };
+    const clear = h('button', { className: 'ghost', type: 'button', textContent: 'Clear guests (keeps numbering)' });
+    clear.onclick = () => { if (confirm('Delete all saved guests from this screen? Download the CSV first.')) { save(BACKUP, [], 2000); refresh(); } };
+    const open = h('button', { className: 'ghost', type: 'button', textContent: 'Open the quiz' }); open.onclick = () => { location.href = location.pathname; };
+    refresh();
+    show([h('p', { className: 'eyebrow', textContent: 'For the Chartwells team' }), h('h1', { style: 'font-size:8cqw', textContent: 'Guests saved on this screen' }), info, dl, h('div', { className: 'row' }, [retry, clear, open])]);
+  }
+
+  if (new URLSearchParams(location.search).get('backup') === '1') { sceneTypical(); compare(true); setSplit(50); backupScreen(); }
+  else home();
+  resetIdle();
+})();
+</script>
+</body>
+</html>
